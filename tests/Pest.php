@@ -18,6 +18,8 @@ pest()->extend(Tests\TestCase::class)
 pest()->extend(Tests\TestCase::class)
     ->in('Unit');
 
+uses(Illuminate\Foundation\Testing\RefreshDatabase::class)->in('Unit/Models');
+
 /*
 |--------------------------------------------------------------------------
 | Expectations
