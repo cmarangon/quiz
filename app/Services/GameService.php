@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Events\CategoryChanged;
 use App\Events\GameFinished;
+use App\Events\QuestionEnded;
 use App\Events\QuestionStarted;
 use App\Models\GameSession;
 use App\Models\Question;
@@ -51,7 +52,18 @@ class GameService
             throw new LogicException("Cannot finish question in '{$session->status}' status.");
         }
 
+        $question = $this->getCurrentQuestion($session);
+
         $session->update(['status' => 'reviewing']);
+
+        if ($question) {
+            $scores = $session->players()->orderByDesc('score')->get()->map(fn ($p) => [
+                'nickname' => $p->nickname,
+                'score' => $p->score,
+            ])->toArray();
+
+            broadcast(new QuestionEnded($session, $question, $scores));
+        }
     }
 
     public function advanceToNextQuestion(GameSession $session): bool
