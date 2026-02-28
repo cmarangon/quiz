@@ -5,6 +5,7 @@ namespace App\Providers;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use App\Services\QuestionTypeRegistry;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -15,7 +16,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(QuestionTypeRegistry::class, function ($app) {
+            return new QuestionTypeRegistry(
+                container: $app,
+                types: config('quiz.question_types'),
+            );
+        });
     }
 
     /**
