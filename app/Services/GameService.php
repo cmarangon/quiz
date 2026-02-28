@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Events\CategoryChanged;
+use App\Events\GameFinished;
+use App\Events\QuestionStarted;
 use App\Models\GameSession;
 use App\Models\Question;
 use Illuminate\Support\Collection;
@@ -22,6 +25,17 @@ class GameService
             'current_question_index' => 0,
             'current_category_id' => $firstCategory?->id,
         ]);
+
+        $session->refresh();
+        $question = $this->getCurrentQuestion($session);
+
+        if ($firstCategory) {
+            broadcast(new CategoryChanged($session, $firstCategory));
+        }
+
+        if ($question) {
+            broadcast(new QuestionStarted($session, $question));
+        }
     }
 
     public function getCurrentQuestion(GameSession $session): ?Question
@@ -52,9 +66,17 @@ class GameService
         if ($nextIndex >= $questions->count()) {
             $session->update(['status' => 'finished']);
 
+            $leaderboard = $session->players()->orderByDesc('score')->get()->map(fn ($p) => [
+                'nickname' => $p->nickname,
+                'score' => $p->score,
+            ])->toArray();
+
+            broadcast(new GameFinished($session, $leaderboard));
+
             return false;
         }
 
+        $prevCategoryId = $session->current_category_id;
         $nextQuestion = $questions->get($nextIndex);
 
         $session->update([
@@ -62,6 +84,14 @@ class GameService
             'current_category_id' => $nextQuestion->category_id,
             'status' => 'playing',
         ]);
+
+        $session->refresh();
+
+        if ($nextQuestion->category_id !== $prevCategoryId) {
+            broadcast(new CategoryChanged($session, $nextQuestion->category));
+        }
+
+        broadcast(new QuestionStarted($session, $nextQuestion));
 
         return true;
     }
