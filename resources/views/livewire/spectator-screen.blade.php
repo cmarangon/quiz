@@ -2,24 +2,43 @@
     {{-- LOBBY PHASE --}}
     @if($phase === 'lobby')
         <div class="text-center space-y-8">
-            <h1 class="text-4xl font-bold text-zinc-900 dark:text-white">Join the Game!</h1>
+            @if($quizTitle)
+                <h1 class="text-5xl font-extrabold text-zinc-900 dark:text-white">{{ $quizTitle }}</h1>
+            @endif
 
-            <div class="rounded-2xl border-2 border-zinc-200 bg-white p-8 dark:border-zinc-700 dark:bg-zinc-900">
-                <p class="text-sm uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Enter this code</p>
-                <p class="font-mono text-7xl font-bold tracking-widest text-zinc-900 dark:text-white">
-                    {{ $session->join_code }}
-                </p>
+            <p class="text-xl text-zinc-500 dark:text-zinc-400">Scan the QR code or enter the code below to join</p>
+
+            <div class="flex flex-col items-center gap-6 sm:flex-row sm:justify-center sm:gap-12">
+                {{-- Join code --}}
+                <div class="rounded-2xl border-2 border-zinc-200 bg-white p-8 dark:border-zinc-700 dark:bg-zinc-900">
+                    <p class="text-sm uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Enter this code</p>
+                    <p class="font-mono text-7xl font-bold tracking-widest text-zinc-900 dark:text-white">
+                        {{ $session->join_code }}
+                    </p>
+                </div>
+
+                {{-- QR code --}}
+                <div class="rounded-2xl border-2 border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+                    {!! $qrCodeSvg !!}
+                </div>
             </div>
 
-            {{-- QR code placeholder --}}
-            <div class="mx-auto h-48 w-48 rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex items-center justify-center">
-                <span class="text-zinc-400 dark:text-zinc-500 text-sm">QR Code</span>
-            </div>
-
+            {{-- Player count --}}
             <p class="text-2xl text-zinc-600 dark:text-zinc-300">
                 <span class="font-bold text-zinc-900 dark:text-white">{{ $playerCount }}</span>
                 {{ Str::plural('player', $playerCount) }} joined
             </p>
+
+            {{-- Player name list --}}
+            @if(count($playerNames) > 0)
+                <div class="flex flex-wrap justify-center gap-3">
+                    @foreach($playerNames as $name)
+                        <span class="rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                            {{ $name }}
+                        </span>
+                    @endforeach
+                </div>
+            @endif
 
             <p class="text-lg text-zinc-500 dark:text-zinc-400 animate-pulse">Waiting for the host to start...</p>
         </div>

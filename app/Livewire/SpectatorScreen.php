@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\GameSession;
+use App\Services\QrCodeService;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -20,9 +21,23 @@ class SpectatorScreen extends Component
     public string $phase = 'lobby';
     public mixed $correctAnswer = null;
 
+    /** @var list<string> */
+    public array $playerNames = [];
+
+    public string $quizTitle = '';
+
+    public string $joinUrl = '';
+
+    public string $qrCodeSvg = '';
+
     public function mount(string $code): void
     {
         $this->session = GameSession::where('join_code', strtoupper($code))->firstOrFail();
+        $this->session->loadMissing('quiz');
+        $this->quizTitle = $this->session->quiz->title ?? '';
+        $this->joinUrl = route('game.join', $this->session->join_code);
+        $this->qrCodeSvg = QrCodeService::svg($this->joinUrl, 250);
+        $this->loadPlayers();
         $this->totalPlayers = $this->session->players()->count();
 
         if ($this->session->status === 'finished') {
@@ -51,6 +66,14 @@ class SpectatorScreen extends Component
     public function onPlayerJoined(array $payload): void
     {
         $this->totalPlayers = $payload['player_count'];
+        $this->loadPlayers();
+    }
+
+    private function loadPlayers(): void
+    {
+        $this->playerNames = $this->session->players()
+            ->pluck('nickname')
+            ->toArray();
     }
 
     public function onCategoryChanged(array $payload): void

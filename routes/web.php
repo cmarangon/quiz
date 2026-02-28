@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GameController;
+use App\Livewire\Dashboard;
 use App\Livewire\HostDashboard;
 use App\Livewire\JoinGame;
 use App\Livewire\PlayerScreen;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', Dashboard::class)->name('dashboard');
     Route::get('/quizzes', QuizIndex::class)->name('quizzes.index');
     Route::get('/quizzes/create', QuizBuilder::class)->name('quizzes.create');
     Route::get('/quizzes/{quiz}/edit', QuizBuilder::class)->name('quizzes.edit');
