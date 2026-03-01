@@ -1,23 +1,19 @@
 <?php
 
-use App\Events\PlayerJoined;
-use App\Events\CategoryChanged;
-use App\Events\QuestionStarted;
-use App\Events\PlayerAnswered;
-use App\Events\QuestionEnded;
 use App\Events\GameFinished;
+use App\Events\PlayerJoined;
+use App\Events\QuestionEnded;
+use App\Events\QuestionStarted;
 use App\Models\GameSession;
-use App\Models\Category;
 use App\Models\Player;
 use App\Models\Question;
-use Illuminate\Broadcasting\Channel;
 
 test('PlayerJoined broadcasts on game channel', function () {
     $session = GameSession::factory()->create();
     $player = Player::factory()->for($session, 'gameSession')->create();
     $event = new PlayerJoined($session, $player);
     $channels = $event->broadcastOn();
-    expect(collect($channels)->map->name)->toContain('game.' . $session->id);
+    expect(collect($channels)->map->name)->toContain('game.'.$session->id);
 });
 
 test('QuestionStarted broadcasts on game channel without correct answer', function () {

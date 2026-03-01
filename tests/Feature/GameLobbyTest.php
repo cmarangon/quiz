@@ -1,11 +1,7 @@
 <?php
 
 use App\Events\PlayerJoined;
-use App\Http\Controllers\GameController;
-use App\Livewire\HostDashboard;
 use App\Livewire\JoinGame;
-use App\Livewire\PlayerScreen;
-use App\Livewire\SpectatorScreen;
 use App\Models\GameSession;
 use App\Models\Player;
 use App\Models\Quiz;
@@ -37,7 +33,7 @@ test('player can join a game with a nickname', function () {
     Livewire::test(JoinGame::class, ['code' => $session->join_code])
         ->set('nickname', 'TestPlayer')
         ->call('join')
-        ->assertRedirectContains('/game/' . $session->join_code . '/play');
+        ->assertRedirectContains('/game/'.$session->join_code.'/play');
 
     $player = Player::where('game_session_id', $session->id)->first();
     expect($player)->not->toBeNull();

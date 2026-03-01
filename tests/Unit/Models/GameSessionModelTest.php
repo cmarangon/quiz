@@ -1,9 +1,9 @@
 <?php
 
 use App\Models\GameSession;
+use App\Models\Player;
 use App\Models\Quiz;
 use App\Models\User;
-use App\Models\Player;
 
 test('game session belongs to quiz and host', function () {
     $quiz = Quiz::factory()->create();

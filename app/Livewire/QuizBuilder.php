@@ -15,11 +15,15 @@ class QuizBuilder extends Component
     public ?Quiz $quiz = null;
 
     public string $title = '';
+
     public string $description = '';
+
     public bool $enableTimeBonus = true;
+
     public bool $enableStreaks = true;
 
     public string $newCategoryName = '';
+
     public string $newCategoryTheme = 'default';
 
     public function mount(?Quiz $quiz = null): void

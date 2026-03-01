@@ -14,7 +14,9 @@ class HostDashboard extends Component
     public GameSession $session;
 
     public int $answeredCount = 0;
+
     public int $totalPlayers = 0;
+
     public string $phase = 'lobby';
 
     public function mount(string $code): void

@@ -1,18 +1,18 @@
 <?php
 
+use App\Actions\SubmitAnswer;
 use App\Events\CategoryChanged;
 use App\Events\GameFinished;
 use App\Events\PlayerAnswered;
 use App\Events\QuestionEnded;
 use App\Events\QuestionStarted;
-use App\Models\Quiz;
 use App\Models\Category;
-use App\Models\Question;
 use App\Models\GameSession;
 use App\Models\Player;
+use App\Models\Question;
+use App\Models\Quiz;
 use App\Models\User;
 use App\Services\GameService;
-use App\Actions\SubmitAnswer;
 use Illuminate\Support\Facades\Event;
 
 test('complete game flow end to end', function () {

@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\GameSession;
 use App\Models\Category;
+use App\Models\GameSession;
 use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\User;
@@ -23,7 +23,7 @@ beforeEach(function () {
         ->for($this->quiz)
         ->for($this->user, 'host')
         ->create(['status' => 'waiting']);
-    $this->service = new GameService();
+    $this->service = new GameService;
 });
 
 test('start game transitions from waiting to playing', function () {

@@ -4,7 +4,7 @@ use App\Models\Question;
 use App\Services\ScoringService;
 
 test('full points when time bonus disabled', function () {
-    $service = new ScoringService();
+    $service = new ScoringService;
     $question = Question::factory()->make(['category_id' => 1, 'points' => 10, 'time_limit_seconds' => 30]);
     $settings = ['enable_time_bonus' => false, 'enable_streaks' => false];
     $points = $service->calculate($question, timeTakenMs: 25000, streak: 0, settings: $settings);
@@ -12,7 +12,7 @@ test('full points when time bonus disabled', function () {
 });
 
 test('time bonus gives full points at instant answer', function () {
-    $service = new ScoringService();
+    $service = new ScoringService;
     $question = Question::factory()->make(['category_id' => 1, 'points' => 10, 'time_limit_seconds' => 30]);
     $settings = ['enable_time_bonus' => true, 'enable_streaks' => false];
     $points = $service->calculate($question, timeTakenMs: 0, streak: 0, settings: $settings);
@@ -20,7 +20,7 @@ test('time bonus gives full points at instant answer', function () {
 });
 
 test('time bonus gives zero points at time limit', function () {
-    $service = new ScoringService();
+    $service = new ScoringService;
     $question = Question::factory()->make(['category_id' => 1, 'points' => 10, 'time_limit_seconds' => 30]);
     $settings = ['enable_time_bonus' => true, 'enable_streaks' => false];
     $points = $service->calculate($question, timeTakenMs: 30000, streak: 0, settings: $settings);
@@ -28,7 +28,7 @@ test('time bonus gives zero points at time limit', function () {
 });
 
 test('time bonus gives half points at half time', function () {
-    $service = new ScoringService();
+    $service = new ScoringService;
     $question = Question::factory()->make(['category_id' => 1, 'points' => 10, 'time_limit_seconds' => 30]);
     $settings = ['enable_time_bonus' => true, 'enable_streaks' => false];
     $points = $service->calculate($question, timeTakenMs: 15000, streak: 0, settings: $settings);
@@ -36,7 +36,7 @@ test('time bonus gives half points at half time', function () {
 });
 
 test('streak multiplier 1x for streak 0-2', function () {
-    $service = new ScoringService();
+    $service = new ScoringService;
     $question = Question::factory()->make(['category_id' => 1, 'points' => 10, 'time_limit_seconds' => 30]);
     $settings = ['enable_time_bonus' => false, 'enable_streaks' => true];
     expect($service->calculate($question, 0, streak: 0, settings: $settings))->toBe(10);
@@ -45,7 +45,7 @@ test('streak multiplier 1x for streak 0-2', function () {
 });
 
 test('streak multiplier 1.5x for streak 3-4', function () {
-    $service = new ScoringService();
+    $service = new ScoringService;
     $question = Question::factory()->make(['category_id' => 1, 'points' => 10, 'time_limit_seconds' => 30]);
     $settings = ['enable_time_bonus' => false, 'enable_streaks' => true];
     expect($service->calculate($question, 0, streak: 3, settings: $settings))->toBe(15);
@@ -53,7 +53,7 @@ test('streak multiplier 1.5x for streak 3-4', function () {
 });
 
 test('streak multiplier 2x for streak 5+', function () {
-    $service = new ScoringService();
+    $service = new ScoringService;
     $question = Question::factory()->make(['category_id' => 1, 'points' => 10, 'time_limit_seconds' => 30]);
     $settings = ['enable_time_bonus' => false, 'enable_streaks' => true];
     expect($service->calculate($question, 0, streak: 5, settings: $settings))->toBe(20);
@@ -61,7 +61,7 @@ test('streak multiplier 2x for streak 5+', function () {
 });
 
 test('time bonus and streak combine correctly', function () {
-    $service = new ScoringService();
+    $service = new ScoringService;
     $question = Question::factory()->make(['category_id' => 1, 'points' => 10, 'time_limit_seconds' => 30]);
     $settings = ['enable_time_bonus' => true, 'enable_streaks' => true];
     $points = $service->calculate($question, timeTakenMs: 15000, streak: 5, settings: $settings);
@@ -69,7 +69,7 @@ test('time bonus and streak combine correctly', function () {
 });
 
 test('streaks disabled ignores streak value', function () {
-    $service = new ScoringService();
+    $service = new ScoringService;
     $question = Question::factory()->make(['category_id' => 1, 'points' => 10, 'time_limit_seconds' => 30]);
     $settings = ['enable_time_bonus' => false, 'enable_streaks' => false];
     $points = $service->calculate($question, 0, streak: 10, settings: $settings);

@@ -12,11 +12,15 @@ use Livewire\Component;
 class PlayerScreen extends Component
 {
     public GameSession $session;
+
     public ?Player $player = null;
 
     public ?array $currentQuestion = null;
+
     public string $phase = 'waiting';
+
     public ?array $lastResult = null;
+
     public array $leaderboard = [];
 
     public function mount(string $code): void

@@ -13,12 +13,19 @@ class SpectatorScreen extends Component
     public GameSession $session;
 
     public ?array $currentTheme = null;
+
     public ?array $currentQuestion = null;
+
     public int $answeredCount = 0;
+
     public int $totalPlayers = 0;
+
     public array $scores = [];
+
     public array $leaderboard = [];
+
     public string $phase = 'lobby';
+
     public mixed $correctAnswer = null;
 
     /** @var list<string> */
@@ -117,6 +124,6 @@ class SpectatorScreen extends Component
         return view('livewire.spectator-screen', [
             'players' => $this->session->players,
             'playerCount' => $this->totalPlayers,
-        ])->title('Game - ' . $this->session->join_code);
+        ])->title('Game - '.$this->session->join_code);
     }
 }

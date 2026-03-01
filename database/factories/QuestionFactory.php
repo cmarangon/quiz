@@ -15,7 +15,7 @@ class QuestionFactory extends Factory
         return [
             'category_id' => Category::factory(),
             'type' => 'multiple_choice',
-            'body' => fake()->sentence() . '?',
+            'body' => fake()->sentence().'?',
             'options' => [
                 ['label' => 'Option A'],
                 ['label' => 'Option B'],

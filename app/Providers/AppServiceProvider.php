@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
+use App\Services\QuestionTypeRegistry;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
-use App\Services\QuestionTypeRegistry;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 

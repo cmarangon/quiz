@@ -18,6 +18,7 @@ class QuestionTypeRegistry
         if (! isset($this->types[$typeKey])) {
             throw new InvalidArgumentException("Unknown question type: {$typeKey}");
         }
+
         return $this->container->make($this->types[$typeKey]);
     }
 

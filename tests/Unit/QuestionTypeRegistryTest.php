@@ -1,7 +1,7 @@
 <?php
 
-use App\Services\QuestionTypeRegistry;
 use App\Contracts\QuestionTypeInterface;
+use App\Services\QuestionTypeRegistry;
 
 test('registry resolves a registered question type', function () {
     $registry = app(QuestionTypeRegistry::class);

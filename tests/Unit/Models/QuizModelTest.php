@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\Quiz;
-use App\Models\User;
 use App\Models\Category;
 use App\Models\Question;
+use App\Models\Quiz;
+use App\Models\User;
 
 test('quiz belongs to a user', function () {
     $user = User::factory()->create();

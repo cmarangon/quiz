@@ -12,7 +12,9 @@ use Livewire\Component;
 class JoinGame extends Component
 {
     public string $code = '';
+
     public string $nickname = '';
+
     public ?Player $player = null;
 
     public function mount(string $code): void
@@ -26,6 +28,7 @@ class JoinGame extends Component
 
         if ($session->status !== 'waiting') {
             $this->addError('nickname', 'This game is no longer accepting players.');
+
             return;
         }
 

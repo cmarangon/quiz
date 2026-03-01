@@ -17,7 +17,7 @@ class QuestionStarted implements ShouldBroadcastNow
     /** @return array<int, Channel> */
     public function broadcastOn(): array
     {
-        return [new Channel('game.' . $this->session->id)];
+        return [new Channel('game.'.$this->session->id)];
     }
 
     public function broadcastAs(): string
