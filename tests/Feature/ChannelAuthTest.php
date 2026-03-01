@@ -20,8 +20,6 @@ test('host channel authorizes the quiz host', function () {
 });
 
 test('host channel rejects non-host user', function () {
-    config(['broadcasting.default' => 'reverb']);
-
     $other = User::factory()->create();
     $session = GameSession::factory()->create();
 
