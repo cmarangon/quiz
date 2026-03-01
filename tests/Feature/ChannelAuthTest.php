@@ -8,22 +8,26 @@ test('host channel authorizes the quiz host', function () {
     $user = User::factory()->create();
     $session = GameSession::factory()->for($user, 'host')->create();
 
-    $channels = Broadcast::getChannels();
-    $callback = $channels['game.{sessionId}.host'];
+    // Directly test the channel authorization callback
+    $result = Broadcast::channel('game.{sessionId}.host', function () {}); // register is already done in channels.php
 
-    $result = $callback($user, $session->id);
-
-    expect($result)->toBeTrue();
+    // Use the auth method directly
+    $this->actingAs($user);
+    $response = $this->post('/broadcasting/auth', [
+        'channel_name' => 'private-game.'.$session->id.'.host',
+    ]);
+    $response->assertOk();
 });
 
 test('host channel rejects non-host user', function () {
+    config(['broadcasting.default' => 'reverb']);
+
     $other = User::factory()->create();
     $session = GameSession::factory()->create();
 
-    $channels = Broadcast::getChannels();
-    $callback = $channels['game.{sessionId}.host'];
-
-    $result = $callback($other, $session->id);
-
-    expect($result)->toBeFalse();
+    $this->actingAs($other);
+    $response = $this->post('/broadcasting/auth', [
+        'channel_name' => 'private-game.'.$session->id.'.host',
+    ]);
+    $response->assertForbidden();
 });

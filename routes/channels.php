@@ -10,5 +10,5 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('game.{sessionId}.host', function ($user, int $sessionId) {
     $session = GameSession::find($sessionId);
 
-    return $session && (int) $session->host_user_id === (int) $user->id;
+    return $session && $session->host_user_id === $user->id;
 });

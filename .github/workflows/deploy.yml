@@ -1,0 +1,69 @@
+name: deploy
+
+on:
+  workflow_run:
+    workflows: [tests]
+    types: [completed]
+    branches:
+      - develop
+      - main
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    environment:
+      name: ${{ github.event.workflow_run.head_branch == 'main' && 'production' || 'staging' }}
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            DEPLOY_PATH="${{ vars.DEPLOY_PATH }}"
+            BRANCH="${{ github.event.workflow_run.head_branch }}"
+
+            echo "==> Deploying branch '$BRANCH' to '$DEPLOY_PATH'"
+            cd "$DEPLOY_PATH"
+
+            echo "==> Entering maintenance mode"
+            php artisan down --retry=60
+
+            echo "==> Pulling latest code"
+            git pull origin "$BRANCH"
+
+            echo "==> Installing PHP dependencies"
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            echo "==> Installing and building frontend assets"
+            npm ci
+            npm run build
+
+            echo "==> Running database migrations"
+            php artisan migrate --force
+
+            echo "==> Caching configuration"
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            echo "==> Restarting Reverb WebSocket server"
+            php artisan reverb:restart
+
+            echo "==> Reloading PHP-FPM"
+            sudo systemctl reload php8.4-fpm
+
+            echo "==> Exiting maintenance mode"
+            php artisan up
+
+            echo "==> Deploy complete!"
