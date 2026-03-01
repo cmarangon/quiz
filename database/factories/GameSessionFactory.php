@@ -16,6 +16,7 @@ class GameSessionFactory extends Factory
         return [
             'quiz_id' => Quiz::factory(),
             'host_user_id' => User::factory(),
+            'join_code' => strtoupper(fake()->bothify('???###')),
             'status' => 'waiting',
             'current_question_index' => 0,
         ];

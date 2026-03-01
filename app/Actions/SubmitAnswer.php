@@ -37,6 +37,13 @@ class SubmitAnswer
         }
 
         $question = $session->quiz->questions()->findOrFail($questionId);
+
+        $gracePeriodMs = 500;
+        $timeLimitMs = $question->time_limit_seconds * 1000 + $gracePeriodMs;
+        if ($timeTakenMs > $timeLimitMs) {
+            throw new LogicException('Answer submitted after time limit.');
+        }
+
         $type = $this->registry->resolve($question->type);
 
         $isCorrect = $type->validateAnswer($answer, $question);
