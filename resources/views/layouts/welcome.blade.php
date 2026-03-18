@@ -7,7 +7,7 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-[#0a0a0a] text-white min-h-screen antialiased">
+<body class="bg-[#0a0a0a] text-white min-h-screen antialiased aurora-bg">
     {{ $slot }}
 </body>
 </html>

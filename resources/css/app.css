@@ -64,3 +64,30 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+/* Landing page aurora background */
+@keyframes aurora {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 50% 0%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    75% {
+        background-position: 50% 100%;
+    }
+}
+
+.aurora-bg {
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 40% 80%, rgba(244, 63, 94, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 60%, rgba(251, 146, 60, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 30%, rgba(52, 211, 153, 0.1) 0%, transparent 50%);
+    background-size: 200% 200%;
+    animation: aurora 20s ease-in-out infinite;
+}
