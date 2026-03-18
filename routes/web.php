@@ -8,9 +8,10 @@ use App\Livewire\PlayerScreen;
 use App\Livewire\QuizBuilder;
 use App\Livewire\QuizIndex;
 use App\Livewire\SpectatorScreen;
+use App\Livewire\WelcomePage;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('home');
+Route::get('/', WelcomePage::class)->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
