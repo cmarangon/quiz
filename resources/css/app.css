@@ -102,3 +102,12 @@ select:focus[data-flux-control] {
         transform: translateY(0);
     }
 }
+
+/* Hide scrollbar for horizontal game cards */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
