@@ -1,4 +1,4 @@
-<div>
+<div wire:poll.5s>
     {{-- Top bar --}}
     <header class="fixed top-0 right-0 p-6 z-50">
         @auth
