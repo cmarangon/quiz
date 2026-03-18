@@ -82,7 +82,8 @@ select:focus[data-flux-control] {
 }
 
 .aurora-bg {
-    background:
+    background-color: #0a0a0a;
+    background-image:
         radial-gradient(ellipse at 20% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
         radial-gradient(ellipse at 80% 20%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
         radial-gradient(ellipse at 40% 80%, rgba(244, 63, 94, 0.12) 0%, transparent 50%),
@@ -101,6 +102,18 @@ select:focus[data-flux-control] {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.fade-in-up-delay-1 {
+    animation: fadeInUp 0.8s ease-out 0.2s forwards;
+}
+
+.fade-in-up-delay-2 {
+    animation: fadeInUp 0.8s ease-out 0.4s forwards;
 }
 
 /* Hide scrollbar for horizontal game cards */
