@@ -2,9 +2,15 @@
     {{-- Top bar --}}
     <header class="fixed top-0 right-0 p-6 z-50">
         @auth
-            <a href="{{ route('dashboard') }}">Dashboard</a>
+            <a href="{{ route('dashboard') }}"
+               class="px-5 py-2 rounded-full text-sm font-medium text-white/80 backdrop-blur-md bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 hover:text-white hover:shadow-[0_0_15px_rgba(139,92,246,0.2)] transition-all duration-300">
+                Dashboard
+            </a>
         @else
-            <a href="{{ route('login') }}">Admin Login</a>
+            <a href="{{ route('login') }}"
+               class="px-5 py-2 rounded-full text-sm font-medium text-white/80 backdrop-blur-md bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 hover:text-white hover:shadow-[0_0_15px_rgba(139,92,246,0.2)] transition-all duration-300">
+                Admin Login
+            </a>
         @endauth
     </header>
 
