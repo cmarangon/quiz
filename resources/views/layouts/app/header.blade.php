@@ -41,6 +41,17 @@
                 </flux:tooltip>
             </flux:navbar>
 
+            {{-- Language Switcher --}}
+            <flux:dropdown position="bottom" align="end">
+                <flux:navbar.item class="!h-10" icon="globe-alt">
+                    {{ strtoupper(app()->getLocale()) }}
+                </flux:navbar.item>
+                <flux:menu>
+                    <flux:menu.item :href="route('locale.switch', 'en')" :current="app()->getLocale() === 'en'">English</flux:menu.item>
+                    <flux:menu.item :href="route('locale.switch', 'de')" :current="app()->getLocale() === 'de'">Deutsch</flux:menu.item>
+                </flux:menu>
+            </flux:dropdown>
+
             <x-desktop-user-menu />
         </flux:header>
 

@@ -16,8 +16,16 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Claudio Marangon',
+            'email' => 'marangon.claudio@gmail.com',
+            'password' => bcrypt('linkinpark'),
+        ]);
+
+        $this->call([
+            NormalQuizSeeder::class,
+            TimeBonusQuizSeeder::class,
+            StreaksQuizSeeder::class,
+            TimeBonusAndStreaksQuizSeeder::class,
         ]);
     }
 }

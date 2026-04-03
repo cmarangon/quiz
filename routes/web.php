@@ -13,6 +13,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', WelcomePage::class)->name('home');
 
+Route::get('/locale/{locale}', function (string $locale) {
+    if (in_array($locale, ['en', 'de'])) {
+        session()->put('locale', $locale);
+    }
+    return redirect()->back();
+})->name('locale.switch');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
     Route::get('/quizzes', QuizIndex::class)->name('quizzes.index');

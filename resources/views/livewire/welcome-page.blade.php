@@ -1,15 +1,21 @@
 <div wire:poll.5s>
     {{-- Top bar --}}
-    <header class="fixed top-0 right-0 p-6 z-50">
+    <header class="fixed top-0 right-0 p-6 z-50 flex items-center gap-3">
+        {{-- Language Switcher --}}
+        <a href="{{ route('locale.switch', app()->getLocale() === 'de' ? 'en' : 'de') }}"
+           class="px-4 py-2 rounded-full text-sm font-medium text-white backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/10 hover:border-white/20 hover:text-white hover:shadow-[0_0_15px_rgba(139,92,246,0.2)] transition-all duration-300">
+            {{ app()->getLocale() === 'de' ? 'EN' : 'DE' }}
+        </a>
+
         @auth
             <a href="{{ route('dashboard') }}"
                class="px-5 py-2 rounded-full text-sm font-medium text-white backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/10 hover:border-white/20 hover:text-white hover:shadow-[0_0_15px_rgba(139,92,246,0.2)] transition-all duration-300">
-                Dashboard
+                {{ __('Dashboard') }}
             </a>
         @else
             <a href="{{ route('login') }}"
                class="px-5 py-2 rounded-full text-sm font-medium text-white backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/10 hover:border-white/20 hover:text-white hover:shadow-[0_0_15px_rgba(139,92,246,0.2)] transition-all duration-300">
-                Admin Login
+                {{ __('Admin Login') }}
             </a>
         @endauth
     </header>
@@ -28,7 +34,7 @@
 
         {{-- Tagline --}}
         <p class="mt-4 text-lg text-zinc-300 opacity-0 fade-in-up-delay-2">
-            Real-time party trivia
+            {{ __('Real-time party trivia') }}
         </p>
     </main>
 
@@ -42,12 +48,12 @@
                     <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
             @endif
-            <h2 class="text-lg font-semibold text-white/90">Live Games</h2>
+            <h2 class="text-lg font-semibold text-white/90">{{ __('Live Games') }}</h2>
         </div>
 
         @if($activeGames->isEmpty())
             <div class="flex items-center justify-center py-8 rounded-2xl backdrop-blur-md bg-white/10 border border-white/20">
-                <p class="text-zinc-400 text-sm">No live games right now</p>
+                <p class="text-zinc-400 text-sm">{{ __('No live games right now') }}</p>
             </div>
         @else
             <div class="flex gap-4 overflow-x-auto pt-8 -mt-8 pb-2 snap-x snap-mandatory scrollbar-hide">
@@ -64,7 +70,7 @@
                                 {{ $game->status === 'waiting' ? 'bg-emerald-500/20 text-emerald-400' : '' }}
                                 {{ $game->status === 'playing' ? 'bg-amber-500/20 text-amber-400' : '' }}
                                 {{ $game->status === 'reviewing' ? 'bg-blue-500/20 text-blue-400' : '' }}">
-                                {{ $game->status === 'waiting' ? 'In Lobby' : ucfirst($game->status) }}
+                                {{ $game->status === 'waiting' ? __('In Lobby') : ucfirst($game->status) }}
                             </span>
                         </div>
 
@@ -72,12 +78,12 @@
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
-                            {{ $game->players->count() }} players
+                            {{ $game->players->count() }} {{ __('players') }}
                         </div>
 
                         <a href="{{ route('game.spectator', $game->join_code) }}"
                            class="block w-full text-center px-4 py-2 rounded-xl text-sm font-medium bg-white/15 text-white border border-white/20 hover:bg-white/25 hover:text-white transition-all duration-200">
-                            Watch
+                            {{ __('Watch') }}
                         </a>
                     </div>
                 @endforeach
