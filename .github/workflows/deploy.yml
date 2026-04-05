@@ -5,7 +5,6 @@ on:
     workflows: [tests]
     types: [completed]
     branches:
-      - develop
       - main
 
 concurrency:
@@ -18,7 +17,7 @@ jobs:
     if: github.event.workflow_run.conclusion == 'success'
 
     environment:
-      name: ${{ github.event.workflow_run.head_branch == 'main' && 'production' || 'staging' }}
+      name: production
 
     steps:
       - name: Deploy via SSH
@@ -30,16 +29,14 @@ jobs:
           script: |
             set -euo pipefail
             DEPLOY_PATH="${{ vars.DEPLOY_PATH }}"
-            BRANCH="${{ github.event.workflow_run.head_branch }}"
-
-            echo "==> Deploying branch '$BRANCH' to '$DEPLOY_PATH'"
+            echo "==> Deploying to '$DEPLOY_PATH'"
             cd "$DEPLOY_PATH"
 
             echo "==> Entering maintenance mode"
             php artisan down --retry=60
 
             echo "==> Pulling latest code"
-            git pull origin "$BRANCH"
+            git pull origin main
 
             echo "==> Installing PHP dependencies"
             composer install --no-dev --optimize-autoloader --no-interaction
