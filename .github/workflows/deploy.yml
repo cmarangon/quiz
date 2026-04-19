@@ -20,6 +20,32 @@ jobs:
       name: production
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Build frontend assets
+        run: |
+          npm ci --no-audit --prefer-offline
+          npm run build
+          tar -czf build.tar.gz -C public build
+
+      - name: Upload built assets
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "build.tar.gz"
+          target: "/tmp/"
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
@@ -30,6 +56,7 @@ jobs:
             set -euo pipefail
             DEPLOY_PATH="${{ vars.DEPLOY_PATH }}"
             HEALTH_URL="${{ vars.HEALTH_URL }}"
+            BUILD_TARBALL="/tmp/build.tar.gz"
             echo "==> Deploying to '$DEPLOY_PATH'"
             cd "$DEPLOY_PATH"
 
@@ -38,14 +65,22 @@ jobs:
             trap 'echo "==> Deploy failed, exiting maintenance mode"; php artisan up || true' ERR
 
             echo "==> Pulling latest code"
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
 
             echo "==> Installing PHP dependencies"
             composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-progress
 
-            echo "==> Installing and building frontend assets"
-            npm ci --no-audit --prefer-offline
-            npm run build
+            echo "==> Swapping in freshly built frontend assets"
+            rm -rf public/build.new public/build.old
+            mkdir -p public/build.new
+            tar -xzf "$BUILD_TARBALL" -C public/build.new --strip-components=1
+            if [ -d public/build ]; then
+              mv public/build public/build.old
+            fi
+            mv public/build.new public/build
+            rm -rf public/build.old
+            rm -f "$BUILD_TARBALL"
 
             echo "==> Running database migrations"
             php artisan migrate --force
