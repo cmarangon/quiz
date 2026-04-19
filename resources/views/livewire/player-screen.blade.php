@@ -8,7 +8,7 @@
         @if($phase === 'waiting')
             <div class="space-y-4">
                 <p class="text-zinc-500 dark:text-zinc-400 animate-pulse">
-                    Waiting for the host to start the game...
+                    {{ __('Waiting for the host to start the game...') }}
                 </p>
             </div>
 
@@ -34,15 +34,9 @@
         {{-- ANSWERED PHASE --}}
         @elseif($phase === 'answered')
             <div class="space-y-4">
-                <div class="text-6xl">
-                    @if($lastResult && $lastResult['is_correct'])
-                        &#10003;
-                    @else
-                        &times;
-                    @endif
-                </div>
+                <div class="text-6xl">&#128076;</div>
                 <p class="text-zinc-500 dark:text-zinc-400">
-                    Answer submitted, waiting for other players...
+                    {{ __('Answer submitted, waiting for other players...') }}
                 </p>
             </div>
 
@@ -52,33 +46,33 @@
                 @if($lastResult)
                     @if($lastResult['is_correct'])
                         <div class="rounded-xl bg-green-100 dark:bg-green-900/30 p-6">
-                            <p class="text-2xl font-bold text-green-700 dark:text-green-300">Correct!</p>
-                            <p class="text-green-600 dark:text-green-400">+{{ $lastResult['points_earned'] }} points</p>
+                            <p class="text-2xl font-bold text-green-700 dark:text-green-300">{{ __('Correct!') }}</p>
+                            <p class="text-green-600 dark:text-green-400">+{{ $lastResult['points_earned'] }} {{ __('points') }}</p>
                         </div>
                     @else
                         <div class="rounded-xl bg-red-100 dark:bg-red-900/30 p-6">
-                            <p class="text-2xl font-bold text-red-700 dark:text-red-300">Wrong!</p>
-                            <p class="text-red-600 dark:text-red-400">+0 points</p>
+                            <p class="text-2xl font-bold text-red-700 dark:text-red-300">{{ __('Wrong!') }}</p>
+                            <p class="text-red-600 dark:text-red-400">+0 {{ __('points') }}</p>
                         </div>
                     @endif
                 @else
-                    <p class="text-zinc-500 dark:text-zinc-400">No answer submitted</p>
+                    <p class="text-zinc-500 dark:text-zinc-400">{{ __('No answer submitted') }}</p>
                 @endif
             </div>
 
         {{-- FINISHED PHASE --}}
         @elseif($phase === 'finished')
             <div class="w-full max-w-md space-y-6">
-                <h2 class="text-3xl font-bold text-zinc-900 dark:text-white">Game Over!</h2>
+                <h2 class="text-3xl font-bold text-zinc-900 dark:text-white">{{ __('Game Over!') }}</h2>
 
                 <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-6">
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400">Your Score</p>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Your Score') }}</p>
                     <p class="text-4xl font-bold text-zinc-900 dark:text-white">{{ $player->fresh()->score }}</p>
                 </div>
 
                 @if(! empty($leaderboard))
                     <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-6 text-left">
-                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-3">Leaderboard</h3>
+                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-3">{{ __('Leaderboard') }}</h3>
                         <ol class="space-y-2">
                             @foreach($leaderboard as $index => $entry)
                                 <li class="flex justify-between
@@ -94,13 +88,13 @@
         @endif
     @else
         <div class="space-y-4">
-            <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">Game</h1>
+            <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">{{ __('Game') }}</h1>
             <p class="text-zinc-500 dark:text-zinc-400">
-                Could not find your player session.
+                {{ __('Could not find your player session.') }}
             </p>
             <a href="{{ route('game.join', $session->join_code) }}"
                class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-                Join Game
+                {{ __('Join Game') }}
             </a>
         </div>
     @endif

@@ -62,23 +62,16 @@ test('user can add a question to a category', function () {
     $quiz = Quiz::factory()->create(['user_id' => $user->id]);
     $category = Category::factory()->create(['quiz_id' => $quiz->id]);
 
-    $questionData = [
-        'type' => 'multiple_choice',
-        'body' => 'What is 2+2?',
-        'options' => [
-            ['label' => '3'],
-            ['label' => '4'],
-            ['label' => '5'],
-            ['label' => '6'],
-        ],
-        'correct_answer' => '4',
-        'points' => 10,
-        'time_limit_seconds' => 30,
-    ];
-
     Livewire::actingAs($user)
         ->test(QuizBuilder::class, ['quiz' => $quiz])
-        ->call('addQuestion', $category->id, $questionData)
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'What is 2+2?')
+        ->set('questionType', 'multiple_choice')
+        ->set('questionOptions', ['3', '4', '5', '6'])
+        ->set('questionCorrectAnswer', '4')
+        ->set('questionPoints', 10)
+        ->set('questionTimeLimit', 30)
+        ->call('saveQuestion')
         ->assertHasNoErrors();
 
     expect($category->questions()->where('body', 'What is 2+2?')->exists())->toBeTrue();

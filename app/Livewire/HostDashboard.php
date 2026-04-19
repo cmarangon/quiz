@@ -50,6 +50,7 @@ class HostDashboard extends Component
     public function onPlayerJoined(array $payload): void
     {
         $this->totalPlayers = $payload['player_count'];
+        $this->session->unsetRelation('players');
     }
 
     public function onPlayerAnswered(array $payload): void
@@ -72,6 +73,12 @@ class HostDashboard extends Component
     public function onGameFinished(array $payload): void
     {
         $this->phase = 'finished';
+    }
+
+    public function pollPlayers(): void
+    {
+        $this->totalPlayers = $this->session->players()->count();
+        $this->session->unsetRelation('players');
     }
 
     public function startGame(): void

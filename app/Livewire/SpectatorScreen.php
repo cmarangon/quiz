@@ -76,6 +76,12 @@ class SpectatorScreen extends Component
         $this->loadPlayers();
     }
 
+    public function pollPlayers(): void
+    {
+        $this->totalPlayers = $this->session->players()->count();
+        $this->loadPlayers();
+    }
+
     private function loadPlayers(): void
     {
         $this->playerNames = $this->session->players()

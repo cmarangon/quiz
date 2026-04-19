@@ -1,4 +1,4 @@
-<div class="flex min-h-svh flex-col items-center justify-center p-8">
+<div class="flex min-h-svh flex-col items-center justify-center p-8" @if($phase === 'lobby') wire:poll.2s="pollPlayers" @endif>
     {{-- LOBBY PHASE --}}
     @if($phase === 'lobby')
         <div class="text-center space-y-8">
@@ -6,12 +6,12 @@
                 <h1 class="text-5xl font-extrabold text-zinc-900 dark:text-white">{{ $quizTitle }}</h1>
             @endif
 
-            <p class="text-xl text-zinc-500 dark:text-zinc-400">Scan the QR code or enter the code below to join</p>
+            <p class="text-xl text-zinc-500 dark:text-zinc-400">{{ __('Scan the QR code or enter the code below to join') }}</p>
 
             <div class="flex flex-col items-center gap-6 sm:flex-row sm:justify-center sm:gap-12">
                 {{-- Join code --}}
                 <div class="rounded-2xl border-2 border-zinc-200 bg-white p-8 dark:border-zinc-700 dark:bg-zinc-900">
-                    <p class="text-sm uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Enter this code</p>
+                    <p class="text-sm uppercase tracking-wider text-zinc-500 dark:text-zinc-400">{{ __('Enter this code') }}</p>
                     <p class="font-mono text-7xl font-bold tracking-widest text-zinc-900 dark:text-white">
                         {{ $session->join_code }}
                     </p>
@@ -26,7 +26,7 @@
             {{-- Player count --}}
             <p class="text-2xl text-zinc-600 dark:text-zinc-300">
                 <span class="font-bold text-zinc-900 dark:text-white">{{ $playerCount }}</span>
-                {{ Str::plural('player', $playerCount) }} joined
+                {{ trans_choice('{1} player|[2,*] players', $playerCount) }} {{ __('joined') }}
             </p>
 
             {{-- Player name list --}}
@@ -40,7 +40,7 @@
                 </div>
             @endif
 
-            <p class="text-lg text-zinc-500 dark:text-zinc-400 animate-pulse">Waiting for the host to start...</p>
+            <p class="text-lg text-zinc-500 dark:text-zinc-400 animate-pulse">{{ __('Waiting for the host to start...') }}</p>
         </div>
 
     {{-- CATEGORY INTRO PHASE --}}
@@ -48,7 +48,7 @@
         <div class="text-center space-y-6">
             @if($currentTheme)
                 <div class="rounded-2xl bg-gradient-to-br {{ $currentTheme['gradient'] ?? '' }} p-12">
-                    <p class="text-sm uppercase tracking-wider text-white/60">Up Next</p>
+                    <p class="text-sm uppercase tracking-wider text-white/60">{{ __('Up Next') }}</p>
                     <h2 class="text-5xl font-bold text-white mt-2">{{ $currentTheme['name'] ?? '' }}</h2>
                 </div>
             @endif
@@ -60,7 +60,7 @@
             @if($currentQuestion)
                 <div class="text-center">
                     <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                        Question {{ ($currentQuestion['question_index'] ?? 0) + 1 }}
+                        {{ __('Question') }} {{ ($currentQuestion['question_index'] ?? 0) + 1 }}
                     </p>
                     <h2 class="text-3xl font-bold text-zinc-900 dark:text-white mt-2">
                         {{ $currentQuestion['body'] ?? '' }}
@@ -83,7 +83,7 @@
                 @endif
 
                 <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-                    <span>{{ $answeredCount }} / {{ $totalPlayers }} answered</span>
+                    <span>{{ __(':answered / :total answered', ['answered' => $answeredCount, 'total' => $totalPlayers]) }}</span>
                     <span>{{ $currentQuestion['time_limit_seconds'] ?? 30 }}s</span>
                 </div>
             @endif
@@ -120,7 +120,7 @@
 
             @if(! empty($scores))
                 <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-6">
-                    <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">Leaderboard</h3>
+                    <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">{{ __('Leaderboard') }}</h3>
                     <ol class="space-y-2">
                         @foreach($scores as $entry)
                             <li class="flex justify-between text-zinc-700 dark:text-zinc-300">
@@ -136,7 +136,7 @@
     {{-- FINISHED PHASE --}}
     @elseif($phase === 'finished')
         <div class="w-full max-w-2xl space-y-8 text-center">
-            <h1 class="text-4xl font-bold text-zinc-900 dark:text-white">Game Over!</h1>
+            <h1 class="text-4xl font-bold text-zinc-900 dark:text-white">{{ __('Game Over!') }}</h1>
 
             @if(! empty($leaderboard))
                 {{-- Podium --}}
@@ -144,7 +144,7 @@
                     @foreach(array_slice($leaderboard, 0, 3) as $index => $entry)
                         <div class="flex flex-col items-center">
                             <span class="text-lg font-bold text-zinc-900 dark:text-white">{{ $entry['nickname'] }}</span>
-                            <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ $entry['score'] }} pts</span>
+                            <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ $entry['score'] }} {{ __('pts') }}</span>
                             <div class="mt-2 rounded-t-lg bg-gradient-to-t
                                 @if($index === 0) from-yellow-500 to-yellow-300 w-24 h-32
                                 @elseif($index === 1) from-zinc-400 to-zinc-300 w-20 h-24
