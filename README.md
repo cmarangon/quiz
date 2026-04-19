@@ -1,14 +1,28 @@
-# Quiz2 — Party Trivia Game
+# Quiz2
 
-A real-time party trivia game built with Laravel, Livewire, and Laravel Reverb for WebSocket communication.
+A real-time, Kahoot-ish party trivia game. One host, a bunch of players, a big screen, and six capital letters standing between your friends and glory.
 
-## Tech Stack
+Built on Laravel 12, Livewire 4, and Reverb, because spinning up a WebSocket stack shouldn't feel like a second job.
 
-- **Backend:** Laravel 12, Livewire 4, Laravel Fortify
-- **Frontend:** Tailwind CSS 4, Flux UI, Vite
-- **Real-time:** Laravel Reverb (WebSockets)
-- **Database:** SQLite
-- **Testing:** Pest
+## What it does
+
+- **Host** a game from your browser — pick a quiz, hit start, read the questions out loud like you're on television.
+- **Players** join from their phones with a 6-character code (or a QR code, because 2008 called and wants its manual entry back).
+- **Spectators** get a big-screen view — scores, questions, drama — no login required.
+- **Question types:** multiple choice and true/false. More welcome; PRs even more welcome.
+- **Languages:** English and German (`/locale/en`, `/locale/de`).
+- **Live everything:** Reverb pushes joins, answers, reveals, and category changes to every screen in real time.
+
+## Stack
+
+| Layer       | Tooling                                  |
+|-------------|------------------------------------------|
+| Backend     | Laravel 12, Livewire 4, Fortify          |
+| Frontend    | Livewire + Flux UI, Tailwind CSS 4, Vite |
+| Real-time   | Laravel Reverb (WebSockets)              |
+| Database    | SQLite (swap if you feel fancy)          |
+| Tests       | Pest 4                                   |
+| Style       | Laravel Pint                             |
 
 ## Prerequisites
 
@@ -22,51 +36,59 @@ A real-time party trivia game built with Laravel, Livewire, and Laravel Reverb f
 composer setup
 ```
 
-This will install dependencies, generate an app key, run migrations, and build frontend assets.
+Installs PHP + JS deps, copies `.env`, generates an app key, runs migrations, and builds the frontend. One command, zero yak shaving.
 
-## Running Locally
+## Running it
 
-The quickest way to start all services at once:
+Start the main show:
 
 ```bash
 composer dev
 ```
 
-This starts the following in parallel:
+That boots the Laravel server, the queue worker, the log tailer (Pail), and Vite — all color-coded, all in one terminal.
 
-| Service          | URL                     |
-|------------------|-------------------------|
-| Laravel server   | http://localhost:8000   |
-| Vite dev server  | http://localhost:5173   |
-| Queue worker     | (background)            |
-| Log viewer (Pail)| (background)            |
-
-You also need to start the **Reverb WebSocket server** separately:
+Reverb runs separately, because WebSockets like their own room:
 
 ```bash
 php artisan reverb:start
 ```
 
-This runs on `localhost:8080` by default.
+| Service          | URL                     |
+|------------------|-------------------------|
+| App              | http://localhost:8000   |
+| Vite HMR         | http://localhost:5173   |
+| Reverb           | ws://localhost:8080     |
 
-### Running Services Individually
+### One service at a time
 
 ```bash
-php artisan serve          # Laravel dev server (port 8000)
-npm run dev                # Vite dev server (port 5173)
-php artisan reverb:start   # WebSocket server (port 8080)
-php artisan queue:listen   # Queue worker
+php artisan serve          # app (8000)
+npm run dev                # vite (5173)
+php artisan reverb:start   # websockets (8080)
+php artisan queue:listen   # jobs
 ```
+
+## Routes worth knowing
+
+| Route                          | Who it's for                       |
+|--------------------------------|------------------------------------|
+| `/`                            | Landing page                       |
+| `/dashboard`                   | Authed host home                   |
+| `/quizzes`, `/quizzes/create`  | Quiz management + inline builder   |
+| `/game/{code}/host`            | Host control panel                 |
+| `/game/{code}/spectator`       | Big-screen view (no auth)          |
+| `/game/{code}/play`            | Player view on phones              |
+| `/join/{code}`                 | Join entry point                   |
 
 ## Testing
 
 ```bash
-composer test
+composer test        # lints, then runs the Pest suite
+composer lint        # Pint auto-fix
+composer lint:check  # Pint in CI mode
 ```
 
-## Linting
+## License
 
-```bash
-composer lint        # Auto-fix
-composer lint:check  # Check only
-```
+MIT. Play nice.
