@@ -1,5 +1,7 @@
 # Quiz2
 
+[![Tests](https://github.com/cmarangon/quiz/actions/workflows/tests.yml/badge.svg)](https://github.com/cmarangon/quiz/actions/workflows/tests.yml)
+
 A real-time, Kahoot-ish party trivia game. One host, a bunch of players, a big screen, and six capital letters standing between your friends and glory.
 
 Built on Laravel 12, Livewire 4, and Reverb, because spinning up a WebSocket stack shouldn't feel like a second job.
