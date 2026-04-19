@@ -29,29 +29,29 @@ jobs:
           script: |
             set -euo pipefail
             DEPLOY_PATH="${{ vars.DEPLOY_PATH }}"
+            HEALTH_URL="${{ vars.HEALTH_URL }}"
             echo "==> Deploying to '$DEPLOY_PATH'"
             cd "$DEPLOY_PATH"
 
             echo "==> Entering maintenance mode"
             php artisan down --retry=60
+            trap 'echo "==> Deploy failed, exiting maintenance mode"; php artisan up || true' ERR
 
             echo "==> Pulling latest code"
             git pull origin main
 
             echo "==> Installing PHP dependencies"
-            composer install --no-dev --optimize-autoloader --no-interaction
+            composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-progress
 
             echo "==> Installing and building frontend assets"
-            npm ci
+            npm ci --no-audit --prefer-offline
             npm run build
 
             echo "==> Running database migrations"
             php artisan migrate --force
 
-            echo "==> Caching configuration"
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
+            echo "==> Caching framework files"
+            php artisan optimize
 
             echo "==> Restarting Reverb WebSocket server"
             php artisan reverb:restart
@@ -61,5 +61,22 @@ jobs:
 
             echo "==> Exiting maintenance mode"
             php artisan up
+            trap - ERR
+
+            if [ -n "$HEALTH_URL" ]; then
+              echo "==> Running health check against $HEALTH_URL"
+              for i in 1 2 3 4 5; do
+                if curl -fsSL --max-time 5 "$HEALTH_URL" > /dev/null; then
+                  echo "==> Health check passed"
+                  break
+                fi
+                if [ "$i" -eq 5 ]; then
+                  echo "==> Health check failed after 5 attempts"
+                  exit 1
+                fi
+                echo "   attempt $i failed, retrying in 2s..."
+                sleep 2
+              done
+            fi
 
             echo "==> Deploy complete!"
