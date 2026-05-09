@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
@@ -28,4 +29,65 @@ test('the page lists all users', function () {
         ->assertSee('alice@example.com')
         ->assertSee('Bob')
         ->assertSee('bob@example.com');
+});
+
+test('authenticated user can create a new user', function () {
+    $actor = User::factory()->create();
+    $this->actingAs($actor);
+
+    Livewire::test('pages::settings.users')
+        ->set('name', 'New Person')
+        ->set('email', 'new@example.com')
+        ->set('password', 'password1234')
+        ->set('password_confirmation', 'password1234')
+        ->call('createUser')
+        ->assertHasNoErrors();
+
+    expect(User::where('email', 'new@example.com')->exists())->toBeTrue();
+});
+
+test('create form clears after success', function () {
+    $this->actingAs(User::factory()->create());
+
+    $component = Livewire::test('pages::settings.users')
+        ->set('name', 'New Person')
+        ->set('email', 'clear@example.com')
+        ->set('password', 'password1234')
+        ->set('password_confirmation', 'password1234')
+        ->call('createUser');
+
+    $component
+        ->assertSet('name', '')
+        ->assertSet('email', '')
+        ->assertSet('password', '')
+        ->assertSet('password_confirmation', '');
+});
+
+test('duplicate email is rejected', function () {
+    $this->actingAs(User::factory()->create());
+    User::factory()->create(['email' => 'taken@example.com']);
+
+    Livewire::test('pages::settings.users')
+        ->set('name', 'Duplicate')
+        ->set('email', 'taken@example.com')
+        ->set('password', 'password1234')
+        ->set('password_confirmation', 'password1234')
+        ->call('createUser')
+        ->assertHasErrors(['email']);
+
+    expect(User::where('email', 'taken@example.com')->count())->toBe(1);
+});
+
+test('mismatched passwords are rejected', function () {
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test('pages::settings.users')
+        ->set('name', 'Bob')
+        ->set('email', 'bob-new@example.com')
+        ->set('password', 'password1234')
+        ->set('password_confirmation', 'different')
+        ->call('createUser')
+        ->assertHasErrors(['password']);
+
+    expect(User::where('email', 'bob-new@example.com')->exists())->toBeFalse();
 });
