@@ -15,3 +15,17 @@ test('authenticated users can view the user management page', function () {
 
     $this->get(route('users.index'))->assertOk();
 });
+
+test('the page lists all users', function () {
+    $alice = User::factory()->create(['name' => 'Alice', 'email' => 'alice@example.com']);
+    $bob = User::factory()->create(['name' => 'Bob', 'email' => 'bob@example.com']);
+
+    $this->actingAs($alice);
+
+    $this->get(route('users.index'))
+        ->assertOk()
+        ->assertSee('Alice')
+        ->assertSee('alice@example.com')
+        ->assertSee('Bob')
+        ->assertSee('bob@example.com');
+});
