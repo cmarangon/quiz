@@ -91,3 +91,43 @@ test('mismatched passwords are rejected', function () {
 
     expect(User::where('email', 'bob-new@example.com')->exists())->toBeFalse();
 });
+
+test('authenticated user can delete another user', function () {
+    $actor = User::factory()->create();
+    $victim = User::factory()->create(['email' => 'victim@example.com']);
+
+    $this->actingAs($actor);
+
+    Livewire::test('pages::settings.users')
+        ->call('confirmDelete', $victim->id)
+        ->call('deleteUser')
+        ->assertHasNoErrors();
+
+    expect(User::find($victim->id))->toBeNull();
+});
+
+test('user cannot delete themselves', function () {
+    $actor = User::factory()->create();
+    $this->actingAs($actor);
+
+    Livewire::test('pages::settings.users')
+        ->call('confirmDelete', $actor->id)
+        ->call('deleteUser')
+        ->assertForbidden();
+
+    expect(User::find($actor->id))->not->toBeNull();
+});
+
+test('deleting a user cascades to their quizzes', function () {
+    $actor = User::factory()->create();
+    $victim = User::factory()->create();
+    $quiz = $victim->quizzes()->create(['title' => 'Doomed Quiz']);
+
+    $this->actingAs($actor);
+
+    Livewire::test('pages::settings.users')
+        ->call('confirmDelete', $victim->id)
+        ->call('deleteUser');
+
+    expect(\App\Models\Quiz::find($quiz->id))->toBeNull();
+});

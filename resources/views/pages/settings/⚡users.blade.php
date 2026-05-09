@@ -15,6 +15,8 @@ new #[Title('Users')] class extends Component {
     public string $password = '';
     public string $password_confirmation = '';
 
+    public ?int $userIdToDelete = null;
+
     public function createUser(CreatesNewUsers $creator): void
     {
         $creator->create([
@@ -27,6 +29,23 @@ new #[Title('Users')] class extends Component {
         $this->reset(['name', 'email', 'password', 'password_confirmation']);
 
         $this->dispatch('user-created');
+    }
+
+    public function confirmDelete(int $userId): void
+    {
+        $this->userIdToDelete = $userId;
+    }
+
+    public function deleteUser(): void
+    {
+        abort_if($this->userIdToDelete === null, 400);
+        abort_if($this->userIdToDelete === Auth::id(), 403);
+
+        User::findOrFail($this->userIdToDelete)->delete();
+
+        $this->userIdToDelete = null;
+
+        $this->dispatch('user-deleted');
     }
 
     public function with(): array
@@ -85,7 +104,18 @@ new #[Title('Users')] class extends Component {
                                 <td class="py-2 pr-4">{{ $user->email }}</td>
                                 <td class="py-2 pr-4">{{ $user->created_at->format('Y-m-d') }}</td>
                                 <td class="py-2 text-right">
-                                    {{-- Delete button lands in Task 6 --}}
+                                    @if ($user->id !== Auth::id())
+                                        <flux:modal.trigger name="confirm-user-delete">
+                                            <flux:button
+                                                size="sm"
+                                                variant="danger"
+                                                wire:click="confirmDelete({{ $user->id }})"
+                                                data-test="delete-user-{{ $user->id }}"
+                                            >
+                                                {{ __('Delete') }}
+                                            </flux:button>
+                                        </flux:modal.trigger>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -95,7 +125,33 @@ new #[Title('Users')] class extends Component {
 
             <div>
                 {{ $users->links() }}
+
+                <x-action-message class="mt-2" on="user-deleted">
+                    {{ __('User deleted.') }}
+                </x-action-message>
             </div>
         </div>
+
+        <flux:modal name="confirm-user-delete" focusable class="max-w-lg">
+            <form wire:submit="deleteUser" class="space-y-6">
+                <div>
+                    <flux:heading size="lg">{{ __('Delete this user?') }}</flux:heading>
+
+                    <flux:subheading>
+                        {{ __('Deleting this user also removes all of their quizzes and hosted games. This cannot be undone.') }}
+                    </flux:subheading>
+                </div>
+
+                <div class="flex justify-end space-x-2 rtl:space-x-reverse">
+                    <flux:modal.close>
+                        <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
+                    </flux:modal.close>
+
+                    <flux:button variant="danger" type="submit" data-test="confirm-delete-user-button">
+                        {{ __('Delete user') }}
+                    </flux:button>
+                </div>
+            </form>
+        </flux:modal>
     </x-pages::settings.layout>
 </section>
