@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Quiz;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -129,5 +130,5 @@ test('deleting a user cascades to their quizzes', function () {
         ->call('confirmDelete', $victim->id)
         ->call('deleteUser');
 
-    expect(\App\Models\Quiz::find($quiz->id))->toBeNull();
+    expect(Quiz::find($quiz->id))->toBeNull();
 });
