@@ -170,3 +170,40 @@ test('bulk-clear silently skips sessions hosted by other users', function () {
 
     expect(GameSession::find($otherSession->id))->not->toBeNull();
 });
+
+test('user can bulk-clear selected player history entries', function () {
+    $user = User::factory()->create();
+    $session = GameSession::factory()->create(['status' => 'finished']);
+    $p1 = Player::factory()->for($session, 'gameSession')->create(['user_id' => $user->id]);
+    $p2 = Player::factory()->for($session, 'gameSession')->create(['user_id' => $user->id]);
+    $kept = Player::factory()->for($session, 'gameSession')->create(['user_id' => $user->id]);
+
+    Livewire::actingAs($user)
+        ->test(Dashboard::class)
+        ->set('selectedPlayerIds', [$p1->id, $p2->id])
+        ->call('confirmClearPlayerEntries')
+        ->assertSet('pendingAction', 'clear-players')
+        ->call('clearPlayerEntries')
+        ->assertSet('selectedPlayerIds', [])
+        ->assertSet('pendingAction', null)
+        ->assertSet('pendingId', null);
+
+    expect(Player::find($p1->id))->toBeNull();
+    expect(Player::find($p2->id))->toBeNull();
+    expect(Player::find($kept->id))->not->toBeNull();
+});
+
+test('bulk-clear player entries silently skips entries belonging to other users', function () {
+    $user = User::factory()->create();
+    $other = User::factory()->create();
+    $session = GameSession::factory()->create(['status' => 'finished']);
+    $otherEntry = Player::factory()->for($session, 'gameSession')->create(['user_id' => $other->id]);
+
+    Livewire::actingAs($user)
+        ->test(Dashboard::class)
+        ->set('selectedPlayerIds', [$otherEntry->id])
+        ->call('confirmClearPlayerEntries')
+        ->call('clearPlayerEntries');
+
+    expect(Player::find($otherEntry->id))->not->toBeNull();
+});

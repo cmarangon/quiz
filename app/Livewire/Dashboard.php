@@ -83,6 +83,25 @@ class Dashboard extends Component
         $this->dispatch('history-cleared');
     }
 
+    public function confirmClearPlayerEntries(): void
+    {
+        $this->pendingAction = 'clear-players';
+    }
+
+    public function clearPlayerEntries(): void
+    {
+        abort_unless($this->pendingAction === 'clear-players', 400);
+
+        Player::whereIn('id', $this->selectedPlayerIds)
+            ->where('user_id', Auth::id())
+            ->delete();
+
+        $this->selectedPlayerIds = [];
+        $this->pendingAction = null;
+        $this->pendingId = null;
+        $this->dispatch('history-cleared');
+    }
+
     public function runPendingAction(): void
     {
         match ($this->pendingAction) {
