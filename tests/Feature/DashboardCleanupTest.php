@@ -207,3 +207,27 @@ test('bulk-clear player entries silently skips entries belonging to other users'
 
     expect(Player::find($otherEntry->id))->not->toBeNull();
 });
+
+test('runPendingAction is a no-op when pendingAction is null', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->for($user)->create();
+
+    Livewire::actingAs($user)
+        ->test(Dashboard::class)
+        ->call('runPendingAction');
+
+    expect(Quiz::find($quiz->id))->not->toBeNull();
+});
+
+test('calling deleteQuiz with mismatched pendingAction aborts 400', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->for($user)->create();
+
+    Livewire::actingAs($user)
+        ->test(Dashboard::class)
+        ->call('confirmEndSession', 9999)
+        ->call('deleteQuiz')
+        ->assertStatus(400);
+
+    expect(Quiz::find($quiz->id))->not->toBeNull();
+});
