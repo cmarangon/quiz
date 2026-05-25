@@ -119,3 +119,51 @@ test('non-host cannot end a session', function () {
 
     expect($session->fresh()->status)->toBe('waiting');
 });
+
+test('user can bulk-clear selected finished sessions', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->for($user)->create();
+    $s1 = GameSession::factory()->for($quiz)->for($user, 'host')->create(['status' => 'finished']);
+    $s2 = GameSession::factory()->for($quiz)->for($user, 'host')->create(['status' => 'finished']);
+    $kept = GameSession::factory()->for($quiz)->for($user, 'host')->create(['status' => 'finished']);
+
+    Livewire::actingAs($user)
+        ->test(Dashboard::class)
+        ->set('selectedSessionIds', [$s1->id, $s2->id])
+        ->call('confirmClearSessions')
+        ->assertSet('pendingAction', 'clear-sessions')
+        ->call('clearSessions');
+
+    expect(GameSession::find($s1->id))->toBeNull();
+    expect(GameSession::find($s2->id))->toBeNull();
+    expect(GameSession::find($kept->id))->not->toBeNull();
+});
+
+test('bulk-clear silently skips open sessions if their ids leak in', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->for($user)->create();
+    $openSession = GameSession::factory()->for($quiz)->for($user, 'host')->create(['status' => 'playing']);
+
+    Livewire::actingAs($user)
+        ->test(Dashboard::class)
+        ->set('selectedSessionIds', [$openSession->id])
+        ->call('confirmClearSessions')
+        ->call('clearSessions');
+
+    expect(GameSession::find($openSession->id))->not->toBeNull();
+});
+
+test('bulk-clear silently skips sessions hosted by other users', function () {
+    $user = User::factory()->create();
+    $other = User::factory()->create();
+    $otherQuiz = Quiz::factory()->for($other)->create();
+    $otherSession = GameSession::factory()->for($otherQuiz)->for($other, 'host')->create(['status' => 'finished']);
+
+    Livewire::actingAs($user)
+        ->test(Dashboard::class)
+        ->set('selectedSessionIds', [$otherSession->id])
+        ->call('confirmClearSessions')
+        ->call('clearSessions');
+
+    expect(GameSession::find($otherSession->id))->not->toBeNull();
+});

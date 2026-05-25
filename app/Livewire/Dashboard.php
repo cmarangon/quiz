@@ -63,6 +63,25 @@ class Dashboard extends Component
         $this->dispatch('game-ended');
     }
 
+    public function confirmClearSessions(): void
+    {
+        $this->pendingAction = 'clear-sessions';
+    }
+
+    public function clearSessions(): void
+    {
+        abort_unless($this->pendingAction === 'clear-sessions', 400);
+
+        GameSession::whereIn('id', $this->selectedSessionIds)
+            ->where('host_user_id', Auth::id())
+            ->where('status', 'finished')
+            ->delete();
+
+        $this->selectedSessionIds = [];
+        $this->pendingAction = null;
+        $this->dispatch('history-cleared');
+    }
+
     public function runPendingAction(): void
     {
         match ($this->pendingAction) {
