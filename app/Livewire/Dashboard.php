@@ -54,6 +54,7 @@ class Dashboard extends Component
 
         $session = GameSession::findOrFail($this->pendingId);
         abort_unless($session->host_user_id === Auth::id(), 403);
+        abort_unless(in_array($session->status, ['waiting', 'playing', 'reviewing'], true), 400);
 
         $session->update(['status' => 'finished']);
 

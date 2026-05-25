@@ -4,6 +4,7 @@ use App\Livewire\Dashboard;
 use App\Models\Category;
 use App\Models\GameSession;
 use App\Models\Player;
+use App\Models\PlayerAnswer;
 use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\User;
@@ -69,11 +70,31 @@ test('host can end a playing session', function () {
     expect($session->fresh()->status)->toBe('finished');
 });
 
+test('host can end a reviewing session', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->for($user)->create();
+    $session = GameSession::factory()->for($quiz)->for($user, 'host')->create(['status' => 'reviewing']);
+
+    Livewire::actingAs($user)
+        ->test(Dashboard::class)
+        ->call('confirmEndSession', $session->id)
+        ->call('endSession');
+
+    expect($session->fresh()->status)->toBe('finished');
+});
+
 test('ending a session preserves players and answers', function () {
     $user = User::factory()->create();
     $quiz = Quiz::factory()->for($user)->create();
+    $category = Category::factory()->for($quiz)->create();
+    $question = Question::factory()->for($category)->create();
     $session = GameSession::factory()->for($quiz)->for($user, 'host')->create(['status' => 'playing']);
     $player = Player::factory()->for($session, 'gameSession')->create();
+    $answer = PlayerAnswer::factory()
+        ->for($player)
+        ->for($session, 'gameSession')
+        ->for($question)
+        ->create();
 
     Livewire::actingAs($user)
         ->test(Dashboard::class)
@@ -81,6 +102,7 @@ test('ending a session preserves players and answers', function () {
         ->call('endSession');
 
     expect(Player::find($player->id))->not->toBeNull();
+    expect(PlayerAnswer::find($answer->id))->not->toBeNull();
 });
 
 test('non-host cannot end a session', function () {
