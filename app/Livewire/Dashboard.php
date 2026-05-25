@@ -42,6 +42,37 @@ class Dashboard extends Component
         $this->dispatch('quiz-deleted');
     }
 
+    public function confirmEndSession(int $id): void
+    {
+        $this->pendingAction = 'end-session';
+        $this->pendingId = $id;
+    }
+
+    public function endSession(): void
+    {
+        abort_unless($this->pendingAction === 'end-session' && $this->pendingId !== null, 400);
+
+        $session = GameSession::findOrFail($this->pendingId);
+        abort_unless($session->host_user_id === Auth::id(), 403);
+
+        $session->update(['status' => 'finished']);
+
+        $this->pendingAction = null;
+        $this->pendingId = null;
+        $this->dispatch('game-ended');
+    }
+
+    public function runPendingAction(): void
+    {
+        match ($this->pendingAction) {
+            'delete-quiz' => $this->deleteQuiz(),
+            'end-session' => $this->endSession(),
+            'clear-sessions' => $this->clearSessions(),
+            'clear-players' => $this->clearPlayerEntries(),
+            default => null,
+        };
+    }
+
     public function render()
     {
         $user = Auth::user();
