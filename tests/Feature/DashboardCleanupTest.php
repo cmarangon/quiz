@@ -132,7 +132,10 @@ test('user can bulk-clear selected finished sessions', function () {
         ->set('selectedSessionIds', [$s1->id, $s2->id])
         ->call('confirmClearSessions')
         ->assertSet('pendingAction', 'clear-sessions')
-        ->call('clearSessions');
+        ->call('clearSessions')
+        ->assertSet('selectedSessionIds', [])
+        ->assertSet('pendingAction', null)
+        ->assertSet('pendingId', null);
 
     expect(GameSession::find($s1->id))->toBeNull();
     expect(GameSession::find($s2->id))->toBeNull();

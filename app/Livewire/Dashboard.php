@@ -79,6 +79,7 @@ class Dashboard extends Component
 
         $this->selectedSessionIds = [];
         $this->pendingAction = null;
+        $this->pendingId = null;
         $this->dispatch('history-cleared');
     }
 
