@@ -45,6 +45,8 @@
                 </table>
             </div>
         @endif
+
+        <x-action-message class="mt-2" on="quiz-deleted">{{ __('Quiz deleted.') }}</x-action-message>
     </div>
 
     {{-- Hosted Games --}}
@@ -178,8 +180,6 @@
         @endif
     </div>
 
-    <x-action-message on="quiz-deleted">{{ __('Quiz deleted.') }}</x-action-message>
-
     {{-- Shared confirmation modal --}}
     <flux:modal name="confirm-action" focusable class="max-w-lg" data-test="confirm-action">
         <form wire:submit="runPendingAction" class="space-y-6">
@@ -202,7 +202,11 @@
                     <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
                 </flux:modal.close>
                 <flux:button variant="danger" type="submit" data-test="confirm-pending-action">
-                    {{ __('Delete') }}
+                    @if($pendingAction === 'end-session')
+                        {{ __('End') }}
+                    @else
+                        {{ __('Delete') }}
+                    @endif
                 </flux:button>
             </div>
         </form>
