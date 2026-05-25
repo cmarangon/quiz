@@ -125,7 +125,7 @@
         @endif
 
         <x-action-message class="mt-2" on="game-ended">{{ __('Game ended.') }}</x-action-message>
-        <x-action-message class="mt-2" on="history-cleared">{{ __('History cleared.') }}</x-action-message>
+        <x-action-message class="mt-2" on="sessions-cleared">{{ __('History cleared.') }}</x-action-message>
     </div>
 
     {{-- My Game History --}}
@@ -178,6 +178,8 @@
                 </div>
             @endif
         @endif
+
+        <x-action-message class="mt-2" on="history-cleared">{{ __('History cleared.') }}</x-action-message>
     </div>
 
     {{-- Shared confirmation modal --}}
