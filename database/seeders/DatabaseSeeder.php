@@ -3,22 +3,21 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        if (User::count() > 0) {
+            return;
+        }
 
-        User::factory()->create([
-            'name' => 'Claudio Marangon',
-            'email' => 'marangon.claudio@gmail.com',
-            'password' => bcrypt('linkinpark'),
+        User::create([
+            'name' => config('app.initial_user.name', env('INITIAL_USER_NAME', 'Admin')),
+            'email' => config('app.initial_user.email', env('INITIAL_USER_EMAIL', 'admin@example.com')),
+            'password' => config('app.initial_user.password', env('INITIAL_USER_PASSWORD', 'password')),
+            'email_verified_at' => now(),
         ]);
 
         $this->call([

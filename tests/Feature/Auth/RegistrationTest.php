@@ -1,21 +1,19 @@
 <?php
 
-test('registration screen can be rendered', function () {
-    $response = $this->get(route('register'));
-
-    $response->assertOk();
+test('registration route is disabled', function () {
+    expect(Route::has('register'))->toBeFalse();
+    expect(Route::has('register.store'))->toBeFalse();
 });
 
-test('new users can register', function () {
-    $response = $this->post(route('register.store'), [
+test('GET /register returns 404', function () {
+    $this->get('/register')->assertNotFound();
+});
+
+test('POST /register returns 404', function () {
+    $this->post('/register', [
         'name' => 'John Doe',
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-    ]);
-
-    $response->assertSessionHasNoErrors()
-        ->assertRedirect(route('dashboard', absolute: false));
-
-    $this->assertAuthenticated();
+    ])->assertNotFound();
 });

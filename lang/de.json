@@ -95,6 +95,18 @@
     "Actions": "Aktionen",
     "My Game History": "Mein Spielverlauf",
     "You haven't played any games yet.": "Du hast noch keine Spiele gespielt.",
+    "End": "Beenden",
+    "Delete this quiz?": "Dieses Quiz löschen?",
+    "All categories, questions and past game sessions will be removed.": "Alle Kategorien, Fragen und vergangenen Spielsitzungen werden entfernt.",
+    "End this game?": "Dieses Spiel beenden?",
+    "Its status will be set to finished.": "Der Status wird auf beendet gesetzt.",
+    "Delete :count hosted games?": ":count gehostete Spiele löschen?",
+    "Delete :count entries from your game history?": ":count Einträge aus deinem Spielverlauf löschen?",
+    "Delete selected": "Auswahl löschen",
+    ":count selected": ":count ausgewählt",
+    "Quiz deleted.": "Quiz gelöscht.",
+    "Game ended.": "Spiel beendet.",
+    "History cleared.": "Verlauf gelöscht.",
 
     "Log in": "Anmelden",
     "Register": "Registrieren",
@@ -124,5 +136,20 @@
 
     "Light": "Hell",
     "Dark": "Dunkel",
-    "System": "System"
+    "System": "System",
+
+    "Users": "Benutzer",
+    "Manage who can access the app": "Verwalte, wer Zugriff auf die App hat",
+    "Add a user": "Benutzer hinzufügen",
+    "Email": "E-Mail",
+    "Confirm password": "Passwort bestätigen",
+    "Create user": "Benutzer erstellen",
+    "User created.": "Benutzer erstellt.",
+    "User deleted.": "Benutzer gelöscht.",
+    "Delete": "Löschen",
+    "Delete this user?": "Diesen Benutzer löschen?",
+    "Delete user": "Benutzer löschen",
+    "Deleting this user also removes all of their quizzes and hosted games. This cannot be undone.": "Wenn du diesen Benutzer löschst, werden auch alle seine Quizze und Spiele entfernt. Das kann nicht rückgängig gemacht werden.",
+    "Created": "Erstellt",
+    "You": "Du"
 }
