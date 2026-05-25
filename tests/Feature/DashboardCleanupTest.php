@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Dashboard;
+use App\Livewire\QuizIndex;
 use App\Models\Category;
 use App\Models\GameSession;
 use App\Models\Player;
@@ -230,4 +231,32 @@ test('calling deleteQuiz with mismatched pendingAction aborts 400', function () 
         ->assertStatus(400);
 
     expect(Quiz::find($quiz->id))->not->toBeNull();
+});
+
+test('user can delete own quiz from quiz index', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->for($user)->create();
+
+    Livewire::actingAs($user)
+        ->test(QuizIndex::class)
+        ->call('confirmDeleteQuiz', $quiz->id)
+        ->assertSet('pendingAction', 'delete-quiz')
+        ->assertSet('pendingId', $quiz->id)
+        ->call('deleteQuiz');
+
+    expect(Quiz::find($quiz->id))->toBeNull();
+});
+
+test('user cannot delete another users quiz from quiz index', function () {
+    $user = User::factory()->create();
+    $other = User::factory()->create();
+    $otherQuiz = Quiz::factory()->for($other)->create();
+
+    Livewire::actingAs($user)
+        ->test(QuizIndex::class)
+        ->call('confirmDeleteQuiz', $otherQuiz->id)
+        ->call('deleteQuiz')
+        ->assertStatus(403);
+
+    expect(Quiz::find($otherQuiz->id))->not->toBeNull();
 });
