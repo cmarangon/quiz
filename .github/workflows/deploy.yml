@@ -96,6 +96,9 @@ jobs:
             echo "==> Running database migrations"
             php artisan migrate --force
 
+            echo "==> Seeding e2e fixture data (idempotent)"
+            php artisan db:seed --class=E2eGameSeeder --force
+
             echo "==> Caching framework files"
             php artisan optimize
 

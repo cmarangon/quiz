@@ -7,7 +7,7 @@ const QUIZ_TITLE = process.env.E2E_QUIZ_TITLE || 'E2E Test Quiz';
 export async function loginAsHost(page: Page): Promise<void> {
     await page.goto('/login');
     await page.getByLabel(/email/i).fill(HOST_EMAIL);
-    await page.getByLabel(/password/i).fill(HOST_PASSWORD);
+    await page.locator('input[type="password"]').fill(HOST_PASSWORD);
     await page.getByRole('button', { name: /log in|sign in/i }).click();
     await page.waitForURL('**/dashboard');
 }

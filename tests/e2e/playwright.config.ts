@@ -6,11 +6,10 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Load .env.e2e for local overrides; CI sets env vars directly.
 dotenv.config({ path: path.resolve(__dirname, '../../.env.e2e') });
 
-const APP_PORT = 8001;
-const REVERB_PORT = 8081;
-const BASE_URL = `http://localhost:${APP_PORT}`;
+const BASE_URL = process.env.E2E_BASE_URL || 'https://quiz.falkenstein.dev';
 
 export default defineConfig({
     testDir: './specs',
@@ -38,41 +37,6 @@ export default defineConfig({
         {
             name: 'chromium',
             use: { ...devices['Desktop Chrome'] },
-        },
-    ],
-
-    webServer: [
-        {
-            name: 'laravel-serve',
-            command: 'php artisan migrate:fresh --seeder=E2eGameSeeder --force --env=e2e && php artisan serve --port=8001 --env=e2e',
-            cwd: path.resolve(__dirname, '../..'),
-            url: BASE_URL,
-            reuseExistingServer: false,
-            timeout: 60_000,
-            stdout: 'pipe',
-            stderr: 'pipe',
-        },
-        {
-            name: 'reverb',
-            command: `php artisan reverb:start --port=${REVERB_PORT} --env=e2e`,
-            cwd: path.resolve(__dirname, '../..'),
-            url: `http://localhost:${REVERB_PORT}`,
-            reuseExistingServer: false,
-            timeout: 30_000,
-            stdout: 'pipe',
-            stderr: 'pipe',
-        },
-        {
-            // Queue worker has no HTTP port; reuse the app URL as the liveness check.
-            // Playwright proceeds once the app URL responds — guaranteed since laravel-serve starts first.
-            name: 'queue',
-            command: 'php artisan queue:work --queue=default --tries=1 --timeout=30 --env=e2e',
-            cwd: path.resolve(__dirname, '../..'),
-            url: BASE_URL,
-            reuseExistingServer: false,
-            timeout: 30_000,
-            stdout: 'pipe',
-            stderr: 'pipe',
         },
     ],
 });

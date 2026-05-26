@@ -26,16 +26,21 @@ class E2eGameSeeder extends Seeder
             ],
         );
 
-        $quiz = Quiz::create([
-            'user_id' => $user->id,
-            'title' => $quizTitle,
-            'description' => 'Deterministic quiz used by the Playwright suite.',
-            'visibility' => 'public',
-            'settings' => [
-                'enable_time_bonus' => false,
-                'enable_streaks' => false,
+        $quiz = Quiz::firstOrCreate(
+            ['user_id' => $user->id, 'title' => $quizTitle],
+            [
+                'description' => 'Deterministic quiz used by the Playwright suite.',
+                'visibility' => 'public',
+                'settings' => [
+                    'enable_time_bonus' => false,
+                    'enable_streaks' => false,
+                ],
             ],
-        ]);
+        );
+
+        if (! $quiz->wasRecentlyCreated) {
+            return;
+        }
 
         $category = Category::create([
             'quiz_id' => $quiz->id,
