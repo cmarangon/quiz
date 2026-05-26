@@ -1,4 +1,5 @@
 <div class="flex min-h-svh flex-col items-center justify-center p-8" @if($phase === 'lobby') wire:poll.2s="pollPlayers" @endif>
+    <div data-test="spectator-phase" data-phase="{{ $phase }}" class="hidden"></div>
     {{-- LOBBY PHASE --}}
     @if($phase === 'lobby')
         <div class="text-center space-y-8">
@@ -25,7 +26,7 @@
 
             {{-- Player count --}}
             <p class="text-2xl text-zinc-600 dark:text-zinc-300">
-                <span class="font-bold text-zinc-900 dark:text-white">{{ $playerCount }}</span>
+                <span data-test="spectator-player-count" class="font-bold text-zinc-900 dark:text-white">{{ $playerCount }}</span>
                 {{ trans_choice('{1} player|[2,*] players', $playerCount) }} {{ __('joined') }}
             </p>
 
@@ -33,7 +34,7 @@
             @if(count($playerNames) > 0)
                 <div class="flex flex-wrap justify-center gap-3">
                     @foreach($playerNames as $name)
-                        <span class="rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                        <span data-test="spectator-player-chip" data-player-nickname="{{ $name }}" class="rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
                             {{ $name }}
                         </span>
                     @endforeach
@@ -62,7 +63,7 @@
                     <p class="text-sm text-zinc-500 dark:text-zinc-400">
                         {{ __('Question') }} {{ ($currentQuestion['question_index'] ?? 0) + 1 }}
                     </p>
-                    <h2 class="text-3xl font-bold text-zinc-900 dark:text-white mt-2">
+                    <h2 data-test="spectator-question-body" class="text-3xl font-bold text-zinc-900 dark:text-white mt-2">
                         {{ $currentQuestion['body'] ?? '' }}
                     </h2>
                 </div>
@@ -160,7 +161,7 @@
                 <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-6 text-left">
                     <ol class="space-y-2">
                         @foreach($leaderboard as $index => $entry)
-                            <li class="flex justify-between text-zinc-700 dark:text-zinc-300">
+                            <li data-test="spectator-leaderboard-row" data-player-nickname="{{ $entry['nickname'] }}" class="flex justify-between text-zinc-700 dark:text-zinc-300">
                                 <span>{{ $index + 1 }}. {{ $entry['nickname'] }}</span>
                                 <span class="font-bold">{{ $entry['score'] }}</span>
                             </li>

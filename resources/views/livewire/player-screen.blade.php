@@ -1,8 +1,9 @@
 <div class="flex flex-col items-center gap-6 text-center">
     @if($player)
-        <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">
+        <h1 data-test="player-nickname" class="text-2xl font-bold text-zinc-900 dark:text-white">
             {{ $player->nickname }}
         </h1>
+        <div data-test="player-phase" data-phase="{{ $phase }}" class="hidden"></div>
 
         {{-- WAITING PHASE --}}
         @if($phase === 'waiting')
@@ -23,6 +24,8 @@
                         @foreach($currentQuestion['options'] as $index => $option)
                             <button
                                 wire:click="submitAnswer('{{ $option['label'] ?? $option }}')"
+                                data-test="player-answer-option"
+                                data-answer-label="{{ $option['label'] ?? $option }}"
                                 class="rounded-xl p-8 text-lg font-bold text-white transition {{ $colors[$index % 4] }}">
                                 {{ $option['label'] ?? $option }}
                             </button>
@@ -67,7 +70,7 @@
 
                 <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-6">
                     <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Your Score') }}</p>
-                    <p class="text-4xl font-bold text-zinc-900 dark:text-white">{{ $player->fresh()->score }}</p>
+                    <p data-test="player-final-score" class="text-4xl font-bold text-zinc-900 dark:text-white">{{ $player->fresh()->score }}</p>
                 </div>
 
                 @if(! empty($leaderboard))
