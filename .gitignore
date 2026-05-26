@@ -22,3 +22,7 @@ yarn-error.log
 /.vscode
 /.zed
 /.playwright-mcp
+/database/e2e.sqlite
+/tests/e2e/test-results
+/tests/e2e/playwright-report
+/.env.e2e.local
