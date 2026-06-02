@@ -33,10 +33,10 @@ php artisan route:cache
 php artisan view:cache
 
 echo "==> Restarting Reverb WebSocket server"
-php artisan reverb:restart
+sudo systemctl restart reverb@quiz.service
 
 echo "==> Reloading PHP-FPM"
-sudo systemctl reload php8.4-fpm
+sudo systemctl reload php-fpm@quiz.service
 
 echo "==> Exiting maintenance mode"
 php artisan up
