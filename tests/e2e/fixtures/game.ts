@@ -13,7 +13,11 @@ export async function loginAsHost(page: Page): Promise<void> {
 }
 
 export async function startGameFromDashboard(page: Page): Promise<string> {
-    const row = page.locator('tr', { hasText: QUIZ_TITLE });
+    return startGameFromDashboardFor(page, QUIZ_TITLE);
+}
+
+export async function startGameFromDashboardFor(page: Page, title: string): Promise<string> {
+    const row = page.locator('tr', { hasText: title });
     await expect(row).toBeVisible();
     await row.getByRole('button', { name: /play/i }).click();
     await page.waitForURL(/\/game\/[A-Z0-9]+\/host/);
@@ -51,6 +55,18 @@ export async function answerQuestion(playerPage: Page, label: string): Promise<v
     await playerPage
         .locator(`[data-test="player-answer-option"][data-answer-label="${label}"]`)
         .click();
+    await expect(playerPage.locator('[data-test="player-phase"]')).toHaveAttribute('data-phase', 'answered');
+}
+
+// Drop a pin on the geo-guesser map and submit. Clicking the map element's
+// centre yields a deterministic-enough lat/lng for a smoke test.
+export async function answerGeoQuestion(playerPage: Page): Promise<void> {
+    const map = playerPage.locator('[data-test="geo-map"]');
+    await expect(map).toBeVisible();
+    await map.click();
+    const submit = playerPage.locator('[data-test="geo-submit"]');
+    await expect(submit).toBeEnabled();
+    await submit.click();
     await expect(playerPage.locator('[data-test="player-phase"]')).toHaveAttribute('data-phase', 'answered');
 }
 

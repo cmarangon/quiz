@@ -75,3 +75,31 @@ test('streaks disabled ignores streak value', function () {
     $points = $service->calculate($question, 0, streak: 10, settings: $settings);
     expect($points)->toBe(10);
 });
+
+test('accuracy factor scales the base points', function () {
+    $service = new ScoringService;
+    $question = Question::factory()->make(['category_id' => 1, 'points' => 100, 'time_limit_seconds' => 30]);
+    $settings = ['enable_time_bonus' => false, 'enable_streaks' => false];
+
+    expect($service->calculate($question, 0, 0, $settings, accuracyFactor: 1.0))->toBe(100);
+    expect($service->calculate($question, 0, 0, $settings, accuracyFactor: 0.5))->toBe(50);
+    expect($service->calculate($question, 0, 0, $settings, accuracyFactor: 0.0))->toBe(0);
+});
+
+test('accuracy factor is clamped to the 0..1 range', function () {
+    $service = new ScoringService;
+    $question = Question::factory()->make(['category_id' => 1, 'points' => 100, 'time_limit_seconds' => 30]);
+    $settings = ['enable_time_bonus' => false, 'enable_streaks' => false];
+
+    expect($service->calculate($question, 0, 0, $settings, accuracyFactor: 2.0))->toBe(100);
+    expect($service->calculate($question, 0, 0, $settings, accuracyFactor: -1.0))->toBe(0);
+});
+
+test('accuracy factor combines with time bonus and streak', function () {
+    $service = new ScoringService;
+    $question = Question::factory()->make(['category_id' => 1, 'points' => 100, 'time_limit_seconds' => 30]);
+    $settings = ['enable_time_bonus' => true, 'enable_streaks' => true];
+    // half accuracy × half time × 2x streak = base.
+    $points = $service->calculate($question, timeTakenMs: 15000, streak: 5, settings: $settings, accuracyFactor: 0.5);
+    expect($points)->toBe(50);
+});

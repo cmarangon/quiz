@@ -22,6 +22,11 @@ class MultipleChoiceType implements QuestionTypeInterface
         return $answer === $question->correct_answer;
     }
 
+    public function scoreFactor(mixed $answer, Question $question): float
+    {
+        return $this->validateAnswer($answer, $question) ? 1.0 : 0.0;
+    }
+
     public function calculatePoints(Question $question, int $timeTakenMs, array $quizSettings): int
     {
         $base = $question->points;

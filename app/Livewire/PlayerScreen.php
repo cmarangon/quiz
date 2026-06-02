@@ -21,6 +21,10 @@ class PlayerScreen extends Component
 
     public ?array $lastResult = null;
 
+    public ?array $lastGuess = null;
+
+    public mixed $correctAnswer = null;
+
     public array $leaderboard = [];
 
     public function mount(string $code): void
@@ -59,11 +63,14 @@ class PlayerScreen extends Component
         $this->phase = 'answering';
         $this->currentQuestion = $payload;
         $this->lastResult = null;
+        $this->lastGuess = null;
+        $this->correctAnswer = null;
     }
 
     public function onQuestionEnded(array $payload): void
     {
         $this->phase = 'review';
+        $this->correctAnswer = $payload['correct_answer'] ?? null;
     }
 
     public function onGameFinished(array $payload): void
@@ -85,6 +92,27 @@ class PlayerScreen extends Component
             $this->player,
             $this->currentQuestion['question_id'],
             $answer,
+            $this->currentQuestion['time_taken_ms'] ?? 10000,
+        );
+
+        $this->phase = 'answered';
+    }
+
+    public function submitGeoGuess(float $lat, float $lng): void
+    {
+        if (! $this->player || ! $this->currentQuestion) {
+            return;
+        }
+
+        $this->lastGuess = ['lat' => $lat, 'lng' => $lng];
+
+        $action = app(SubmitAnswer::class);
+
+        $this->lastResult = $action->execute(
+            $this->session,
+            $this->player,
+            $this->currentQuestion['question_id'],
+            $this->lastGuess,
             $this->currentQuestion['time_taken_ms'] ?? 10000,
         );
 

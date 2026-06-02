@@ -47,16 +47,21 @@ class SubmitAnswer
         $type = $this->registry->resolve($question->type);
 
         $isCorrect = $type->validateAnswer($answer, $question);
+        $scoreFactor = $type->scoreFactor($answer, $question);
         $pointsEarned = 0;
 
-        if ($isCorrect) {
+        if ($scoreFactor > 0) {
             $pointsEarned = $this->scoring->calculate(
                 $question,
                 $timeTakenMs,
                 $player->streak,
                 $session->quiz->settings,
+                $scoreFactor,
             );
             $player->increment('score', $pointsEarned);
+        }
+
+        if ($isCorrect) {
             $player->increment('streak');
         } else {
             $player->update(['streak' => 0]);
