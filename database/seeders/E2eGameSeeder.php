@@ -15,7 +15,6 @@ class E2eGameSeeder extends Seeder
     {
         $email = env('E2E_HOST_EMAIL', 'e2e-host@test.local');
         $password = env('E2E_HOST_PASSWORD', 'password');
-        $quizTitle = env('E2E_QUIZ_TITLE', 'E2E Test Quiz');
 
         $user = User::firstOrCreate(
             ['email' => $email],
@@ -25,6 +24,14 @@ class E2eGameSeeder extends Seeder
                 'email_verified_at' => now(),
             ],
         );
+
+        $this->seedMultipleChoiceQuiz($user);
+        $this->seedGeoQuiz($user);
+    }
+
+    private function seedMultipleChoiceQuiz(User $user): void
+    {
+        $quizTitle = env('E2E_QUIZ_TITLE', 'E2E Test Quiz');
 
         $quiz = Quiz::firstOrCreate(
             ['user_id' => $user->id, 'title' => $quizTitle],
@@ -94,5 +101,51 @@ class E2eGameSeeder extends Seeder
                 'order' => $index,
             ]);
         }
+    }
+
+    private function seedGeoQuiz(User $user): void
+    {
+        $quizTitle = env('E2E_GEO_QUIZ_TITLE', 'E2E Geo Quiz');
+
+        $quiz = Quiz::firstOrCreate(
+            ['user_id' => $user->id, 'title' => $quizTitle],
+            [
+                'description' => 'Deterministic geo-guesser quiz used by the Playwright suite.',
+                'visibility' => 'public',
+                'settings' => [
+                    'enable_time_bonus' => false,
+                    'enable_streaks' => false,
+                ],
+            ],
+        );
+
+        if (! $quiz->wasRecentlyCreated) {
+            return;
+        }
+
+        $category = Category::create([
+            'quiz_id' => $quiz->id,
+            'name' => 'Geography',
+            'slug' => 'geography',
+            'order' => 0,
+        ]);
+
+        Question::create([
+            'category_id' => $category->id,
+            'type' => 'geo_guesser',
+            'body' => 'Where is the Eiffel Tower?',
+            'options' => [
+                'zoom' => 2,
+                'center' => ['lat' => 30.0, 'lng' => 10.0],
+                'threshold_km' => 0,
+                // Wide radius keeps the smoke test deterministic: any reasonable
+                // pin earns a non-zero score.
+                'max_distance_km' => 20000,
+            ],
+            'correct_answer' => ['lat' => 48.8584, 'lng' => 2.2945],
+            'points' => 100,
+            'time_limit_seconds' => 30,
+            'order' => 0,
+        ]);
     }
 }

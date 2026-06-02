@@ -6,9 +6,11 @@ use App\Models\Question;
 
 class ScoringService
 {
-    public function calculate(Question $question, int $timeTakenMs, int $streak, array $settings): int
+    public function calculate(Question $question, int $timeTakenMs, int $streak, array $settings, float $accuracyFactor = 1.0): int
     {
         $base = $question->points;
+
+        $accuracyFactor = max(0.0, min(1.0, $accuracyFactor));
 
         $timeFactor = 1.0;
         if ($settings['enable_time_bonus'] ?? true) {
@@ -26,6 +28,6 @@ class ScoringService
             };
         }
 
-        return (int) round($base * $timeFactor * $streakMultiplier);
+        return (int) round($base * $accuracyFactor * $timeFactor * $streakMultiplier);
     }
 }

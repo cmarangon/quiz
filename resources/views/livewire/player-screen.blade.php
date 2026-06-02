@@ -16,7 +16,9 @@
         {{-- ANSWERING PHASE --}}
         @elseif($phase === 'answering')
             <div class="w-full max-w-md space-y-4">
-                @if($currentQuestion && ! empty($currentQuestion['options']))
+                @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
+                    @include('question-types.geo-guesser-player')
+                @elseif($currentQuestion && ! empty($currentQuestion['options']))
                     @php
                         $colors = ['bg-red-500 hover:bg-red-600', 'bg-blue-500 hover:bg-blue-600', 'bg-yellow-500 hover:bg-yellow-600', 'bg-green-500 hover:bg-green-600'];
                     @endphp
@@ -45,6 +47,11 @@
 
         {{-- REVIEW PHASE --}}
         @elseif($phase === 'review')
+            @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
+                <div class="w-full max-w-md space-y-4">
+                    @include('question-types.geo-guesser-player')
+                </div>
+            @else
             <div class="space-y-4">
                 @if($lastResult)
                     @if($lastResult['is_correct'])
@@ -62,6 +69,7 @@
                     <p class="text-zinc-500 dark:text-zinc-400">{{ __('No answer submitted') }}</p>
                 @endif
             </div>
+            @endif
 
         {{-- FINISHED PHASE --}}
         @elseif($phase === 'finished')

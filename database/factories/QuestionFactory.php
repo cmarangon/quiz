@@ -28,4 +28,20 @@ class QuestionFactory extends Factory
             'order' => 0,
         ];
     }
+
+    public function geoGuesser(): static
+    {
+        return $this->state(fn () => [
+            'type' => 'geo_guesser',
+            'body' => 'Where is '.fake()->city().'?',
+            'options' => [
+                'zoom' => 2,
+                'center' => ['lat' => 20.0, 'lng' => 0.0],
+            ],
+            'correct_answer' => [
+                'lat' => fake()->latitude(),
+                'lng' => fake()->longitude(),
+            ],
+        ]);
+    }
 }
