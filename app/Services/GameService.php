@@ -8,7 +8,9 @@ use App\Events\QuestionEnded;
 use App\Events\QuestionStarted;
 use App\Models\GameSession;
 use App\Models\Question;
+use Illuminate\Broadcasting\BroadcastException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use LogicException;
 
 class GameService
@@ -30,13 +32,9 @@ class GameService
         $session->refresh();
         $question = $this->getCurrentQuestion($session);
 
-        if ($firstCategory) {
-            broadcast(new CategoryChanged($session, $firstCategory));
-        }
+        $this->broadcastSafely(fn () => $firstCategory && broadcast(new CategoryChanged($session, $firstCategory)));
 
-        if ($question) {
-            broadcast(new QuestionStarted($session, $question));
-        }
+        $this->broadcastSafely(fn () => $question && broadcast(new QuestionStarted($session, $question)));
     }
 
     public function getCurrentQuestion(GameSession $session): ?Question
@@ -62,7 +60,7 @@ class GameService
                 'score' => $p->score,
             ])->toArray();
 
-            broadcast(new QuestionEnded($session, $question, $scores));
+            $this->broadcastSafely(fn () => broadcast(new QuestionEnded($session, $question, $scores)));
         }
     }
 
@@ -83,7 +81,7 @@ class GameService
                 'score' => $p->score,
             ])->toArray();
 
-            broadcast(new GameFinished($session, $leaderboard));
+            $this->broadcastSafely(fn () => broadcast(new GameFinished($session, $leaderboard)));
 
             return false;
         }
@@ -100,12 +98,21 @@ class GameService
         $session->refresh();
 
         if ($nextQuestion->category_id !== $prevCategoryId) {
-            broadcast(new CategoryChanged($session, $nextQuestion->category));
+             $this->broadcastSafely(fn () => broadcast(new CategoryChanged($session, $nextQuestion->category)));
         }
 
-        broadcast(new QuestionStarted($session, $nextQuestion));
+        $this->broadcastSafely(fn () => broadcast(new QuestionStarted($session, $nextQuestion)));
 
         return true;
+    }
+
+    private function broadcastSafely(callable $fn): void
+    {
+        try {
+            $fn();
+        } catch (BroadcastException $e) {
+            Log::warning('Broadcast failed: '.$e->getMessage());
+        }
     }
 
     private function getAllQuestionsOrdered(GameSession $session): Collection
