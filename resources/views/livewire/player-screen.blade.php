@@ -18,6 +18,8 @@
             <div class="w-full max-w-md space-y-4">
                 @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
                     @include('question-types.geo-guesser-player')
+                @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
+                    @include('question-types.ordering-player')
                 @elseif($currentQuestion && ! empty($currentQuestion['options']))
                     @php
                         $colors = ['bg-red-500 hover:bg-red-600', 'bg-blue-500 hover:bg-blue-600', 'bg-yellow-500 hover:bg-yellow-600', 'bg-green-500 hover:bg-green-600'];

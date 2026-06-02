@@ -74,6 +74,7 @@
                                         <select wire:model.live="questionType" class="rounded-md border border-neutral-300 px-3 py-1.5 text-sm dark:border-neutral-600 dark:bg-neutral-800 dark:text-white">
                                             <option value="multiple_choice">{{ __('Multiple Choice') }}</option>
                                             <option value="true_false">{{ __('True / False') }}</option>
+                                            <option value="ordering">{{ __('Ordering') }}</option>
                                         </select>
                                     </div>
                                     <div>
@@ -84,13 +85,15 @@
                                     </div>
                                 </div>
 
-                                @if($questionType === 'multiple_choice')
+                                @if($questionType === 'multiple_choice' || $questionType === 'ordering')
                                     <div>
-                                        <label class="mb-1 block text-sm font-medium dark:text-neutral-300">{{ __('Options') }}</label>
+                                        <label class="mb-1 block text-sm font-medium dark:text-neutral-300">
+                                            {{ $questionType === 'ordering' ? __('Items (enter in the correct order)') : __('Options') }}
+                                        </label>
                                         <div class="space-y-2">
                                             @foreach($questionOptions as $index => $option)
                                                 <div class="flex gap-2">
-                                                    <flux:input wire:model.live.debounce.300ms="questionOptions.{{ $index }}" :placeholder="__('Option') . ' ' . ($index + 1)" size="sm" class="flex-1" />
+                                                    <flux:input wire:model.live.debounce.300ms="questionOptions.{{ $index }}" :placeholder="($questionType === 'ordering' ? __('Item') : __('Option')) . ' ' . ($index + 1)" size="sm" class="flex-1" />
                                                     @if(count($questionOptions) > 2)
                                                         <flux:button wire:click="removeQuestionOption({{ $index }})" size="sm" variant="ghost" class="text-red-500">
                                                             &times;
@@ -101,11 +104,12 @@
                                         </div>
                                         @error('questionOptions.*') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                                         <flux:button wire:click="addQuestionOption" size="sm" variant="ghost" class="mt-1">
-                                            + {{ __('Add Option') }}
+                                            + {{ $questionType === 'ordering' ? __('Add Item') : __('Add Option') }}
                                         </flux:button>
                                     </div>
                                 @endif
 
+                                @if($questionType !== 'ordering')
                                 <div>
                                     <label class="mb-1 block text-sm font-medium dark:text-neutral-300">{{ __('Correct Answer') }}</label>
                                     @if($questionType === 'true_false')
@@ -126,6 +130,7 @@
                                     @endif
                                     @error('questionCorrectAnswer') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                                 </div>
+                                @endif
 
                                 <div class="flex gap-2">
                                     <flux:button wire:click="saveQuestion" size="sm" variant="primary">
