@@ -28,4 +28,37 @@ class QuestionFactory extends Factory
             'order' => 0,
         ];
     }
+
+    public function geoGuesser(): static
+    {
+        return $this->state(fn () => [
+            'type' => 'geo_guesser',
+            'body' => 'Where is '.fake()->city().'?',
+            'options' => [
+                'zoom' => 2,
+                'center' => ['lat' => 20.0, 'lng' => 0.0],
+            ],
+            'correct_answer' => [
+                'lat' => fake()->latitude(),
+                'lng' => fake()->longitude(),
+            ],
+        ]);
+    }
+
+    public function ordering(): static
+    {
+        return $this->state(fn () => [
+            'type' => 'ordering',
+            'body' => 'Put the steps in the correct order.',
+            // Stored display order is intentionally shuffled so the broadcast
+            // never reveals the correct sequence.
+            'options' => [
+                ['label' => 'Step B'],
+                ['label' => 'Step D'],
+                ['label' => 'Step A'],
+                ['label' => 'Step C'],
+            ],
+            'correct_answer' => ['Step A', 'Step B', 'Step C', 'Step D'],
+        ]);
+    }
 }

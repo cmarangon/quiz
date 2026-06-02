@@ -86,3 +86,71 @@ test('user cannot edit another users quiz', function () {
         ->get("/quizzes/{$quiz->id}/edit")
         ->assertStatus(403);
 });
+
+test('user can add an ordering question with a shuffled display order', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'Order the planets from the sun')
+        ->set('questionType', 'ordering')
+        ->set('questionOptions', ['Mercury', 'Venus', 'Earth', 'Mars'])
+        ->set('questionPoints', 10)
+        ->set('questionTimeLimit', 30)
+        ->call('saveQuestion')
+        ->assertHasNoErrors();
+
+    $question = $category->questions()->where('body', 'Order the planets from the sun')->firstOrFail();
+
+    expect($question->type)->toBe('ordering');
+    // The entered order is the correct answer.
+    expect($question->correct_answer)->toBe(['Mercury', 'Venus', 'Earth', 'Mars']);
+    // Options carry the same labels but in a different (shuffled) display order
+    // so the broadcast never reveals the correct sequence.
+    $displayLabels = collect($question->options)->pluck('label')->all();
+    expect($displayLabels)->not->toBe(['Mercury', 'Venus', 'Earth', 'Mars']);
+    sort($displayLabels);
+    expect($displayLabels)->toBe(['Earth', 'Mars', 'Mercury', 'Venus']);
+});
+
+test('ordering question rejects duplicate item labels', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'Order these steps')
+        ->set('questionType', 'ordering')
+        ->set('questionOptions', ['Step A', 'Step A'])
+        ->set('questionPoints', 10)
+        ->set('questionTimeLimit', 30)
+        ->call('saveQuestion')
+        ->assertHasErrors('questionOptions.*');
+
+    expect($category->questions()->count())->toBe(0);
+});
+
+test('ordering question does not require a separate correct answer field', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'Order these steps')
+        ->set('questionType', 'ordering')
+        ->set('questionOptions', ['First', 'Second', 'Third'])
+        ->set('questionCorrectAnswer', '')
+        ->set('questionPoints', 10)
+        ->set('questionTimeLimit', 30)
+        ->call('saveQuestion')
+        ->assertHasNoErrors();
+
+    expect($category->questions()->where('type', 'ordering')->count())->toBe(1);
+});

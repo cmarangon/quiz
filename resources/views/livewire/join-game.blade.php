@@ -3,7 +3,7 @@
     <p class="text-zinc-500 dark:text-zinc-400">{{ __('Code') }}: <span class="font-mono font-bold text-lg">{{ $code }}</span></p>
 
     <form wire:submit="join" class="w-full flex flex-col gap-4">
-        <flux:input wire:model="nickname" :label="__('Your Nickname')" :placeholder="__('Enter a nickname')" required />
+        <flux:input wire:model="nickname" data-test="join-nickname-input" :label="__('Your Nickname')" :placeholder="__('Enter a nickname')" required />
 
         @error('nickname')
             <p class="text-sm text-red-500">{{ $message }}</p>

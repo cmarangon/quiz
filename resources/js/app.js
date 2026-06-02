@@ -1,7 +1,15 @@
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
+import { registerGeoMap } from './geo-map';
+import { registerOrdering } from './ordering';
 
 window.Pusher = Pusher;
+
+document.addEventListener('alpine:init', () => {
+    registerGeoMap(window.Alpine);
+    registerOrdering(window.Alpine);
+});
+
 
 window.Echo = new Echo({
     broadcaster: 'reverb',

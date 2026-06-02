@@ -1,8 +1,9 @@
 <div class="flex flex-col items-center gap-6 text-center">
     @if($player)
-        <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">
+        <h1 data-test="player-nickname" class="text-2xl font-bold text-zinc-900 dark:text-white">
             {{ $player->nickname }}
         </h1>
+        <div data-test="player-phase" data-phase="{{ $phase }}" class="hidden"></div>
 
         {{-- WAITING PHASE --}}
         @if($phase === 'waiting')
@@ -15,7 +16,11 @@
         {{-- ANSWERING PHASE --}}
         @elseif($phase === 'answering')
             <div class="w-full max-w-md space-y-4">
-                @if($currentQuestion && ! empty($currentQuestion['options']))
+                @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
+                    @include('question-types.geo-guesser-player')
+                @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
+                    @include('question-types.ordering-player')
+                @elseif($currentQuestion && ! empty($currentQuestion['options']))
                     @php
                         $colors = ['bg-red-500 hover:bg-red-600', 'bg-blue-500 hover:bg-blue-600', 'bg-yellow-500 hover:bg-yellow-600', 'bg-green-500 hover:bg-green-600'];
                     @endphp
@@ -23,6 +28,8 @@
                         @foreach($currentQuestion['options'] as $index => $option)
                             <button
                                 wire:click="submitAnswer('{{ $option['label'] ?? $option }}')"
+                                data-test="player-answer-option"
+                                data-answer-label="{{ $option['label'] ?? $option }}"
                                 class="rounded-xl p-8 text-lg font-bold text-white transition {{ $colors[$index % 4] }}">
                                 {{ $option['label'] ?? $option }}
                             </button>
@@ -42,6 +49,11 @@
 
         {{-- REVIEW PHASE --}}
         @elseif($phase === 'review')
+            @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
+                <div class="w-full max-w-md space-y-4">
+                    @include('question-types.geo-guesser-player')
+                </div>
+            @else
             <div class="space-y-4">
                 @if($lastResult)
                     @if($lastResult['is_correct'])
@@ -59,6 +71,7 @@
                     <p class="text-zinc-500 dark:text-zinc-400">{{ __('No answer submitted') }}</p>
                 @endif
             </div>
+            @endif
 
         {{-- FINISHED PHASE --}}
         @elseif($phase === 'finished')
@@ -67,7 +80,7 @@
 
                 <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-6">
                     <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Your Score') }}</p>
-                    <p class="text-4xl font-bold text-zinc-900 dark:text-white">{{ $player->fresh()->score }}</p>
+                    <p data-test="player-final-score" class="text-4xl font-bold text-zinc-900 dark:text-white">{{ $player->fresh()->score }}</p>
                 </div>
 
                 @if(! empty($leaderboard))

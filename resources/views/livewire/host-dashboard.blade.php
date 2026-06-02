@@ -1,7 +1,7 @@
 <div class="space-y-6" @if($phase === 'lobby') wire:poll.2s="pollPlayers" @endif>
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">{{ __('Host Dashboard') }}</h1>
-        <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium
+        <span data-test="host-phase" data-phase="{{ $phase }}" class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium
             @if($phase === 'lobby') bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
             @elseif($phase === 'playing') bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
             @elseif($phase === 'reviewing') bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
@@ -13,7 +13,7 @@
 
     <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
         <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Join Code') }}</p>
-        <p class="font-mono text-3xl font-bold text-zinc-900 dark:text-white">{{ $session->join_code }}</p>
+        <p data-test="join-code" class="font-mono text-3xl font-bold text-zinc-900 dark:text-white">{{ $session->join_code }}</p>
         <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
             {{ __('Share this code or the spectator link with your audience.') }}
         </p>
@@ -28,7 +28,7 @@
                     <div class="h-full rounded-full bg-green-500 transition-all duration-300"
                          style="width: {{ $totalPlayers > 0 ? ($answeredCount / $totalPlayers) * 100 : 0 }}%"></div>
                 </div>
-                <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <span data-test="answer-progress" class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                     {{ $answeredCount }} / {{ $totalPlayers }}
                 </span>
             </div>
@@ -44,7 +44,7 @@
         @else
             <ul class="space-y-2">
                 @foreach($players as $player)
-                    <li class="flex items-center justify-between gap-2 rounded-lg border border-zinc-200 px-4 py-2 dark:border-zinc-700">
+                    <li data-test="host-player-row" data-player-nickname="{{ $player->nickname }}" class="flex items-center justify-between gap-2 rounded-lg border border-zinc-200 px-4 py-2 dark:border-zinc-700">
                         <span class="text-zinc-900 dark:text-white">{{ $player->nickname }}</span>
                         <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ $player->score }} {{ __('pts') }}</span>
                     </li>
