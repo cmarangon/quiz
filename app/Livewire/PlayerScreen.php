@@ -119,6 +119,25 @@ class PlayerScreen extends Component
         $this->phase = 'answered';
     }
 
+    public function submitOrder(array $order): void
+    {
+        if (! $this->player || ! $this->currentQuestion) {
+            return;
+        }
+
+        $action = app(SubmitAnswer::class);
+
+        $this->lastResult = $action->execute(
+            $this->session,
+            $this->player,
+            $this->currentQuestion['question_id'],
+            array_values($order),
+            $this->currentQuestion['time_taken_ms'] ?? 10000,
+        );
+
+        $this->phase = 'answered';
+    }
+
     public function render()
     {
         return view('livewire.player-screen')->title('Playing');

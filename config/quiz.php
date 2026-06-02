@@ -5,6 +5,7 @@ return [
         'multiple_choice' => \App\QuestionTypes\MultipleChoiceType::class,
         'true_false' => \App\QuestionTypes\TrueFalseType::class,
         'geo_guesser' => \App\QuestionTypes\GeoGuesserType::class,
+        'ordering' => \App\QuestionTypes\OrderingType::class,
     ],
 
     'geo_guesser' => [

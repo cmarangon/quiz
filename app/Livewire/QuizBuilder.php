@@ -127,15 +127,22 @@ class QuizBuilder extends Component
     {
         $rules = [
             'questionBody' => 'required|min:3',
-            'questionType' => 'required|in:multiple_choice,true_false',
-            'questionCorrectAnswer' => 'required',
+            'questionType' => 'required|in:multiple_choice,true_false,ordering',
             'questionPoints' => 'required|integer|min:1',
             'questionTimeLimit' => 'required|integer|min:5',
         ];
 
-        if ($this->questionType === 'multiple_choice') {
+        if ($this->questionType === 'multiple_choice' || $this->questionType === 'ordering') {
             $rules['questionOptions'] = 'required|array|min:2';
             $rules['questionOptions.*'] = 'required|string';
+        }
+
+        if ($this->questionType === 'ordering') {
+            $rules['questionOptions.*'] = 'required|string|distinct';
+        }
+
+        if ($this->questionType !== 'ordering') {
+            $rules['questionCorrectAnswer'] = 'required';
         }
 
         $this->validate($rules);
@@ -146,9 +153,7 @@ class QuizBuilder extends Component
             abort(403);
         }
 
-        $options = $this->questionType === 'true_false'
-            ? ['True', 'False']
-            : array_values(array_filter($this->questionOptions));
+        [$options, $correctAnswer] = $this->buildQuestionPayload();
 
         $nextOrder = $category->questions()->max('order') + 1;
 
@@ -156,7 +161,7 @@ class QuizBuilder extends Component
             'type' => $this->questionType,
             'body' => $this->questionBody,
             'options' => $options,
-            'correct_answer' => $this->questionCorrectAnswer,
+            'correct_answer' => $correctAnswer,
             'points' => $this->questionPoints,
             'time_limit_seconds' => $this->questionTimeLimit,
             'order' => $nextOrder,
@@ -164,6 +169,49 @@ class QuizBuilder extends Component
 
         $this->addingQuestionToCategoryId = null;
         $this->resetQuestionForm();
+    }
+
+    /**
+     * Build the [options, correct_answer] pair for the question being saved.
+     *
+     * For ordering questions the author enters the items in their correct
+     * sequence; we persist that sequence as correct_answer and store the
+     * options in a shuffled display order so the broadcast never leaks it.
+     *
+     * @return array{0: array<int, mixed>, 1: mixed}
+     */
+    private function buildQuestionPayload(): array
+    {
+        if ($this->questionType === 'true_false') {
+            return [['True', 'False'], $this->questionCorrectAnswer];
+        }
+
+        if ($this->questionType === 'ordering') {
+            $labels = array_values(array_filter(
+                array_map('trim', $this->questionOptions),
+                fn ($label) => $label !== '',
+            ));
+
+            $shuffled = $labels;
+            if (count($shuffled) > 1) {
+                // Bounded shuffle so a degenerate input (e.g. labels that only
+                // differ by whitespace) can never spin forever; fall back to a
+                // rotation, which always differs when labels aren't identical.
+                for ($attempt = 0; $attempt < 10 && $shuffled === $labels; $attempt++) {
+                    shuffle($shuffled);
+                }
+
+                if ($shuffled === $labels && count(array_unique($labels)) > 1) {
+                    $shuffled[] = array_shift($shuffled);
+                }
+            }
+
+            $options = array_map(fn ($label) => ['label' => $label], $shuffled);
+
+            return [$options, $labels];
+        }
+
+        return [array_values(array_filter($this->questionOptions)), $this->questionCorrectAnswer];
     }
 
     private function resetQuestionForm(): void
