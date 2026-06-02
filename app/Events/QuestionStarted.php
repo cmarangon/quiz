@@ -35,6 +35,8 @@ class QuestionStarted implements ShouldBroadcastNow
             'options' => $this->question->options,
             'time_limit_seconds' => $this->question->time_limit_seconds,
             'question_index' => $this->session->current_question_index,
+            'theme' => $this->question->category?->theme ?? 'default',
+            'category_name' => $this->question->category?->name,
         ];
     }
 }

@@ -30,6 +30,7 @@ class StreaksQuizSeeder extends Seeder
             'quiz_id' => $quiz->id,
             'name' => 'History',
             'slug' => 'history',
+            'theme' => 'history',
             'order' => 0,
         ]);
 

@@ -43,4 +43,10 @@ return [
         'icon' => 'globe-alt',
         'background_pattern' => 'map',
     ],
+    'general-knowledge' => [
+        'gradient' => 'from-indigo-900 to-blue-900',
+        'accent' => 'indigo-400',
+        'icon' => 'light-bulb',
+        'background_pattern' => 'none',
+    ],
 ];

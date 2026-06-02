@@ -14,6 +14,8 @@ class SpectatorScreen extends Component
 
     public ?array $currentTheme = null;
 
+    public ?string $themeKey = null;
+
     public ?array $currentQuestion = null;
 
     public int $answeredCount = 0;
@@ -93,6 +95,7 @@ class SpectatorScreen extends Component
     {
         $this->phase = 'category-intro';
         $theme = $payload['theme'] ?? 'default';
+        $this->themeKey = $theme;
         $this->currentTheme = config("themes.{$theme}", config('themes.default'));
         $this->currentTheme['name'] = $payload['name'] ?? '';
         $this->currentTheme['key'] = $theme;
@@ -102,6 +105,7 @@ class SpectatorScreen extends Component
     {
         $this->phase = 'question';
         $this->currentQuestion = $payload;
+        $this->themeKey = $payload['theme'] ?? 'default';
         $this->answeredCount = 0;
         $this->correctAnswer = null;
     }

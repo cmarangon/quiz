@@ -4,6 +4,7 @@ use App\Events\GameFinished;
 use App\Events\PlayerJoined;
 use App\Events\QuestionEnded;
 use App\Events\QuestionStarted;
+use App\Models\Category;
 use App\Models\GameSession;
 use App\Models\Player;
 use App\Models\Question;
@@ -24,6 +25,27 @@ test('QuestionStarted broadcasts on game channel without correct answer', functi
     expect($data)->toHaveKey('body');
     expect($data)->toHaveKey('options');
     expect($data)->not->toHaveKey('correct_answer');
+});
+
+test('QuestionStarted broadcasts the category theme and name', function () {
+    $category = Category::factory()->create(['theme' => 'science', 'name' => 'Science']);
+    $question = Question::factory()->for($category)->create();
+    $session = GameSession::factory()->create();
+
+    $data = (new QuestionStarted($session, $question))->broadcastWith();
+
+    expect($data['theme'])->toBe('science');
+    expect($data['category_name'])->toBe('Science');
+});
+
+test('QuestionStarted falls back to the default theme without a category', function () {
+    $session = GameSession::factory()->create();
+    $question = Question::factory()->create();
+    $question->setRelation('category', null);
+
+    $data = (new QuestionStarted($session, $question))->broadcastWith();
+
+    expect($data['theme'])->toBe('default');
 });
 
 test('QuestionEnded broadcasts with correct answer and scores', function () {

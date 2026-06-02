@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sports — Spectator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Teko:wght@600;700&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0a1020;--pitch:#1f8a4c;--pitch-d:#176b3a;--led:#ff4d3d;--ledg:#39ff8b;--red:#e23636;--blue:#2f6bff;--gold:#ffc637;--steel:#1b2740}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Nunito',system-ui,sans-serif;color:#fff;min-height:100vh;overflow:hidden;
+    background:radial-gradient(ellipse at 50% -8%, rgba(255,255,255,.2), transparent 42%),linear-gradient(180deg,#101a33,#070b16);
+    padding:32px 56px;display:flex;flex-direction:column}
+  body::before{content:"";position:fixed;inset:0 0 40% 0;pointer-events:none;opacity:.15;
+    background-image:radial-gradient(#fff 1.6px,transparent 1.8px);background-size:14px 14px}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;
+    background-image:repeating-linear-gradient(125deg,#fff 0 2px,transparent 2px 40px)}
+  .pitch{position:fixed;left:0;right:0;bottom:0;width:100%;height:38vh;z-index:0;
+    background:linear-gradient(180deg,var(--pitch),var(--pitch-d));box-shadow:inset 0 24px 60px rgba(0,0,0,.5)}
+  .pitch svg{width:100%;height:100%}
+  .ball{position:fixed;font-size:50px;z-index:1;filter:drop-shadow(-30px 6px 0 rgba(255,255,255,.16))}
+  .ball.b1{top:13%;left:5%}.ball.b2{top:26%;right:6%;font-size:40px}
+
+  /* scoreboard header */
+  header{display:flex;align-items:center;justify-content:space-between;z-index:3;
+    background:var(--steel);border:4px solid #000;border-radius:14px;padding:12px 22px;box-shadow:0 8px 0 #000,inset 0 0 0 2px rgba(255,255,255,.06)}
+  .badge{font-family:'Anton';letter-spacing:2px;text-transform:uppercase;font-size:30px;display:inline-flex;align-items:center;gap:12px}
+  .badge .dot{width:16px;height:16px;border-radius:50%;background:var(--led);box-shadow:0 0 14px var(--led);animation:blink 1.1s steps(1) infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .meta{display:flex;align-items:center;gap:18px}
+  .pill{font-family:'Anton';letter-spacing:1px;text-transform:uppercase;font-size:22px;background:#0c1322;color:#fff;padding:8px 20px;border-radius:10px;border:2px solid #2a3a5e}
+  .led{font-family:'Teko';font-weight:700;font-size:56px;line-height:.7;letter-spacing:3px;color:var(--ledg);
+    background:#06210f;padding:8px 22px;border-radius:10px;border:2px solid #0a3a1c;box-shadow:inset 0 0 18px rgba(57,255,139,.5);text-shadow:0 0 12px rgba(57,255,139,.8)}
+
+  main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:36px;z-index:3}
+  .jumbo{position:relative;margin:0 auto;max-width:1080px;width:100%;text-align:center;background:#0c1322;
+    border:6px solid #2a3a5e;border-radius:18px;padding:34px 48px;box-shadow:0 14px 0 #000,0 0 60px rgba(47,107,255,.3),inset 0 0 40px rgba(47,107,255,.12)}
+  .jumbo::after{content:"";position:absolute;inset:0;border-radius:12px;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 4px)}
+  .jumbo .emoji{font-size:.8em;display:block;margin-bottom:6px}
+  .jumbo h1{font-family:'Anton';letter-spacing:1.5px;text-transform:uppercase;font-size:clamp(36px,4.8vw,58px);line-height:1.05;
+    color:#eaf2ff;text-shadow:0 0 18px rgba(120,170,255,.6)}
+
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1080px;margin:0 auto;width:100%}
+  .opt{position:relative;overflow:hidden;font-family:'Anton';letter-spacing:1.5px;text-transform:uppercase;font-size:clamp(24px,2.6vw,36px);color:#fff;
+    display:flex;align-items:center;gap:20px;padding:22px 28px;border-radius:14px;border:4px solid #000;box-shadow:0 8px 0 #000}
+  .opt::before{content:"";position:absolute;top:0;bottom:0;right:-14px;width:80px;background:rgba(255,255,255,.16);transform:skewX(-18deg)}
+  .opt .num{flex:0 0 54px;width:54px;height:54px;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center;border:3px solid #000}
+  .opt.a{background:var(--red)}.opt.b{background:var(--blue)}.opt.c{background:var(--pitch)}.opt.d{background:var(--gold);color:#000}
+  .opt.d .num{background:#000;color:var(--gold)}
+</style>
+</head>
+<body>
+  <div class="pitch">
+    <svg viewBox="0 0 1600 360" preserveAspectRatio="none">
+      <g stroke="rgba(255,255,255,.5)" stroke-width="4" fill="none">
+        <line x1="0" y1="70" x2="1600" y2="70"/><line x1="800" y1="0" x2="800" y2="360"/>
+        <circle cx="800" cy="200" r="90"/>
+        <rect x="0" y="120" width="120" height="160"/><rect x="1480" y="120" width="120" height="160"/>
+      </g>
+    </svg>
+  </div>
+  <span class="ball b1">⚽</span><span class="ball b2">🏀</span>
+
+  <header>
+    <span class="badge"><span class="dot"></span>🏆 Sports</span>
+    <div class="meta">
+      <span class="pill">Round 3/10</span>
+      <span class="pill">👥 24</span>
+      <span class="led">00:18</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="jumbo">
+      <span class="emoji">⚽</span>
+      <h1>How many players are on a soccer team on the field?</h1>
+    </div>
+    <div class="options">
+      <div class="opt a"><span class="num">A</span> 9</div>
+      <div class="opt b"><span class="num">B</span> 10</div>
+      <div class="opt c"><span class="num">C</span> 11</div>
+      <div class="opt d"><span class="num">D</span> 12</div>
+    </div>
+  </main>
+</body>
+</html>

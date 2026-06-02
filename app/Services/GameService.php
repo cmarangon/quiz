@@ -122,7 +122,8 @@ class GameService
             ->orderBy('order')
             ->with(['questions' => fn ($q) => $q->orderBy('order')])
             ->get()
-            ->flatMap->questions
+            ->flatMap(fn ($category) => $category->questions
+                ->each(fn ($question) => $question->setRelation('category', $category)))
             ->values();
     }
 }

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nature — Spectator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#2c4a22;--wood:#a06a37;--wood-d:#7c4f26;--emerald:#2f9e54;--lime:#8fd14f;--sun:#ffd23f;--sky1:#bfe9ff;--sky2:#88d3f0;--cream:#fff7e4;--berry:#e8743b}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Nunito',system-ui,sans-serif;color:var(--ink);min-height:100vh;overflow:hidden;
+    background:linear-gradient(180deg,var(--sky1),var(--sky2) 52%,#a7dd8c 53%,#7cc56a);
+    padding:36px 56px;display:flex;flex-direction:column}
+  .sun{position:fixed;top:-70px;right:-70px;width:260px;height:260px;border-radius:50%;
+    background:radial-gradient(circle,#fff3b0,var(--sun));box-shadow:0 0 90px rgba(255,210,63,.7);z-index:0}
+  .sun::before{content:"";position:absolute;inset:-60px;border-radius:50%;
+    background:conic-gradient(from 0deg,rgba(255,210,63,.4) 0 6deg,transparent 6deg 30deg);animation:spin 70s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .hills{position:fixed;left:0;right:0;bottom:0;width:100%;height:40vh;z-index:0}
+  .leaf{position:fixed;font-size:46px;z-index:1;animation:sway 7s ease-in-out infinite}
+  .leaf.l1{top:14%;left:6%}.leaf.l2{top:24%;right:18%;animation-delay:-3s}
+  @keyframes sway{0%,100%{transform:translateY(0) rotate(-12deg)}50%{transform:translateY(-16px) rotate(14deg)}}
+
+  header{display:flex;align-items:center;justify-content:space-between;z-index:3}
+  .badge{font-family:'Sniglet';font-weight:800;font-size:28px;background:var(--emerald);color:#fff;padding:10px 28px;border-radius:999px;border:4px solid var(--ink);box-shadow:0 5px 0 var(--ink)}
+  .meta{display:flex;gap:16px}
+  .pill{font-family:'Sniglet';font-weight:800;font-size:20px;background:#fff7e4;color:var(--ink);padding:8px 22px;border-radius:999px;border:4px solid var(--ink);box-shadow:0 4px 0 var(--ink)}
+  .pill.g{background:var(--lime)}
+
+  main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:38px;z-index:3}
+  .qcard{position:relative;margin:0 auto;max-width:1080px;width:100%;text-align:center;background:var(--cream);color:var(--ink);
+    border:6px solid var(--emerald);border-radius:32px;padding:36px 48px;box-shadow:0 14px 0 #1f6e3a,0 26px 40px rgba(0,0,0,.25)}
+  .qcard::before{content:"🌼";position:absolute;left:30px;top:-22px;font-size:42px}
+  .qcard::after{content:"🌱";position:absolute;right:36px;bottom:-24px;font-size:44px}
+  .qcard .emoji{font-size:.8em;display:block;margin-bottom:6px}
+  .qcard h1{font-family:'Sniglet';font-weight:800;font-size:clamp(36px,4.8vw,60px);line-height:1.12}
+
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1080px;margin:0 auto;width:100%}
+  .opt{font-family:'Sniglet';font-weight:800;font-size:clamp(24px,2.6vw,36px);color:#fff;display:flex;align-items:center;gap:20px;
+    padding:22px 28px;border-radius:26px;border:5px solid var(--ink);box-shadow:0 8px 0 var(--ink)}
+  .opt .key{flex:0 0 52px;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.35);display:grid;place-items:center}
+  .opt.a{background:var(--emerald)}.opt.b{background:var(--lime);color:var(--ink)}.opt.c{background:var(--wood)}.opt.d{background:var(--berry)}
+
+  .sign{position:fixed;right:56px;top:46%;transform:translateY(-50%);z-index:3}
+  .sign .ropes{position:absolute;top:-20px;left:0;right:0;height:22px}
+  .plank{font-family:'Sniglet';font-weight:800;font-size:46px;color:#fff3d6;
+    background:repeating-linear-gradient(180deg,var(--wood) 0 12px,var(--wood-d) 12px 14px);
+    padding:16px 32px;border-radius:16px;border:5px solid var(--wood-d);box-shadow:0 8px 0 rgba(0,0,0,.25),inset 0 0 14px rgba(0,0,0,.2);text-shadow:0 2px 0 rgba(0,0,0,.35)}
+</style>
+</head>
+<body>
+  <div class="sun"></div>
+  <span class="leaf l1">🍃</span><span class="leaf l2">🌿</span>
+  <svg class="hills" viewBox="0 0 1600 360" preserveAspectRatio="none">
+    <path d="M0,170 Q400,80 820,150 T1600,140 V360 H0 Z" fill="#5fb35a"/>
+    <path d="M0,250 Q500,170 1000,230 T1600,220 V360 H0 Z" fill="#3f8f43"/>
+    <g fill="#2f6e34">
+      <path d="M180,270 l26,-66 l26,66 z"/><rect x="200" y="266" width="12" height="22"/>
+      <path d="M1320,286 l30,-78 l30,78 z"/><rect x="1346" y="280" width="12" height="24"/>
+    </g>
+  </svg>
+
+  <header>
+    <span class="badge">🌿 Nature</span>
+    <div class="meta">
+      <span class="pill">Trail <b>3</b>/10</span>
+      <span class="pill g">👥 24 ramblers</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="qcard">
+      <span class="emoji">🦋</span>
+      <h1>What is the largest species of big cat?</h1>
+    </div>
+    <div class="options">
+      <div class="opt a"><span class="key">A</span> Lion</div>
+      <div class="opt b"><span class="key">B</span> Tiger</div>
+      <div class="opt c"><span class="key">C</span> Jaguar</div>
+      <div class="opt d"><span class="key">D</span> Leopard</div>
+    </div>
+  </main>
+
+  <div class="sign">
+    <svg class="ropes" viewBox="0 0 140 22"><line x1="26" y1="0" x2="40" y2="22" stroke="#6b4a26" stroke-width="4"/><line x1="114" y1="0" x2="100" y2="22" stroke="#6b4a26" stroke-width="4"/></svg>
+    <div class="plank">18</div>
+  </div>
+</body>
+</html>

@@ -19,6 +19,8 @@ class PlayerScreen extends Component
 
     public string $phase = 'waiting';
 
+    public ?string $themeKey = null;
+
     public ?array $lastResult = null;
 
     public ?array $lastGuess = null;
@@ -62,6 +64,7 @@ class PlayerScreen extends Component
     {
         $this->phase = 'answering';
         $this->currentQuestion = $payload;
+        $this->themeKey = $payload['theme'] ?? 'default';
         $this->lastResult = null;
         $this->lastGuess = null;
         $this->correctAnswer = null;

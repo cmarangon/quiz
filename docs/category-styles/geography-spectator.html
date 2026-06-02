@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geography — Spectator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+  :root{--map:#efe2c0;--map-dark:#e2cf9f;--ink:#4a361c;--route:#c6452f;--ocean1:#1d6f86;--ocean2:#0d4254;--teal:#2aa6a0;--gold:#d99a2b}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Patrick Hand',system-ui,cursive;color:#fff;min-height:100vh;overflow:hidden;
+    background:radial-gradient(circle at 85% 6%, rgba(217,154,43,.32), transparent 38%),linear-gradient(160deg,var(--ocean1),var(--ocean2));
+    padding:36px 56px;display:flex;flex-direction:column}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.09;
+    background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:70px 70px;
+    mask:radial-gradient(circle at 50% 45%,#000,transparent 80%)}
+  .route{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;opacity:.7}
+  .route path{fill:none;stroke:var(--route);stroke-width:5;stroke-dasharray:2 16;stroke-linecap:round}
+  .doodle{position:fixed;color:rgba(255,255,255,.14);z-index:0}
+  .doodle.m{bottom:5%;left:3%;font-size:90px}.doodle.w{top:10%;left:46%;font-size:64px}
+
+  header{display:flex;align-items:center;justify-content:space-between;z-index:3}
+  .badge{font-family:'Cabin Sketch';font-weight:700;font-size:34px;letter-spacing:1px;background:var(--map);color:var(--ink);
+    padding:10px 30px;border-radius:18px;border:4px solid var(--ink);box-shadow:6px 6px 0 rgba(0,0,0,.4);transform:rotate(-2deg)}
+  .meta{display:flex;gap:16px}
+  .pill{font-size:24px;background:var(--map);color:var(--ink);padding:8px 22px;border-radius:14px;border:4px solid var(--ink);box-shadow:4px 4px 0 rgba(0,0,0,.35)}
+  .pill b{color:var(--route)}
+
+  main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:40px;z-index:3}
+  .qcard{position:relative;margin:0 auto;max-width:1080px;width:100%;text-align:center;color:var(--ink);padding:38px 56px;
+    background:repeating-linear-gradient(0deg,rgba(120,80,40,.04) 0 4px,transparent 4px 8px),radial-gradient(circle at 30% 16%,#f7ecce,var(--map) 60%,var(--map-dark));
+    border:3px solid var(--map-dark);
+    clip-path:polygon(0 6%,3% 0,28% 4%,52% 0,76% 5%,100% 1%,99% 32%,100% 64%,98% 100%,72% 96%,46% 100%,22% 96%,2% 100%,0 66%,2% 34%);
+    box-shadow:0 20px 50px rgba(0,0,0,.45)}
+  .qcard .rose{position:absolute;top:14px;right:26px;font-size:40px;color:var(--gold)}
+  .qcard .emoji{font-size:.8em;display:block;margin-bottom:6px}
+  .qcard h1{font-family:'Cabin Sketch';font-weight:700;font-size:clamp(36px,4.8vw,60px);line-height:1.1}
+
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1080px;margin:0 auto;width:100%}
+  .opt{position:relative;font-size:clamp(24px,2.6vw,36px);color:#fff;display:flex;align-items:center;gap:20px;
+    padding:22px 28px;border-radius:16px;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink)}
+  .opt .pin{flex:0 0 50px;width:50px;height:50px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+    background:var(--map);border:3px solid var(--ink);display:grid;place-items:center}
+  .opt .pin b{transform:rotate(45deg);color:var(--ink)}
+  .opt.a{background:var(--teal)}.opt.b{background:var(--route)}.opt.c{background:var(--gold);color:var(--ink)}.opt.d{background:#3f7d4f}
+
+  .compass{position:fixed;right:48px;top:50%;transform:translateY(-50%);width:130px;height:130px;z-index:3}
+  .compass svg{position:absolute;inset:0;animation:spin 24s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .compass .num{position:absolute;inset:0;display:grid;place-items:center;font-family:'Cabin Sketch';font-weight:700;font-size:42px;color:var(--map)}
+</style>
+</head>
+<body>
+  <svg class="route" viewBox="0 0 1600 900" preserveAspectRatio="none">
+    <path d="M40,120 C400,40 500,300 800,240 S1300,120 1500,360 S1100,640 1400,780"/>
+  </svg>
+  <span class="doodle m">⛰️</span><span class="doodle w">🌊</span>
+
+  <header>
+    <span class="badge">🧭 Geography</span>
+    <div class="meta">
+      <span class="pill">Stop <b>3</b>/10</span>
+      <span class="pill">👥 <b>24</b> explorers</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="qcard">
+      <span class="rose">✣</span>
+      <span class="emoji">🗺️</span>
+      <h1>What is the capital of Australia?</h1>
+    </div>
+    <div class="options">
+      <div class="opt a"><span class="pin"><b>A</b></span> Sydney</div>
+      <div class="opt b"><span class="pin"><b>B</b></span> Canberra</div>
+      <div class="opt c"><span class="pin"><b>C</b></span> Melbourne</div>
+      <div class="opt d"><span class="pin"><b>D</b></span> Perth</div>
+    </div>
+  </main>
+
+  <div class="compass">
+    <svg viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#e2cf9f" stroke-width="3"/>
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#d99a2b" stroke-width="3" stroke-dasharray="6 6"/>
+      <polygon points="50,8 58,50 50,42 42,50" fill="#c6452f"/>
+      <polygon points="50,92 42,50 50,58 58,50" fill="#efe2c0"/>
+    </svg>
+    <span class="num">18</span>
+  </div>
+</body>
+</html>

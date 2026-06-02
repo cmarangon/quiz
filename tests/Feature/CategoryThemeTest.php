@@ -1,0 +1,92 @@
+<?php
+
+use App\Events\QuestionStarted;
+use App\Livewire\PlayerScreen;
+use App\Livewire\SpectatorScreen;
+use App\Models\Category;
+use App\Models\GameSession;
+use App\Models\Player;
+use App\Models\Question;
+use App\Models\Quiz;
+use App\Models\User;
+use Livewire\Livewire;
+
+function themedSession(string $theme): GameSession
+{
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->for($user)->create();
+    $category = Category::factory()->for($quiz)->create(['theme' => $theme, 'name' => ucfirst($theme)]);
+    Question::factory()->for($category)->create();
+
+    return GameSession::factory()->for($quiz)->for($user, 'host')->create(['status' => 'active']);
+}
+
+function questionPayload(string $theme): array
+{
+    return [
+        'question_id' => 'q-1',
+        'question_index' => 0,
+        'body' => 'Sample themed question?',
+        'category_name' => ucfirst($theme),
+        'theme' => $theme,
+        'time_limit_seconds' => 30,
+        'options' => [
+            ['label' => 'Option A'],
+            ['label' => 'Option B'],
+            ['label' => 'Option C'],
+            ['label' => 'Option D'],
+        ],
+    ];
+}
+
+$themes = ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'];
+
+test('QuestionStarted carries the theme for every styled category', function (string $theme) {
+    $category = Category::factory()->create(['theme' => $theme]);
+    $question = Question::factory()->for($category)->create();
+    $session = GameSession::factory()->create();
+
+    $data = (new QuestionStarted($session, $question))->broadcastWith();
+
+    expect($data['theme'])->toBe($theme);
+    expect($data)->not->toHaveKey('correct_answer');
+})->with($themes);
+
+test('player answering screen renders the themed partial', function (string $theme) {
+    $session = themedSession($theme);
+    $player = Player::factory()->for($session, 'gameSession')->create();
+
+    Livewire::withQueryParams(['player_id' => $player->id])
+        ->test(PlayerScreen::class, ['code' => $session->join_code])
+        ->call('onQuestionStarted', questionPayload($theme))
+        ->assertSee('qz-theme--'.$theme, false)
+        ->assertSee('player-answer-option', false)
+        ->assertSee("submitAnswer('Option A')", false);
+})->with($themes);
+
+test('spectator question and review screens render the themed partial', function (string $theme) {
+    $session = themedSession($theme);
+
+    $component = Livewire::test(SpectatorScreen::class, ['code' => $session->join_code])
+        ->call('onQuestionStarted', questionPayload($theme))
+        ->assertSee('qz-theme--'.$theme, false)
+        ->assertSee('spectator-question-body', false);
+
+    $component->call('onQuestionEnded', [
+        'correct_answer' => 'Option A',
+        'scores' => [['nickname' => 'Sam', 'score' => 50]],
+    ])
+        ->assertSee('qz-theme--'.$theme, false)
+        ->assertSee('is-correct', false);
+})->with($themes);
+
+test('an unknown theme falls back to the default markup', function () {
+    $session = themedSession('default');
+    $player = Player::factory()->for($session, 'gameSession')->create();
+
+    Livewire::withQueryParams(['player_id' => $player->id])
+        ->test(PlayerScreen::class, ['code' => $session->join_code])
+        ->call('onQuestionStarted', questionPayload('default'))
+        ->assertDontSee('qz-theme--', false)
+        ->assertSee('player-answer-option', false);
+});

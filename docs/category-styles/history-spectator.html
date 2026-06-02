@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History — Spectator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Spectral:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--parch:#f3e3c3;--parch-dark:#e7d2a6;--sepia:#5b3a21;--ink:#3a2410;--gold:#c8962a;--burg:#7a2e2e;--green:#5a6b35}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Spectral',Georgia,serif;color:var(--ink);min-height:100vh;overflow:hidden;
+    background:
+      radial-gradient(circle at 18% 15%, rgba(120,80,40,.12), transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(120,80,40,.16), transparent 45%),
+      #2c1d10;
+    padding:36px 52px;display:flex;flex-direction:column;
+  }
+  .frame{
+    flex:1;display:flex;flex-direction:column;border:3px solid #b89b6a;border-radius:22px;
+    background:
+      repeating-linear-gradient(0deg, rgba(120,80,40,.022) 0 2px, transparent 2px 4px),
+      linear-gradient(180deg,var(--parch),var(--parch-dark));
+    box-shadow:0 24px 60px rgba(0,0,0,.55),inset 0 0 90px rgba(120,80,40,.2);
+    padding:30px 46px;position:relative;
+  }
+  header{display:flex;align-items:center;justify-content:space-between}
+  .badge{
+    font-family:'MedievalSharp',serif;background:var(--burg);color:var(--parch);
+    padding:12px 28px;border-radius:8px;letter-spacing:1.5px;font-size:26px;border:3px solid var(--gold);
+    box-shadow:0 4px 0 rgba(0,0,0,.3)
+  }
+  .meta{display:flex;gap:16px}
+  .pill{font-family:'MedievalSharp',serif;background:#fbf1d8;border:2px solid var(--sepia);padding:10px 22px;border-radius:8px;font-size:20px;box-shadow:0 3px 0 var(--sepia)}
+  .pill b{color:var(--burg)}
+
+  .laurel{text-align:center;color:var(--gold);font-size:34px;letter-spacing:14px;margin:8px 0}
+  main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:36px}
+  .question{
+    text-align:center;font-family:'MedievalSharp',serif;font-size:clamp(36px,5vw,64px);
+    line-height:1.2;color:var(--sepia);max-width:1100px;margin:0 auto
+  }
+  .question .emoji{display:block;font-size:.85em;margin-bottom:8px}
+
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1100px;margin:0 auto;width:100%}
+  .opt{
+    font-weight:600;font-size:clamp(22px,2.4vw,34px);display:flex;align-items:center;gap:20px;
+    background:linear-gradient(180deg,#fbf1d8,#ecdab0);border:3px solid var(--sepia);
+    border-radius:14px;padding:24px 28px;box-shadow:0 6px 0 var(--sepia)
+  }
+  .opt .key{flex:0 0 56px;width:56px;height:56px;border-radius:12px;display:grid;place-items:center;font-family:'MedievalSharp',serif;color:var(--parch);background:var(--burg);border:2px solid var(--gold)}
+  .opt:nth-child(2) .key{background:var(--green)}
+  .opt:nth-child(3) .key{background:var(--sepia)}
+  .opt:nth-child(4) .key{background:var(--gold);color:var(--ink)}
+
+  .timer{position:absolute;left:50%;bottom:-30px;transform:translateX(-50%);
+    width:96px;height:96px;border-radius:50%;display:grid;place-items:center;
+    font-family:'MedievalSharp',serif;font-size:38px;color:var(--parch);
+    background:radial-gradient(circle at 35% 30%,#caa14a,#8a5a1e);border:4px solid var(--ink);box-shadow:0 7px 0 rgba(0,0,0,.35)}
+</style>
+</head>
+<body>
+  <div class="frame">
+    <header>
+      <span class="badge">⚜ History</span>
+      <div class="meta">
+        <span class="pill">Chapter <b>3</b> / 10</span>
+        <span class="pill">👥 <b>24</b> scribes</span>
+      </div>
+    </header>
+
+    <div class="laurel">❦ ⚜ ❦</div>
+
+    <main>
+      <h1 class="question"><span class="emoji">🏛️</span>In which year did the Berlin Wall fall?</h1>
+      <div class="options">
+        <div class="opt"><span class="key">A</span> 1987</div>
+        <div class="opt"><span class="key">B</span> 1989</div>
+        <div class="opt"><span class="key">C</span> 1991</div>
+        <div class="opt"><span class="key">D</span> 1993</div>
+      </div>
+    </main>
+
+    <div class="timer">18</div>
+  </div>
+</body>
+</html>

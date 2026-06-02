@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geography — Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --map:#efe2c0; --map-dark:#e2cf9f; --ink:#4a361c; --route:#c6452f;
+    --ocean1:#1d6f86; --ocean2:#0d4254; --teal:#2aa6a0; --gold:#d99a2b; --land:#cdb079;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Patrick Hand',system-ui,cursive;min-height:100vh;color:#fff;
+    background:
+      radial-gradient(circle at 80% 8%, rgba(217,154,43,.35), transparent 40%),
+      linear-gradient(160deg,var(--ocean1),var(--ocean2));
+    display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;
+  }
+  /* lat/long grid */
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.10;
+    background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);
+    background-size:54px 54px;mask:radial-gradient(circle at 50% 40%,#000,transparent 78%)}
+  /* winding dashed route across the screen */
+  .route{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;opacity:.8}
+  .route path{fill:none;stroke:var(--route);stroke-width:4;stroke-dasharray:2 12;stroke-linecap:round;
+    filter:drop-shadow(0 1px 0 rgba(0,0,0,.3))}
+  .doodle{position:fixed;color:rgba(255,255,255,.16);z-index:0}
+  .doodle.m{bottom:6%;left:4%;font-size:54px}
+  .doodle.w{top:14%;right:6%;font-size:40px}
+
+  .phone{position:relative;width:100%;max-width:430px;z-index:3;display:flex;flex-direction:column;gap:18px}
+  .topbar{display:flex;align-items:center;justify-content:space-between}
+  .badge{display:inline-flex;align-items:center;gap:8px;font-family:'Cabin Sketch';font-weight:700;font-size:22px;letter-spacing:1px;
+    background:var(--map);color:var(--ink);padding:6px 18px;border-radius:14px;border:3px solid var(--ink);
+    box-shadow:4px 4px 0 rgba(0,0,0,.35);transform:rotate(-2deg)}
+  .player-name{font-size:22px;color:var(--map)}
+
+  /* compass rose timer */
+  .compass{align-self:center;position:relative;width:96px;height:96px}
+  .compass svg{position:absolute;inset:0;animation:spin 22s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .compass .num{position:absolute;inset:0;display:grid;place-items:center;font-family:'Cabin Sketch';font-weight:700;font-size:30px;color:var(--map)}
+
+  /* aged unrolled map question card */
+  .qcard{position:relative;background:
+      repeating-linear-gradient(0deg,rgba(120,80,40,.04) 0 3px,transparent 3px 6px),
+      radial-gradient(circle at 30% 20%,#f7ecce,var(--map) 60%,var(--map-dark));
+    color:var(--ink);padding:26px 22px;text-align:center;
+    border:2px solid var(--map-dark);
+    clip-path:polygon(0 4%,4% 0,30% 3%,55% 0,78% 4%,100% 1%,98% 30%,100% 60%,97% 100%,70% 97%,42% 100%,18% 97%,2% 100%,0 70%,3% 38%);
+    box-shadow:0 16px 36px rgba(0,0,0,.45)}
+  .qcard .rose{position:absolute;top:8px;right:12px;font-size:26px;color:var(--gold);opacity:.8}
+  .qcard .emoji{font-size:40px}
+  .qcard h2{font-family:'Cabin Sketch';font-weight:700;font-size:27px;line-height:1.2;margin-top:4px}
+
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  /* signpost-style answers with a pin */
+  .opt{position:relative;font-family:'Patrick Hand';font-size:20px;cursor:pointer;color:#fff;text-align:left;
+    display:flex;align-items:center;gap:12px;padding:16px 14px 16px 16px;border-radius:12px;border:3px solid var(--ink);
+    box-shadow:4px 4px 0 var(--ink);transition:transform .07s,box-shadow .07s}
+  .opt:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+  .opt .pin{flex:0 0 30px;width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+    background:var(--map);border:2px solid var(--ink);display:grid;place-items:center}
+  .opt .pin b{transform:rotate(45deg);color:var(--ink);font-size:16px}
+  .opt.a{background:var(--teal)}.opt.b{background:var(--route)}.opt.c{background:var(--gold);color:var(--ink)}
+  .opt.c .pin b{color:var(--ink)} .opt.d{background:#3f7d4f}
+  .hint{text-align:center;font-size:18px;color:#cdeef0}
+</style>
+</head>
+<body>
+  <svg class="route" viewBox="0 0 430 900" preserveAspectRatio="none">
+    <path d="M20,120 C140,180 40,300 200,330 S420,470 250,560 S60,700 220,820"/>
+  </svg>
+  <span class="doodle m">⛰️</span><span class="doodle w">🌊</span>
+
+  <div class="phone">
+    <div class="topbar">
+      <span class="badge">🧭 Geography</span>
+      <span class="player-name">Marco P.</span>
+    </div>
+
+    <div class="compass">
+      <svg viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#e2cf9f" stroke-width="3"/>
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#d99a2b" stroke-width="3" stroke-dasharray="6 6"/>
+        <polygon points="50,8 58,50 50,42 42,50" fill="#c6452f"/>
+        <polygon points="50,92 42,50 50,58 58,50" fill="#efe2c0"/>
+      </svg>
+      <span class="num">18</span>
+    </div>
+
+    <div class="qcard">
+      <span class="rose">✣</span>
+      <span class="emoji">🗺️</span>
+      <h2>What is the capital of Australia?</h2>
+    </div>
+
+    <div class="options">
+      <button class="opt a"><span class="pin"><b>A</b></span> Sydney</button>
+      <button class="opt b"><span class="pin"><b>B</b></span> Canberra</button>
+      <button class="opt c"><span class="pin"><b>C</b></span> Melbourne</button>
+      <button class="opt d"><span class="pin"><b>D</b></span> Perth</button>
+    </div>
+
+    <p class="hint">X marks the right answer — chart your course! ⛵</p>
+  </div>
+</body>
+</html>

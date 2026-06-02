@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pop Culture — Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#ff3d9a; --cyan:#22e0e0; --yellow:#ffe14d; --purple:#9b5cff; --ink:#1a1030;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Nunito',system-ui,sans-serif;min-height:100vh;color:#fff;
+    background:
+      radial-gradient(circle at 18% 18%, rgba(255,61,154,.45), transparent 40%),
+      radial-gradient(circle at 82% 78%, rgba(34,224,224,.40), transparent 42%),
+      linear-gradient(160deg,#3a1066,#160a33);
+    display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;
+  }
+  /* halftone Ben-Day dots overlay */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;
+    background-image:radial-gradient(#fff 1.6px, transparent 1.7px);
+    background-size:14px 14px;
+  }
+  /* comic burst */
+  .burst{position:fixed;font-family:'Bangers';color:var(--yellow);opacity:.85;text-shadow:3px 3px 0 var(--ink);transform:rotate(-12deg)}
+  .burst.b1{top:8%;left:6%;font-size:46px;color:var(--cyan)}
+  .burst.b2{bottom:10%;right:7%;font-size:42px;color:var(--pink);transform:rotate(10deg)}
+
+  .phone{position:relative;width:100%;max-width:430px;z-index:2;display:flex;flex-direction:column;gap:20px}
+  .topbar{display:flex;align-items:center;justify-content:space-between}
+  .badge{
+    font-family:'Bangers';letter-spacing:1.5px;font-size:22px;
+    background:var(--pink);color:#fff;padding:8px 18px;border-radius:14px;
+    border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);transform:rotate(-3deg);
+    display:inline-flex;align-items:center;gap:8px
+  }
+  .player-name{font-family:'Bangers';font-size:20px;letter-spacing:1px;color:var(--yellow);text-shadow:2px 2px 0 var(--ink)}
+
+  .timer{
+    align-self:center;font-family:'Bangers';font-size:34px;
+    width:76px;height:76px;display:grid;place-items:center;border-radius:50%;
+    background:var(--yellow);color:var(--ink);border:4px solid var(--ink);
+    box-shadow:5px 5px 0 var(--ink);transform:rotate(4deg)
+  }
+
+  .qcard{
+    background:#fff;color:var(--ink);border:4px solid var(--ink);border-radius:20px;
+    padding:24px 20px;text-align:center;box-shadow:7px 7px 0 var(--ink);position:relative;
+  }
+  .qcard::after{content:"";position:absolute;left:38px;bottom:-18px;border:14px solid transparent;border-top-color:#fff;filter:drop-shadow(0 4px 0 var(--ink))}
+  .qcard .emoji{font-size:40px}
+  .qcard h2{font-family:'Bangers';font-size:26px;letter-spacing:1px;line-height:1.2;margin-top:4px}
+
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+  .opt{
+    font-family:'Bangers';letter-spacing:1px;font-size:20px;cursor:pointer;color:#fff;
+    border:4px solid var(--ink);border-radius:16px;padding:18px 14px;text-align:center;
+    box-shadow:5px 5px 0 var(--ink);transition:transform .07s,box-shadow .07s;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+  }
+  .opt:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}
+  .opt .key{font-size:15px;background:rgba(0,0,0,.2);padding:1px 10px;border-radius:8px}
+  .opt.a{background:var(--pink)} .opt.b{background:var(--cyan);color:var(--ink)}
+  .opt.c{background:var(--purple)} .opt.d{background:var(--yellow);color:var(--ink)}
+
+  .hint{text-align:center;font-family:'Bangers';letter-spacing:1px;font-size:16px;color:var(--cyan);text-shadow:2px 2px 0 var(--ink)}
+</style>
+</head>
+<body>
+  <span class="burst b1">POW!</span>
+  <span class="burst b2">WOW!</span>
+
+  <div class="phone">
+    <div class="topbar">
+      <span class="badge">★ Pop Culture</span>
+      <span class="player-name">DJ Maxx</span>
+    </div>
+
+    <div class="timer">18</div>
+
+    <div class="qcard">
+      <span class="emoji">🎤</span>
+      <h2>Which artist released the album "1989"?</h2>
+    </div>
+
+    <div class="options">
+      <button class="opt a"><span class="key">A</span> Taylor Swift</button>
+      <button class="opt b"><span class="key">B</span> Adele</button>
+      <button class="opt c"><span class="key">C</span> Beyoncé</button>
+      <button class="opt d"><span class="key">D</span> Rihanna</button>
+    </div>
+
+    <p class="hint">Smash that answer! ⚡</p>
+  </div>
+</body>
+</html>
