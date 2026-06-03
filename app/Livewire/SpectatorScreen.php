@@ -30,7 +30,7 @@ class SpectatorScreen extends Component
 
     public mixed $correctAnswer = null;
 
-    /** @var list<string> */
+    /** @var list<array{nickname: string, emoji: ?string}> */
     public array $playerNames = [];
 
     public string $quizTitle = '';
@@ -54,7 +54,7 @@ class SpectatorScreen extends Component
             $this->leaderboard = $this->session->players()
                 ->orderByDesc('score')
                 ->get()
-                ->map(fn ($p) => ['nickname' => $p->nickname, 'score' => $p->score])
+                ->map(fn ($p) => ['nickname' => $p->nickname, 'emoji' => $p->emoji, 'score' => $p->score])
                 ->toArray();
         }
     }
@@ -87,7 +87,8 @@ class SpectatorScreen extends Component
     private function loadPlayers(): void
     {
         $this->playerNames = $this->session->players()
-            ->pluck('nickname')
+            ->get(['nickname', 'emoji'])
+            ->map(fn ($p) => ['nickname' => $p->nickname, 'emoji' => $p->emoji])
             ->toArray();
     }
 

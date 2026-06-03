@@ -57,6 +57,7 @@ class GameService
         if ($question) {
             $scores = $session->players()->orderByDesc('score')->get()->map(fn ($p) => [
                 'nickname' => $p->nickname,
+                'emoji' => $p->emoji,
                 'score' => $p->score,
             ])->toArray();
 
@@ -78,6 +79,7 @@ class GameService
 
             $leaderboard = $session->players()->orderByDesc('score')->get()->map(fn ($p) => [
                 'nickname' => $p->nickname,
+                'emoji' => $p->emoji,
                 'score' => $p->score,
             ])->toArray();
 

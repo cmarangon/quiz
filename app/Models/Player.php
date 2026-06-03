@@ -17,6 +17,7 @@ class Player extends Model
         'game_session_id',
         'user_id',
         'nickname',
+        'emoji',
         'score',
         'streak',
         'is_connected',

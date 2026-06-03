@@ -24,6 +24,8 @@ class QuizBuilder extends Component
 
     public bool $enableStreaks = true;
 
+    public string $presentationStyle = 'party-pop';
+
     public string $newCategoryName = '';
 
     public string $newCategoryTheme = '';
@@ -64,6 +66,7 @@ class QuizBuilder extends Component
             $this->description = $quiz->description ?? '';
             $this->enableTimeBonus = $quiz->settings['enable_time_bonus'] ?? true;
             $this->enableStreaks = $quiz->settings['enable_streaks'] ?? true;
+            $this->presentationStyle = $quiz->settings['presentation_style'] ?? 'party-pop';
         }
     }
 
@@ -71,6 +74,7 @@ class QuizBuilder extends Component
     {
         $this->validate([
             'title' => 'required|min:3',
+            'presentationStyle' => ['required', Rule::in(['party-pop', 'game-show', 'bright-bouncy'])],
         ]);
 
         $data = [
@@ -79,6 +83,7 @@ class QuizBuilder extends Component
             'settings' => [
                 'enable_time_bonus' => $this->enableTimeBonus,
                 'enable_streaks' => $this->enableStreaks,
+                'presentation_style' => $this->presentationStyle,
             ],
         ];
 

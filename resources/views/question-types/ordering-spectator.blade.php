@@ -1,6 +1,12 @@
+@php
+    $qzTheme = ($themeKey ?? null) && in_array($themeKey, array_keys(config('themes', [])), true) && $themeKey !== 'default'
+        ? 'qz-theme qz-theme--'.$themeKey.' '
+        : '';
+@endphp
+
 <div
     wire:key="ordering-spectator-{{ $currentQuestion['question_id'] ?? 'q' }}-{{ $phase }}"
-    class="w-full space-y-6"
+    class="{{ $qzTheme }}w-full space-y-6"
 >
     <div class="text-center">
         <h2 data-test="spectator-question-body" class="text-3xl font-bold text-zinc-900 dark:text-white">

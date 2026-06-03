@@ -38,14 +38,20 @@ export async function joinAsPlayer(
     context: BrowserContext,
     code: string,
     nickname: string,
+    emoji: string = '🚀',
 ): Promise<Page> {
     const page = await context.newPage();
     await page.goto(`/join/${code}`);
+    await page.locator(`[data-test="join-emoji-option"][data-emoji="${emoji}"]`).click();
     await page.locator('[data-test="join-nickname-input"]').fill(nickname);
-    await page.getByRole('button', { name: /join game/i }).click();
+    // Picking an emoji prepends it to the live name preview before submitting.
+    await expect(page.locator('[data-test="join-name-preview"]')).toContainText(emoji);
+    await page.locator('[data-test="join-submit"]').click();
     // URL includes ?player_id=N — use ** suffix to match query params
     await page.waitForURL(`**/game/${code}/play**`);
+    // The header renders emoji + nickname via <x-player-name>, so assert both.
     await expect(page.locator('[data-test="player-nickname"]')).toContainText(nickname);
+    await expect(page.locator('[data-test="player-nickname"]')).toContainText(emoji);
     return page;
 }
 

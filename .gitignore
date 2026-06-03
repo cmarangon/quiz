@@ -26,3 +26,6 @@ yarn-error.log
 /tests/e2e/test-results
 /tests/e2e/playwright-report
 /.env.e2e.local
+
+# Visual brainstorming companion
+.superpowers/

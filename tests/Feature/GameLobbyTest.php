@@ -32,6 +32,7 @@ test('player can join a game with a nickname', function () {
 
     Livewire::test(JoinGame::class, ['code' => $session->join_code])
         ->set('nickname', 'TestPlayer')
+        ->set('emoji', '🚀')
         ->call('join')
         ->assertRedirectContains('/game/'.$session->join_code.'/play');
 
@@ -53,6 +54,7 @@ test('duplicate nickname gets number appended', function () {
 
     Livewire::test(JoinGame::class, ['code' => $session->join_code])
         ->set('nickname', 'Alex')
+        ->set('emoji', '🚀')
         ->call('join');
 
     $players = Player::where('game_session_id', $session->id)->pluck('nickname')->toArray();

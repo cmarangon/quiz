@@ -1,7 +1,7 @@
 <div class="flex flex-col items-center gap-6 text-center" @if(in_array($phase, ['waiting', 'answered', 'review'], true)) wire:poll.2s="pollState" @endif>
     @if($player)
-        <h1 data-test="player-nickname" class="text-2xl font-bold text-zinc-900 dark:text-white">
-            {{ $player->nickname }}
+        <h1 data-test="player-nickname" data-player-nickname="{{ $player->nickname }}" class="text-2xl font-bold text-zinc-900 dark:text-white">
+            <x-player-name :emoji="$player->emoji" :nickname="$player->nickname" />
         </h1>
         <div data-test="player-phase" data-phase="{{ $phase }}" class="hidden"></div>
 
@@ -58,49 +58,65 @@
                     @include('question-types.geo-guesser-player')
                 </div>
             @else
-            <div class="space-y-4">
-                @if($lastResult)
-                    @if($lastResult['is_correct'])
-                        <div class="rounded-xl bg-green-100 dark:bg-green-900/30 p-6">
-                            <p class="text-2xl font-bold text-green-700 dark:text-green-300">{{ __('Correct!') }}</p>
-                            <p class="text-green-600 dark:text-green-400">+{{ $lastResult['points_earned'] }} {{ __('points') }}</p>
-                        </div>
-                    @else
-                        <div class="rounded-xl bg-red-100 dark:bg-red-900/30 p-6">
-                            <p class="text-2xl font-bold text-red-700 dark:text-red-300">{{ __('Wrong!') }}</p>
-                            <p class="text-red-600 dark:text-red-400">+0 {{ __('points') }}</p>
-                        </div>
-                    @endif
-                @else
-                    <p class="text-zinc-500 dark:text-zinc-400">{{ __('No answer submitted') }}</p>
-                @endif
-            </div>
+                <div class="w-full max-w-md">
+                    @include('themes._player-result')
+                </div>
             @endif
 
         {{-- FINISHED PHASE --}}
         @elseif($phase === 'finished')
-            <div class="w-full max-w-md space-y-6">
-                <h2 class="text-3xl font-bold text-zinc-900 dark:text-white">{{ __('Game Over!') }}</h2>
-
-                <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-6">
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Your Score') }}</p>
-                    <p data-test="player-final-score" class="text-4xl font-bold text-zinc-900 dark:text-white">{{ $player->fresh()->score }}</p>
+            @php($style = $session->presentationStyle())
+            @php($top = array_slice($leaderboard, 0, 3))
+            <div class="qz-stage qz-stage--{{ $style }} w-full max-w-md">
+                <div class="qz-confetti" aria-hidden="true">
+                    @for($i = 0; $i < 24; $i++)
+                        <i style="left: {{ ($i * 4.1) + 2 }}%; background: hsl({{ ($i * 37) % 360 }}, 85%, 60%); animation-duration: {{ 2.4 + (($i % 5) * 0.4) }}s; animation-delay: {{ ($i % 7) * 0.18 }}s;"></i>
+                    @endfor
                 </div>
 
-                @if(! empty($leaderboard))
-                    <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-6 text-left">
-                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-3">{{ __('Leaderboard') }}</h3>
-                        <ol class="space-y-2">
-                            @foreach($leaderboard as $index => $entry)
-                                <li class="flex justify-between
-                                    {{ ($entry['nickname'] ?? '') === $player->nickname ? 'font-bold text-zinc-900 dark:text-white' : 'text-zinc-600 dark:text-zinc-400' }}">
-                                    <span>{{ $index + 1 }}. {{ $entry['nickname'] }}</span>
-                                    <span>{{ $entry['score'] }}</span>
-                                </li>
-                            @endforeach
-                        </ol>
+                <div class="qz-card">
+                    <div class="qz-final">
+                        <h2 class="qz-final__title">{{ __('Game Over!') }}</h2>
+
+                        @if(count($top) > 0)
+                            <div class="qz-podium">
+                                @php($order = [1 => $top[1] ?? null, 0 => $top[0] ?? null, 2 => $top[2] ?? null])
+                                @foreach($order as $idx => $entry)
+                                    @if($entry)
+                                        <div class="qz-podium__col qz-podium__col--{{ $idx + 1 }}">
+                                            <div class="qz-podium__emoji">{{ $entry['emoji'] ?? '🎮' }}</div>
+                                            <div class="qz-podium__name">{{ $entry['nickname'] }}</div>
+                                            <div class="qz-podium__score">{{ $entry['score'] }}</div>
+                                            <div class="qz-podium__bar">{{ $idx + 1 }}</div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @php($finalScore = $player->fresh()->score)
+                        <div class="qz-scorecard">
+                            <div class="qz-scorecard__label">{{ __('Your Score') }}</div>
+                            {{-- Alpine count-up; server-rendered fallback text keeps the real
+                                 number present for Pest/non-JS, while browsers animate 0 → score. --}}
+                            <div class="qz-scorecard__value" data-test="player-final-score"
+                                 x-data="{ n: 0, target: {{ $finalScore }} }"
+                                 x-init="let step = Math.max(1, Math.round(target / 40)); let t = setInterval(() => { n = Math.min(target, n + step); if (n >= target) clearInterval(t); }, 25)"
+                                 x-text="n">{{ $finalScore }}</div>
+                        </div>
+
+                        @if(! empty($leaderboard))
+                            <div class="qz-board">
+                                @foreach($leaderboard as $index => $entry)
+                                    <div @class(['qz-board__row', 'is-me' => ($entry['nickname'] ?? '') === $player->nickname])>
+                                        <span>{{ $index + 1 }}. <x-player-name :emoji="$entry['emoji'] ?? null" :nickname="$entry['nickname']" /></span>
+                                        <span>{{ $entry['score'] }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
-                @endif
+                </div>
             </div>
         @endif
     @else

@@ -10,12 +10,15 @@
         'guess' => null,
         'correct' => $geoCorrect,
     ];
+    $qzTheme = ($themeKey ?? null) && in_array($themeKey, array_keys(config('themes', [])), true) && $themeKey !== 'default'
+        ? 'qz-theme qz-theme--'.$themeKey.' '
+        : '';
 @endphp
 
 <div
     wire:key="geo-spectator-{{ $currentQuestion['question_id'] ?? 'q' }}-{{ $phase }}"
     x-data="geoMap(@js($geoConfig))"
-    class="w-full space-y-4"
+    class="{{ $qzTheme }}w-full space-y-4"
 >
     <div class="text-center">
         <h2 data-test="spectator-question-body" class="text-3xl font-bold text-zinc-900 dark:text-white">

@@ -5,6 +5,8 @@ namespace App\Livewire;
 use App\Events\PlayerJoined;
 use App\Models\GameSession;
 use App\Models\Player;
+use App\Support\PlayerEmojis;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -15,16 +17,21 @@ class JoinGame extends Component
 
     public string $nickname = '';
 
+    public string $emoji = '';
+
     public ?Player $player = null;
+
+    public ?GameSession $session = null;
 
     public function mount(string $code): void
     {
         $this->code = strtoupper($code);
+        $this->session = GameSession::where('join_code', $this->code)->first();
     }
 
     public function join()
     {
-        $session = GameSession::where('join_code', $this->code)->firstOrFail();
+        $session = $this->session ?? GameSession::where('join_code', $this->code)->firstOrFail();
 
         if ($session->status !== 'waiting') {
             $this->addError('nickname', 'This game is no longer accepting players.');
@@ -34,6 +41,7 @@ class JoinGame extends Component
 
         $this->validate([
             'nickname' => 'required|string|min:1|max:50',
+            'emoji' => ['required', Rule::in(PlayerEmojis::all())],
         ]);
 
         $nickname = $this->resolveUniqueNickname($session, trim($this->nickname));
@@ -41,6 +49,7 @@ class JoinGame extends Component
         $player = Player::create([
             'game_session_id' => $session->id,
             'nickname' => $nickname,
+            'emoji' => $this->emoji,
             'score' => 0,
             'streak' => 0,
             'is_connected' => true,
