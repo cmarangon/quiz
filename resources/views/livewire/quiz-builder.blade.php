@@ -49,19 +49,29 @@
                     </div>
 
                     @if($category->questions->isNotEmpty())
-                        <ul class="ml-4 list-disc space-y-1 text-sm text-neutral-600 dark:text-neutral-400">
+                        <ul class="ml-4 space-y-1 text-sm text-neutral-600 dark:text-neutral-400">
                             @foreach($category->questions as $question)
-                                <li>{{ $question->body }} ({{ $question->points }} {{ __('pts') }}, {{ $question->time_limit_seconds }}s)</li>
+                                <li class="flex items-center justify-between gap-2">
+                                    <span class="flex items-start gap-2">
+                                        <span class="mt-1 text-neutral-400">&bull;</span>
+                                        <span>{{ $question->body }} ({{ $question->points }} {{ __('pts') }}, {{ $question->time_limit_seconds }}s)</span>
+                                    </span>
+                                    <flux:button wire:click="editQuestion({{ $question->id }})" size="xs" variant="ghost">
+                                        {{ __('Edit') }}
+                                    </flux:button>
+                                </li>
                             @endforeach
                         </ul>
                     @else
                         <p class="text-sm text-neutral-500 dark:text-neutral-400">{{ __('No questions yet.') }}</p>
                     @endif
 
-                    {{-- Add Question Form --}}
-                    @if($addingQuestionToCategoryId === $category->id)
+                    @php($isEditingInCategory = $editingQuestionId && $category->questions->contains('id', $editingQuestionId))
+
+                    {{-- Add / Edit Question Form --}}
+                    @if($addingQuestionToCategoryId === $category->id || $isEditingInCategory)
                         <div class="mt-3 rounded-md border border-dashed border-neutral-300 p-4 dark:border-neutral-600">
-                            <h4 class="mb-3 text-sm font-medium dark:text-neutral-300">{{ __('Add Question') }}</h4>
+                            <h4 class="mb-3 text-sm font-medium dark:text-neutral-300">{{ $editingQuestionId ? __('Edit Question') : __('Add Question') }}</h4>
                             <div class="space-y-3">
                                 <div>
                                     <flux:textarea wire:model="questionBody" :label="__('Question')" :placeholder="__('Enter your question')" rows="2" />
@@ -147,7 +157,7 @@
 
                                 <div class="flex gap-2">
                                     <flux:button wire:click="saveQuestion" size="sm" variant="primary">
-                                        {{ __('Save Question') }}
+                                        {{ $editingQuestionId ? __('Update Question') : __('Save Question') }}
                                     </flux:button>
                                     <flux:button wire:click="cancelAddQuestion" size="sm" variant="ghost">
                                         {{ __('Cancel') }}
