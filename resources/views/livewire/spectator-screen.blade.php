@@ -61,22 +61,31 @@
 
     {{-- QUESTION PHASE --}}
     @elseif($phase === 'question')
+        @if($totalPlayers > 0 && $answeredCount >= $totalPlayers)
+            <div wire:key="spectator-countdown-{{ $currentQuestion['question_id'] ?? 'na' }}"
+                 x-data="{
+                    remaining: {{ $countdownSeconds }},
+                    timer: null,
+                    init() {
+                        this.timer = setInterval(() => {
+                            this.remaining--;
+                            if (this.remaining <= 0) clearInterval(this.timer);
+                        }, 1000);
+                    },
+                    destroy() { clearInterval(this.timer); }
+                 }"
+                 data-test="spectator-countdown"
+                 class="fixed inset-x-0 top-8 z-50 flex flex-col items-center gap-2">
+                <p class="text-lg font-semibold text-zinc-600 dark:text-zinc-300">{{ __('Everyone answered!') }}</p>
+                <div class="flex h-20 w-20 items-center justify-center rounded-full bg-green-500 text-4xl font-bold text-white shadow-lg">
+                    <span x-text="remaining" data-test="spectator-countdown-value">{{ $countdownSeconds }}</span>
+                </div>
+            </div>
+        @endif
         @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
-            <div class="w-full max-w-4xl space-y-8">
-                @include('question-types.geo-guesser-spectator')
-                <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-                    <span>{{ __(':answered / :total answered', ['answered' => $answeredCount, 'total' => $totalPlayers]) }}</span>
-                    <span>{{ $currentQuestion['time_limit_seconds'] ?? 30 }}s</span>
-                </div>
-            </div>
+            @include('question-types.geo-guesser-spectator')
         @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
-            <div class="w-full max-w-4xl space-y-8">
-                @include('question-types.ordering-spectator')
-                <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-                    <span>{{ __(':answered / :total answered', ['answered' => $answeredCount, 'total' => $totalPlayers]) }}</span>
-                    <span>{{ $currentQuestion['time_limit_seconds'] ?? 30 }}s</span>
-                </div>
-            </div>
+            @include('question-types.ordering-spectator')
         @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
             @include('themes.'.$themeKey.'.spectator-question')
         @elseif($currentQuestion)
@@ -114,15 +123,15 @@
 
     {{-- REVIEW PHASE --}}
     @elseif($phase === 'review')
-        @if($currentQuestion && ! empty($currentQuestion['options']) && ($currentQuestion['type'] ?? null) !== 'geo_guesser' && ($currentQuestion['type'] ?? null) !== 'ordering' && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
+        @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
+            @include('question-types.geo-guesser-spectator')
+        @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
+            @include('question-types.ordering-spectator')
+        @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
             @include('themes.'.$themeKey.'.spectator-review')
         @else
         <div class="w-full max-w-4xl space-y-8">
-            @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
-                @include('question-types.geo-guesser-spectator')
-            @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
-                @include('question-types.ordering-spectator')
-            @elseif($currentQuestion && ! empty($currentQuestion['options']))
+            @if($currentQuestion && ! empty($currentQuestion['options']))
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-zinc-900 dark:text-white">
                         {{ $currentQuestion['body'] ?? '' }}

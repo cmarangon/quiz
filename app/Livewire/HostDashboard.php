@@ -18,6 +18,10 @@ class HostDashboard extends Component
 
     public int $totalPlayers = 0;
 
+    public ?int $currentQuestionId = null;
+
+    public int $countdownSeconds = 5;
+
     public string $phase = 'lobby';
 
     public string $spectatorUrl = '';
@@ -41,6 +45,10 @@ class HostDashboard extends Component
             'finished' => 'finished',
             default => 'lobby',
         };
+
+        if (in_array($this->session->status, ['playing', 'reviewing'], true)) {
+            $this->currentQuestionId = app(GameService::class)->getCurrentQuestion($this->session)?->id;
+        }
     }
 
     /** @return array<string, string> */
@@ -63,6 +71,10 @@ class HostDashboard extends Component
 
     public function onPlayerAnswered(array $payload): void
     {
+        if (isset($payload['question_id']) && $payload['question_id'] !== $this->currentQuestionId) {
+            return;
+        }
+
         $this->answeredCount = $payload['answered_count'];
         $this->totalPlayers = $payload['total_players'];
     }
@@ -71,6 +83,7 @@ class HostDashboard extends Component
     {
         $this->phase = 'playing';
         $this->answeredCount = 0;
+        $this->currentQuestionId = $payload['question_id'] ?? null;
     }
 
     public function onQuestionEnded(array $payload): void
@@ -99,8 +112,31 @@ class HostDashboard extends Component
 
     public function finishQuestion(): void
     {
+        if ($this->phase !== 'playing') {
+            return;
+        }
+
         app(GameService::class)->finishQuestion($this->session);
         $this->session->refresh();
+        $this->phase = 'reviewing';
+    }
+
+    /**
+     * Automatically end the question once every player has answered. Driven by a
+     * client-side countdown timer. Guarded so a stale timer from a previous
+     * question (or a double-fire) can never end the wrong question early.
+     */
+    public function autoFinishQuestion(int $questionId): void
+    {
+        if ($this->phase !== 'playing' || $questionId !== $this->currentQuestionId) {
+            return;
+        }
+
+        if ($this->totalPlayers <= 0 || $this->answeredCount < $this->totalPlayers) {
+            return;
+        }
+
+        $this->finishQuestion();
     }
 
     public function nextQuestion(): void

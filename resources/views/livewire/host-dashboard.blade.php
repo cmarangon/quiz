@@ -61,6 +61,29 @@
                     {{ $answeredCount }} / {{ $totalPlayers }}
                 </span>
             </div>
+
+            @if($totalPlayers > 0 && $answeredCount >= $totalPlayers && $currentQuestionId)
+                <div wire:key="auto-advance-{{ $currentQuestionId }}"
+                     x-data="{
+                        remaining: {{ $countdownSeconds }},
+                        timer: null,
+                        init() {
+                            this.timer = setInterval(() => {
+                                this.remaining--;
+                                if (this.remaining <= 0) {
+                                    clearInterval(this.timer);
+                                    $wire.autoFinishQuestion({{ $currentQuestionId }});
+                                }
+                            }, 1000);
+                        },
+                        destroy() { clearInterval(this.timer); }
+                     }"
+                     data-test="host-auto-advance"
+                     class="mt-3 text-sm font-medium text-green-700 dark:text-green-400">
+                    {{ __('Everyone answered! Ending question in') }}
+                    <span x-text="remaining"></span>{{ __('s...') }}
+                </div>
+            @endif
         </div>
     @endif
 
