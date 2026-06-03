@@ -3,12 +3,15 @@
         ->map(fn ($option) => $option['label'] ?? $option)
         ->values()
         ->all();
+    $qzTheme = ($themeKey ?? null) && in_array($themeKey, array_keys(config('themes', [])), true) && $themeKey !== 'default'
+        ? 'qz-theme qz-theme--'.$themeKey.' '
+        : '';
 @endphp
 
 <div
     wire:key="ordering-player-{{ $currentQuestion['question_id'] ?? 'q' }}"
     x-data="orderingList(@js(['items' => $orderingItems]))"
-    class="w-full space-y-4"
+    class="{{ $qzTheme }}w-full space-y-4"
 >
     @if($currentQuestion['body'] ?? null)
         <h2 class="text-xl font-bold text-zinc-900 dark:text-white">{{ $currentQuestion['body'] }}</h2>

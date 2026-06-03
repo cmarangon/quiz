@@ -39,6 +39,22 @@ function questionPayload(string $theme): array
     ];
 }
 
+function typedPayload(string $theme, string $type): array
+{
+    return [
+        'question_id' => 'q-'.$type,
+        'question_index' => 0,
+        'type' => $type,
+        'body' => 'Sample themed question?',
+        'category_name' => ucfirst($theme),
+        'theme' => $theme,
+        'time_limit_seconds' => 30,
+        'options' => $type === 'geo_guesser'
+            ? ['center' => ['lat' => 0, 'lng' => 0], 'zoom' => 2]
+            : [['label' => 'Alpha'], ['label' => 'Beta'], ['label' => 'Gamma']],
+    ];
+}
+
 $themes = ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'];
 
 test('QuestionStarted carries the theme for every styled category', function (string $theme) {
@@ -96,6 +112,28 @@ test('spectator keeps showing the themed question when category.changed is proce
         ->assertSet('phase', 'question')
         ->assertSee('qz-theme--'.$theme, false)
         ->assertSee('spectator-question-body', false);
+})->with($themes);
+
+test('spectator applies the theme to ordering and geo_guesser questions', function (string $theme) {
+    $session = themedSession($theme);
+
+    foreach (['ordering', 'geo_guesser'] as $type) {
+        Livewire::test(SpectatorScreen::class, ['code' => $session->join_code])
+            ->call('onQuestionStarted', typedPayload($theme, $type))
+            ->assertSee('qz-theme--'.$theme, false);
+    }
+})->with($themes);
+
+test('player applies the theme to ordering and geo_guesser questions', function (string $theme) {
+    $session = themedSession($theme);
+    $player = Player::factory()->for($session, 'gameSession')->create();
+
+    foreach (['ordering', 'geo_guesser'] as $type) {
+        Livewire::withQueryParams(['player_id' => $player->id])
+            ->test(PlayerScreen::class, ['code' => $session->join_code])
+            ->call('onQuestionStarted', typedPayload($theme, $type))
+            ->assertSee('qz-theme--'.$theme, false);
+    }
 })->with($themes);
 
 test('an unknown theme falls back to the default markup', function () {

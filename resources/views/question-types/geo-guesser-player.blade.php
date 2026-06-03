@@ -11,12 +11,15 @@
         'guess' => $lastGuess,
         'correct' => $geoCorrect,
     ];
+    $qzTheme = ($themeKey ?? null) && in_array($themeKey, array_keys(config('themes', [])), true) && $themeKey !== 'default'
+        ? 'qz-theme qz-theme--'.$themeKey.' '
+        : '';
 @endphp
 
 <div
     wire:key="geo-player-{{ $currentQuestion['question_id'] ?? 'q' }}-{{ $phase }}"
     x-data="geoMap(@js($geoConfig))"
-    class="w-full space-y-3"
+    class="{{ $qzTheme }}w-full space-y-3"
 >
     @if($currentQuestion['body'] ?? null)
         <h2 class="text-xl font-bold text-zinc-900 dark:text-white">{{ $currentQuestion['body'] }}</h2>
