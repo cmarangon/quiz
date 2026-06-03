@@ -3,8 +3,10 @@
 namespace App\Livewire;
 
 use App\Actions\SubmitAnswer;
+use App\Events\QuestionStarted;
 use App\Models\GameSession;
 use App\Models\Player;
+use App\Services\GameService;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -68,6 +70,42 @@ class PlayerScreen extends Component
         $this->lastResult = null;
         $this->lastGuess = null;
         $this->correctAnswer = null;
+    }
+
+    /**
+     * Fallback reconciliation for clients that missed a one-shot broadcast
+     * (e.g. their WebSocket subscription wasn't established yet when the host
+     * started the game or advanced the question). Driven by wire:poll while the
+     * player is in a passive phase.
+     */
+    public function pollState(): void
+    {
+        $this->session->refresh();
+
+        if ($this->session->status === 'finished') {
+            if ($this->phase !== 'finished') {
+                $this->phase = 'finished';
+                $this->leaderboard = $this->session->players()
+                    ->orderByDesc('score')
+                    ->get()
+                    ->map(fn ($p) => ['nickname' => $p->nickname, 'score' => $p->score])
+                    ->toArray();
+            }
+
+            return;
+        }
+
+        if ($this->session->status !== 'playing') {
+            return;
+        }
+
+        $question = app(GameService::class)->getCurrentQuestion($this->session);
+
+        if (! $question || ($this->currentQuestion['question_id'] ?? null) === $question->id) {
+            return;
+        }
+
+        $this->onQuestionStarted((new QuestionStarted($this->session, $question))->broadcastWith());
     }
 
     public function onQuestionEnded(array $payload): void
