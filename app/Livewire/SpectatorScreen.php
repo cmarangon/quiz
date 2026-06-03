@@ -37,8 +37,6 @@ class SpectatorScreen extends Component
 
     public string $joinUrl = '';
 
-    public string $spectatorUrl = '';
-
     public string $qrCodeSvg = '';
 
     public function mount(string $code): void
@@ -47,7 +45,6 @@ class SpectatorScreen extends Component
         $this->session->loadMissing('quiz');
         $this->quizTitle = $this->session->quiz->title ?? '';
         $this->joinUrl = route('game.join', $this->session->join_code);
-        $this->spectatorUrl = route('game.spectator', $this->session->join_code);
         $this->qrCodeSvg = QrCodeService::svg($this->joinUrl, 250);
         $this->loadPlayers();
         $this->totalPlayers = $this->session->players()->count();

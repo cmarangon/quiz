@@ -100,13 +100,13 @@ test('host dashboard shows the spectator link as a button and qr code', function
         ->assertSeeHtml($spectatorUrl);
 });
 
-test('spectator screen shows its own link in the lobby', function () {
+test('spectator screen shows the join link in the lobby', function () {
     $session = GameSession::factory()->create(['status' => 'waiting']);
 
-    $spectatorUrl = route('game.spectator', $session->join_code);
+    $joinUrl = route('game.join', $session->join_code);
 
     Livewire::test(\App\Livewire\SpectatorScreen::class, ['code' => $session->join_code])
-        ->assertSet('spectatorUrl', $spectatorUrl)
+        ->assertSet('joinUrl', $joinUrl)
         ->assertSeeHtml('data-test="spectator-link"')
-        ->assertSeeHtml($spectatorUrl);
+        ->assertSeeHtml($joinUrl);
 });
