@@ -54,3 +54,21 @@ test('welcome page shows watch link for active games', function () {
     $this->get(route('home'))
         ->assertSee(route('game.spectator', 'ABC123'));
 });
+
+test('welcome page does not show stale open game sessions', function () {
+    $quiz = Quiz::factory()->create(['title' => 'Abandoned Lobby']);
+    $session = GameSession::factory()->for($quiz)->create(['status' => 'waiting']);
+    GameSession::query()->whereKey($session)
+        ->update(['updated_at' => now()->subMinutes(GameSession::IDLE_TIMEOUT_MINUTES + 1)]);
+
+    $this->get(route('home'))
+        ->assertDontSee('Abandoned Lobby');
+});
+
+test('welcome page still shows recently updated open games', function () {
+    $quiz = Quiz::factory()->create(['title' => 'Live Right Now']);
+    GameSession::factory()->for($quiz)->create(['status' => 'playing']);
+
+    $this->get(route('home'))
+        ->assertSee('Live Right Now');
+});
