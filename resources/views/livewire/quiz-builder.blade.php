@@ -193,10 +193,12 @@
                     </div>
                     <div>
                         <select wire:model="newCategoryTheme" class="rounded-md border border-neutral-300 px-3 py-1.5 text-sm dark:border-neutral-600 dark:bg-neutral-800 dark:text-white">
+                            <option value="" disabled>{{ __('Select a theme') }}</option>
                             @foreach($themeKeys as $theme)
-                                <option value="{{ $theme }}">{{ ucfirst($theme) }}</option>
+                                <option value="{{ $theme }}">{{ ucfirst(str_replace('-', ' ', $theme)) }}</option>
                             @endforeach
                         </select>
+                        @error('newCategoryTheme') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                     </div>
                     <flux:button wire:click="addCategory" size="sm" variant="primary">
                         {{ __('Add') }}

@@ -57,6 +57,29 @@ test('user can add a category to a quiz', function () {
     expect($quiz->categories()->where('name', 'Science')->exists())->toBeTrue();
 });
 
+test('adding a category requires choosing a styled theme', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+
+    // No theme selected (the default empty state) must not silently save.
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->set('newCategoryName', 'Science')
+        ->set('newCategoryTheme', '')
+        ->call('addCategory')
+        ->assertHasErrors(['newCategoryTheme']);
+
+    // The unstyled "default" fallback is not a selectable choice either.
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->set('newCategoryName', 'Science')
+        ->set('newCategoryTheme', 'default')
+        ->call('addCategory')
+        ->assertHasErrors(['newCategoryTheme']);
+
+    expect($quiz->categories()->count())->toBe(0);
+});
+
 test('user can add a question to a category', function () {
     $user = User::factory()->create();
     $quiz = Quiz::factory()->create(['user_id' => $user->id]);

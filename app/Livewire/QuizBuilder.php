@@ -7,6 +7,7 @@ use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -25,7 +26,7 @@ class QuizBuilder extends Component
 
     public string $newCategoryName = '';
 
-    public string $newCategoryTheme = 'default';
+    public string $newCategoryTheme = '';
 
     public ?int $addingQuestionToCategoryId = null;
 
@@ -92,6 +93,7 @@ class QuizBuilder extends Component
     {
         $this->validate([
             'newCategoryName' => 'required',
+            'newCategoryTheme' => ['required', Rule::in($this->selectableThemeKeys())],
         ]);
 
         if (! $this->quiz) {
@@ -108,7 +110,21 @@ class QuizBuilder extends Component
         ]);
 
         $this->newCategoryName = '';
-        $this->newCategoryTheme = 'default';
+        $this->newCategoryTheme = '';
+    }
+
+    /**
+     * Styled themes a user may pick. Excludes the 'default' fallback so a
+     * category can't be silently created without a real theme.
+     *
+     * @return list<string>
+     */
+    private function selectableThemeKeys(): array
+    {
+        return array_values(array_filter(
+            array_keys(config('themes', [])),
+            fn (string $key) => $key !== 'default',
+        ));
     }
 
     public function showAddQuestion(int $categoryId): void
@@ -336,7 +352,7 @@ class QuizBuilder extends Component
     public function render()
     {
         $categories = $this->quiz ? $this->quiz->categories()->with('questions')->get() : collect();
-        $themeKeys = array_keys(config('themes', []));
+        $themeKeys = $this->selectableThemeKeys();
         $questionTypes = array_keys(config('quiz.question_types', []));
 
         return view('livewire.quiz-builder', [
