@@ -14,6 +14,10 @@ test('stale scope selects open games idle past the timeout', function () {
     GameSession::query()->whereKey($stalePlaying)
         ->update(['updated_at' => now()->subMinutes(GameSession::IDLE_TIMEOUT_MINUTES + 1)]);
 
+    $staleReviewing = GameSession::factory()->create(['status' => 'reviewing']);
+    GameSession::query()->whereKey($staleReviewing)
+        ->update(['updated_at' => now()->subMinutes(GameSession::IDLE_TIMEOUT_MINUTES + 1)]);
+
     $freshWaiting = GameSession::factory()->create(['status' => 'waiting']);
 
     $staleFinished = GameSession::factory()->create(['status' => 'finished']);
@@ -24,6 +28,7 @@ test('stale scope selects open games idle past the timeout', function () {
 
     expect($ids)->toContain($staleWaiting->id)
         ->toContain($stalePlaying->id)
+        ->toContain($staleReviewing->id)
         ->not->toContain($freshWaiting->id)
         ->not->toContain($staleFinished->id);
 });
