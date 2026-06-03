@@ -30,6 +30,7 @@ class TimeBonusQuizSeeder extends Seeder
             'quiz_id' => $quiz->id,
             'name' => 'Science',
             'slug' => 'science',
+            'theme' => 'science',
             'order' => 0,
         ]);
 

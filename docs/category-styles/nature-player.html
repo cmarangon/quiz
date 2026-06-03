@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nature — Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2c4a22; --wood:#a06a37; --wood-d:#7c4f26; --emerald:#2f9e54; --lime:#8fd14f;
+    --sun:#ffd23f; --sky1:#bfe9ff; --sky2:#88d3f0; --cream:#fff7e4; --berry:#e8743b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Nunito',system-ui,sans-serif;min-height:100vh;color:var(--ink);
+    background:linear-gradient(180deg,var(--sky1),var(--sky2) 55%,#a7dd8c 56%, #7cc56a);
+    display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;
+  }
+  /* sun with rays */
+  .sun{position:fixed;top:-46px;right:-46px;width:180px;height:180px;border-radius:50%;
+    background:radial-gradient(circle at 50% 50%,#fff3b0,var(--sun));box-shadow:0 0 60px rgba(255,210,63,.7);z-index:0}
+  .sun::before{content:"";position:absolute;inset:-40px;border-radius:50%;
+    background:conic-gradient(from 0deg,rgba(255,210,63,.45) 0 6deg,transparent 6deg 30deg);animation:spin 60s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  /* rolling hills */
+  .hills{position:fixed;left:0;right:0;bottom:0;width:100%;height:42vh;z-index:0}
+  /* swaying leaves */
+  .leaf{position:fixed;font-size:30px;z-index:1;animation:sway 6s ease-in-out infinite}
+  .leaf.l1{top:18%;left:8%}.leaf.l2{top:30%;right:10%;animation-delay:-2s}.leaf.l3{top:62%;left:6%;animation-delay:-3.5s}
+  @keyframes sway{0%,100%{transform:translateY(0) rotate(-12deg)}50%{transform:translateY(-12px) rotate(14deg)}}
+
+  .phone{position:relative;width:100%;max-width:430px;z-index:3;display:flex;flex-direction:column;gap:18px}
+  .topbar{display:flex;align-items:center;justify-content:space-between}
+  .badge{display:inline-flex;align-items:center;gap:8px;font-family:'Sniglet';font-weight:800;font-size:18px;
+    background:var(--emerald);color:#fff;padding:8px 18px;border-radius:999px;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink)}
+  .player-name{font-family:'Sniglet';font-weight:800;font-size:18px;color:#1c3a16;background:rgba(255,255,255,.6);padding:4px 14px;border-radius:999px}
+
+  /* hanging wooden plank sign as timer */
+  .sign{align-self:center;position:relative;margin-top:14px}
+  .sign .ropes{position:absolute;top:-16px;left:0;right:0;height:18px}
+  .plank{font-family:'Sniglet';font-weight:800;font-size:30px;color:#fff3d6;
+    background:repeating-linear-gradient(180deg,var(--wood) 0 9px,var(--wood-d) 9px 11px);
+    padding:12px 30px;border-radius:14px;border:4px solid var(--wood-d);box-shadow:0 6px 0 rgba(0,0,0,.25),inset 0 0 12px rgba(0,0,0,.2);
+    text-shadow:0 2px 0 rgba(0,0,0,.35)}
+
+  .qcard{position:relative;background:var(--cream);color:var(--ink);border:5px solid var(--emerald);border-radius:26px;
+    padding:26px 22px;text-align:center;box-shadow:0 10px 0 #1f6e3a, 0 18px 30px rgba(0,0,0,.25)}
+  .qcard::after{content:"🌱";position:absolute;left:14px;bottom:-14px;font-size:26px}
+  .qcard::before{content:"🌼";position:absolute;right:14px;top:-14px;font-size:24px}
+  .qcard .emoji{font-size:42px}
+  .qcard h2{font-family:'Sniglet';font-weight:800;font-size:24px;line-height:1.25;margin-top:4px}
+
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  /* rounded pebble/wood answers */
+  .opt{font-family:'Sniglet';font-weight:800;font-size:18px;cursor:pointer;color:#fff;text-align:left;
+    display:flex;align-items:center;gap:12px;padding:18px 14px;border-radius:20px;border:4px solid var(--ink);
+    box-shadow:0 6px 0 var(--ink);transition:transform .07s,box-shadow .07s}
+  .opt:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ink)}
+  .opt .key{flex:0 0 30px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.35);display:grid;place-items:center;font-size:16px}
+  .opt.a{background:var(--emerald)}.opt.b{background:var(--lime);color:var(--ink)}.opt.c{background:var(--wood)}.opt.d{background:var(--berry)}
+  .hint{text-align:center;font-family:'Sniglet';font-weight:800;font-size:15px;color:#1c3a16}
+</style>
+</head>
+<body>
+  <div class="sun"></div>
+  <span class="leaf l1">🍃</span><span class="leaf l2">🌿</span><span class="leaf l3">🍂</span>
+  <svg class="hills" viewBox="0 0 430 300" preserveAspectRatio="none">
+    <path d="M0,140 Q110,70 220,130 T430,120 V300 H0 Z" fill="#5fb35a"/>
+    <path d="M0,200 Q130,140 260,190 T430,180 V300 H0 Z" fill="#3f8f43"/>
+    <g fill="#2f6e34">
+      <path d="M60,210 l16,-42 l16,42 z"/><rect x="72" y="208" width="8" height="14"/>
+      <path d="M350,224 l20,-52 l20,52 z"/><rect x="366" y="220" width="8" height="16"/>
+    </g>
+  </svg>
+
+  <div class="phone">
+    <div class="topbar">
+      <span class="badge">🌿 Nature</span>
+      <span class="player-name">Ranger Rae</span>
+    </div>
+
+    <div class="sign">
+      <svg class="ropes" viewBox="0 0 120 20"><line x1="20" y1="0" x2="32" y2="20" stroke="#6b4a26" stroke-width="3"/><line x1="100" y1="0" x2="88" y2="20" stroke="#6b4a26" stroke-width="3"/></svg>
+      <div class="plank">18</div>
+    </div>
+
+    <div class="qcard">
+      <span class="emoji">🦋</span>
+      <h2>What is the largest species of big cat?</h2>
+    </div>
+
+    <div class="options">
+      <button class="opt a"><span class="key">A</span> Lion</button>
+      <button class="opt b"><span class="key">B</span> Tiger</button>
+      <button class="opt c"><span class="key">C</span> Jaguar</button>
+      <button class="opt d"><span class="key">D</span> Leopard</button>
+    </div>
+
+    <p class="hint">Sniff out the right trail! 🐾</p>
+  </div>
+</body>
+</html>

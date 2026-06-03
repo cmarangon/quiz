@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sports — Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Teko:wght@600;700&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0a1020; --pitch:#1f8a4c; --pitch-d:#176b3a; --led:#ff4d3d; --ledg:#39ff8b;
+    --red:#e23636; --blue:#2f6bff; --gold:#ffc637; --steel:#1b2740;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Nunito',system-ui,sans-serif;min-height:100vh;color:#fff;
+    background:radial-gradient(ellipse at 50% -10%, rgba(255,255,255,.18), transparent 45%),linear-gradient(180deg,#101a33,#070b16);
+    display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;
+  }
+  /* crowd halftone + jersey diagonal stripes */
+  body::before{content:"";position:fixed;inset:0 0 42% 0;pointer-events:none;opacity:.16;
+    background-image:radial-gradient(#fff 1.4px,transparent 1.6px);background-size:11px 11px}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;
+    background-image:repeating-linear-gradient(125deg,#fff 0 2px,transparent 2px 30px)}
+  /* pitch with yard lines + center circle */
+  .pitch{position:fixed;left:0;right:0;bottom:0;width:100%;height:40vh;z-index:0;
+    background:linear-gradient(180deg,var(--pitch),var(--pitch-d));
+    box-shadow:inset 0 20px 50px rgba(0,0,0,.5)}
+  .pitch svg{width:100%;height:100%}
+  .ball{position:fixed;font-size:30px;z-index:1;filter:drop-shadow(-18px 4px 0 rgba(255,255,255,.18))}
+  .ball.b1{top:16%;left:7%}.ball.b2{top:30%;right:8%;font-size:24px}
+
+  .phone{position:relative;width:100%;max-width:430px;z-index:3;display:flex;flex-direction:column;gap:16px}
+  /* scoreboard header */
+  .scoreboard{display:flex;align-items:center;justify-content:space-between;background:var(--steel);
+    border:3px solid #000;border-radius:12px;padding:8px 12px;box-shadow:0 6px 0 #000,inset 0 0 0 2px rgba(255,255,255,.06)}
+  .badge{font-family:'Anton';letter-spacing:1.5px;text-transform:uppercase;font-size:20px;color:#fff;
+    display:inline-flex;align-items:center;gap:8px}
+  .badge .dot{width:11px;height:11px;border-radius:50%;background:var(--led);box-shadow:0 0 10px var(--led);animation:blink 1.1s steps(1) infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .led{font-family:'Teko';font-weight:700;font-size:38px;line-height:.8;letter-spacing:2px;color:var(--ledg);
+    background:#06210f;padding:4px 14px;border-radius:8px;border:2px solid #0a3a1c;box-shadow:inset 0 0 14px rgba(57,255,139,.5);text-shadow:0 0 10px rgba(57,255,139,.8)}
+
+  .player-name{align-self:center;font-family:'Anton';letter-spacing:1px;text-transform:uppercase;font-size:18px;color:var(--gold)}
+
+  /* jumbotron LED question screen */
+  .jumbo{position:relative;background:#0c1322;border:4px solid #2a3a5e;border-radius:14px;padding:24px 20px;text-align:center;
+    box-shadow:0 10px 0 #000,0 0 40px rgba(47,107,255,.25),inset 0 0 30px rgba(47,107,255,.12)}
+  .jumbo::after{content:"";position:absolute;inset:0;border-radius:10px;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px)}
+  .jumbo .emoji{font-size:40px}
+  .jumbo h2{font-family:'Anton';letter-spacing:1px;text-transform:uppercase;font-size:25px;line-height:1.1;margin-top:6px;
+    color:#eaf2ff;text-shadow:0 0 14px rgba(120,170,255,.6)}
+
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  /* jersey answer buttons with number circle + diagonal stripe */
+  .opt{position:relative;overflow:hidden;font-family:'Anton';letter-spacing:1px;text-transform:uppercase;font-size:19px;cursor:pointer;color:#fff;text-align:left;
+    display:flex;align-items:center;gap:12px;padding:18px 14px;border-radius:12px;border:3px solid #000;
+    box-shadow:0 6px 0 #000;transition:transform .07s,box-shadow .07s}
+  .opt:active{transform:translateY(4px);box-shadow:0 2px 0 #000}
+  .opt::before{content:"";position:absolute;top:0;bottom:0;right:-10px;width:46px;background:rgba(255,255,255,.16);transform:skewX(-18deg)}
+  .opt .num{flex:0 0 34px;width:34px;height:34px;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center;font-size:18px;border:2px solid #000}
+  .opt.a{background:var(--red)}.opt.b{background:var(--blue)}.opt.c{background:var(--pitch)}.opt.d{background:var(--gold);color:#000}
+  .opt.d .num{background:#000;color:var(--gold)}
+  .hint{text-align:center;font-family:'Anton';letter-spacing:1px;text-transform:uppercase;font-size:15px;color:var(--led)}
+</style>
+</head>
+<body>
+  <div class="pitch">
+    <svg viewBox="0 0 430 300" preserveAspectRatio="none">
+      <g stroke="rgba(255,255,255,.5)" stroke-width="3" fill="none">
+        <line x1="0" y1="60" x2="430" y2="60"/><line x1="0" y1="150" x2="430" y2="150"/>
+        <circle cx="215" cy="150" r="46"/><line x1="215" y1="0" x2="215" y2="300"/>
+      </g>
+      <rect x="0" y="0" width="430" height="300" fill="url(#mow)"/>
+      <defs><pattern id="mow" width="60" height="300" patternUnits="userSpaceOnUse">
+        <rect width="30" height="300" fill="rgba(255,255,255,.04)"/></pattern></defs>
+    </svg>
+  </div>
+  <span class="ball b1">⚽</span><span class="ball b2">🏀</span>
+
+  <div class="phone">
+    <div class="scoreboard">
+      <span class="badge"><span class="dot"></span>🏆 Sports</span>
+      <span class="led">00:18</span>
+    </div>
+    <span class="player-name">Ace #10</span>
+
+    <div class="jumbo">
+      <span class="emoji">⚽</span>
+      <h2>How many players are on a soccer team on the field?</h2>
+    </div>
+
+    <div class="options">
+      <button class="opt a"><span class="num">A</span> 9</button>
+      <button class="opt b"><span class="num">B</span> 10</button>
+      <button class="opt c"><span class="num">C</span> 11</button>
+      <button class="opt d"><span class="num">D</span> 12</button>
+    </div>
+
+    <p class="hint">Take your shot before the whistle! 📣</p>
+  </div>
+</body>
+</html>

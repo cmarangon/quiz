@@ -1,11 +1,16 @@
 <?php
 
+use App\QuestionTypes\GeoGuesserType;
+use App\QuestionTypes\MultipleChoiceType;
+use App\QuestionTypes\OrderingType;
+use App\QuestionTypes\TrueFalseType;
+
 return [
     'question_types' => [
-        'multiple_choice' => \App\QuestionTypes\MultipleChoiceType::class,
-        'true_false' => \App\QuestionTypes\TrueFalseType::class,
-        'geo_guesser' => \App\QuestionTypes\GeoGuesserType::class,
-        'ordering' => \App\QuestionTypes\OrderingType::class,
+        'multiple_choice' => MultipleChoiceType::class,
+        'true_false' => TrueFalseType::class,
+        'geo_guesser' => GeoGuesserType::class,
+        'ordering' => OrderingType::class,
     ],
 
     'geo_guesser' => [

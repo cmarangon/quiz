@@ -21,6 +21,9 @@
                 @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
                     @include('question-types.ordering-player')
                 @elseif($currentQuestion && ! empty($currentQuestion['options']))
+                    @if(in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
+                        @include('themes.'.$themeKey.'.player-answering')
+                    @else
                     @php
                         $colors = ['bg-red-500 hover:bg-red-600', 'bg-blue-500 hover:bg-blue-600', 'bg-yellow-500 hover:bg-yellow-600', 'bg-green-500 hover:bg-green-600'];
                     @endphp
@@ -35,6 +38,7 @@
                             </button>
                         @endforeach
                     </div>
+                    @endif
                 @endif
             </div>
 

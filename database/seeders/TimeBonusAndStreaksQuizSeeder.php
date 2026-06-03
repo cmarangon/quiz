@@ -30,6 +30,7 @@ class TimeBonusAndStreaksQuizSeeder extends Seeder
             'quiz_id' => $quiz->id,
             'name' => 'Pop Culture',
             'slug' => 'pop-culture',
+            'theme' => 'pop-culture',
             'order' => 0,
         ]);
 

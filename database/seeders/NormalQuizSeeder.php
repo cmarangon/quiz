@@ -30,6 +30,7 @@ class NormalQuizSeeder extends Seeder
             'quiz_id' => $quiz->id,
             'name' => 'General Knowledge',
             'slug' => 'general-knowledge',
+            'theme' => 'general-knowledge',
             'order' => 0,
         ]);
 

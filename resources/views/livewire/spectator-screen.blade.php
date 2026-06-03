@@ -57,20 +57,26 @@
 
     {{-- QUESTION PHASE --}}
     @elseif($phase === 'question')
-        <div class="w-full max-w-4xl space-y-8">
-            @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
+        @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
+            <div class="w-full max-w-4xl space-y-8">
                 @include('question-types.geo-guesser-spectator')
                 <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
                     <span>{{ __(':answered / :total answered', ['answered' => $answeredCount, 'total' => $totalPlayers]) }}</span>
                     <span>{{ $currentQuestion['time_limit_seconds'] ?? 30 }}s</span>
                 </div>
-            @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
+            </div>
+        @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
+            <div class="w-full max-w-4xl space-y-8">
                 @include('question-types.ordering-spectator')
                 <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
                     <span>{{ __(':answered / :total answered', ['answered' => $answeredCount, 'total' => $totalPlayers]) }}</span>
                     <span>{{ $currentQuestion['time_limit_seconds'] ?? 30 }}s</span>
                 </div>
-            @elseif($currentQuestion)
+            </div>
+        @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
+            @include('themes.'.$themeKey.'.spectator-question')
+        @elseif($currentQuestion)
+            <div class="w-full max-w-4xl space-y-8">
                 <div class="text-center">
                     <p class="text-sm text-zinc-500 dark:text-zinc-400">
                         {{ __('Question') }} {{ ($currentQuestion['question_index'] ?? 0) + 1 }}
@@ -99,11 +105,14 @@
                     <span>{{ __(':answered / :total answered', ['answered' => $answeredCount, 'total' => $totalPlayers]) }}</span>
                     <span>{{ $currentQuestion['time_limit_seconds'] ?? 30 }}s</span>
                 </div>
-            @endif
-        </div>
+            </div>
+        @endif
 
     {{-- REVIEW PHASE --}}
     @elseif($phase === 'review')
+        @if($currentQuestion && ! empty($currentQuestion['options']) && ($currentQuestion['type'] ?? null) !== 'geo_guesser' && ($currentQuestion['type'] ?? null) !== 'ordering' && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
+            @include('themes.'.$themeKey.'.spectator-review')
+        @else
         <div class="w-full max-w-4xl space-y-8">
             @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
                 @include('question-types.geo-guesser-spectator')
@@ -149,6 +158,7 @@
                 </div>
             @endif
         </div>
+        @endif
 
     {{-- FINISHED PHASE --}}
     @elseif($phase === 'finished')
