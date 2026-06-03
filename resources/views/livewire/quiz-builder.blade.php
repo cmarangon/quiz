@@ -75,6 +75,7 @@
                                             <option value="multiple_choice">{{ __('Multiple Choice') }}</option>
                                             <option value="true_false">{{ __('True / False') }}</option>
                                             <option value="ordering">{{ __('Ordering') }}</option>
+                                            <option value="geo_guesser">{{ __('Geo Guesser') }}</option>
                                         </select>
                                     </div>
                                     <div>
@@ -109,7 +110,7 @@
                                     </div>
                                 @endif
 
-                                @if($questionType !== 'ordering')
+                                @if($questionType === 'multiple_choice' || $questionType === 'true_false')
                                 <div>
                                     <label class="mb-1 block text-sm font-medium dark:text-neutral-300">{{ __('Correct Answer') }}</label>
                                     @if($questionType === 'true_false')
@@ -129,6 +130,18 @@
                                         </select>
                                     @endif
                                     @error('questionCorrectAnswer') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                </div>
+                                @endif
+
+                                @if($questionType === 'geo_guesser')
+                                <div>
+                                    <label class="mb-1 block text-sm font-medium dark:text-neutral-300">{{ __('Correct Location') }}</label>
+                                    <div class="flex gap-2">
+                                        <flux:input wire:model="questionGeoLat" :label="__('Latitude')" type="number" step="any" min="-90" max="90" size="sm" />
+                                        <flux:input wire:model="questionGeoLng" :label="__('Longitude')" type="number" step="any" min="-180" max="180" size="sm" />
+                                    </div>
+                                    @error('questionGeoLat') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    @error('questionGeoLng') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                                 </div>
                                 @endif
 

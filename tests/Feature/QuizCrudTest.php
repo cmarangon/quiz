@@ -154,3 +154,44 @@ test('ordering question does not require a separate correct answer field', funct
 
     expect($category->questions()->where('type', 'ordering')->count())->toBe(1);
 });
+
+test('user can add a geo guesser question with coordinates', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'Where is the Eiffel Tower?')
+        ->set('questionType', 'geo_guesser')
+        ->set('questionGeoLat', '48.8584')
+        ->set('questionGeoLng', '2.2945')
+        ->set('questionPoints', 100)
+        ->set('questionTimeLimit', 30)
+        ->call('saveQuestion')
+        ->assertHasNoErrors();
+
+    $question = $category->questions()->where('type', 'geo_guesser')->firstOrFail();
+    expect($question->correct_answer)->toBe(['lat' => 48.8584, 'lng' => 2.2945]);
+});
+
+test('geo guesser question requires valid coordinates', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'Where is the Eiffel Tower?')
+        ->set('questionType', 'geo_guesser')
+        ->set('questionGeoLat', '200')
+        ->set('questionGeoLng', '')
+        ->set('questionPoints', 100)
+        ->set('questionTimeLimit', 30)
+        ->call('saveQuestion')
+        ->assertHasErrors(['questionGeoLat', 'questionGeoLng']);
+
+    expect($category->questions()->count())->toBe(0);
+});
