@@ -1,0 +1,24 @@
+<?php
+
+use App\Models\GameSession;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
+
+test('stale scope selects open games idle past the timeout', function () {
+    $staleWaiting = GameSession::factory()->create(['status' => 'waiting']);
+    GameSession::query()->whereKey($staleWaiting)
+        ->update(['updated_at' => now()->subMinutes(GameSession::IDLE_TIMEOUT_MINUTES + 1)]);
+
+    $freshWaiting = GameSession::factory()->create(['status' => 'waiting']);
+
+    $staleFinished = GameSession::factory()->create(['status' => 'finished']);
+    GameSession::query()->whereKey($staleFinished)
+        ->update(['updated_at' => now()->subDay()]);
+
+    $ids = GameSession::stale()->pluck('id');
+
+    expect($ids)->toContain($staleWaiting->id)
+        ->not->toContain($freshWaiting->id)
+        ->not->toContain($staleFinished->id);
+});
