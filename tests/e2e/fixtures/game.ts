@@ -17,7 +17,10 @@ export async function startGameFromDashboard(page: Page): Promise<string> {
 }
 
 export async function startGameFromDashboardFor(page: Page, title: string): Promise<string> {
-    const row = page.locator('tr', { hasText: title });
+    // Scope to the quiz row (wire:key="quiz-…"); a separate active-session row
+    // (wire:key="session-…") can share the same title and would otherwise make
+    // this locator match two elements.
+    const row = page.locator('tr[wire\\:key^="quiz-"]', { hasText: title });
     await expect(row).toBeVisible();
     await row.getByRole('button', { name: /play/i }).click();
     await page.waitForURL(/\/game\/[A-Z0-9]+\/host/);
