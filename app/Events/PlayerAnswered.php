@@ -12,6 +12,7 @@ class PlayerAnswered implements ShouldBroadcastNow
         public GameSession $session,
         public int $answeredCount,
         public int $totalPlayers,
+        public int $questionId,
     ) {}
 
     /** @return array<int, Channel> */
@@ -31,6 +32,7 @@ class PlayerAnswered implements ShouldBroadcastNow
         return [
             'answered_count' => $this->answeredCount,
             'total_players' => $this->totalPlayers,
+            'question_id' => $this->questionId,
         ];
     }
 }

@@ -61,6 +61,27 @@
 
     {{-- QUESTION PHASE --}}
     @elseif($phase === 'question')
+        @if($totalPlayers > 0 && $answeredCount >= $totalPlayers)
+            <div wire:key="spectator-countdown-{{ $currentQuestion['question_id'] ?? 'na' }}"
+                 x-data="{
+                    remaining: {{ $countdownSeconds }},
+                    timer: null,
+                    init() {
+                        this.timer = setInterval(() => {
+                            this.remaining--;
+                            if (this.remaining <= 0) clearInterval(this.timer);
+                        }, 1000);
+                    },
+                    destroy() { clearInterval(this.timer); }
+                 }"
+                 data-test="spectator-countdown"
+                 class="fixed inset-x-0 top-8 z-50 flex flex-col items-center gap-2">
+                <p class="text-lg font-semibold text-zinc-600 dark:text-zinc-300">{{ __('Everyone answered!') }}</p>
+                <div class="flex h-20 w-20 items-center justify-center rounded-full bg-green-500 text-4xl font-bold text-white shadow-lg">
+                    <span x-text="remaining" data-test="spectator-countdown-value">{{ $countdownSeconds }}</span>
+                </div>
+            </div>
+        @endif
         @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
             @include('question-types.geo-guesser-spectator')
         @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')

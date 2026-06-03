@@ -81,7 +81,7 @@ class SubmitAnswer
             ->where('question_id', $questionId)
             ->count();
 
-        broadcast(new PlayerAnswered($session, $answeredCount, $session->players()->count()));
+        broadcast(new PlayerAnswered($session, $answeredCount, $session->players()->count(), $questionId));
 
         return [
             'is_correct' => $isCorrect,

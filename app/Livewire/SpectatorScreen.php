@@ -22,6 +22,8 @@ class SpectatorScreen extends Component
 
     public int $totalPlayers = 0;
 
+    public int $countdownSeconds = 5;
+
     public array $scores = [];
 
     public array $leaderboard = [];
@@ -124,6 +126,11 @@ class SpectatorScreen extends Component
 
     public function onPlayerAnswered(array $payload): void
     {
+        if (isset($payload['question_id'])
+            && ($this->currentQuestion['question_id'] ?? null) !== $payload['question_id']) {
+            return;
+        }
+
         $this->answeredCount = $payload['answered_count'];
         $this->totalPlayers = $payload['total_players'];
     }
