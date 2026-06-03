@@ -34,9 +34,7 @@
             @if(count($playerNames) > 0)
                 <div class="flex flex-wrap justify-center gap-3">
                     @foreach($playerNames as $name)
-                        <span data-test="spectator-player-chip" data-player-nickname="{{ $name }}" class="rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                            {{ $name }}
-                        </span>
+                        <x-player-name data-test="spectator-player-chip" data-player-nickname="{{ $name['nickname'] }}" :emoji="$name['emoji'] ?? null" :nickname="$name['nickname']" class="rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300" />
                     @endforeach
                 </div>
             @endif
@@ -156,7 +154,7 @@
                     <ol class="space-y-2">
                         @foreach($scores as $entry)
                             <li class="flex justify-between text-zinc-700 dark:text-zinc-300">
-                                <span>{{ $entry['nickname'] ?? '' }}</span>
+                                <x-player-name :emoji="$entry['emoji'] ?? null" :nickname="$entry['nickname'] ?? ''" />
                                 <span class="font-bold">{{ $entry['score'] ?? 0 }}</span>
                             </li>
                         @endforeach
@@ -176,7 +174,7 @@
                 <div class="flex items-end justify-center gap-4 mt-8">
                     @foreach(array_slice($leaderboard, 0, 3) as $index => $entry)
                         <div class="flex flex-col items-center">
-                            <span class="text-lg font-bold text-zinc-900 dark:text-white">{{ $entry['nickname'] }}</span>
+                            <x-player-name :emoji="$entry['emoji'] ?? null" :nickname="$entry['nickname']" class="text-lg font-bold text-zinc-900 dark:text-white" />
                             <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ $entry['score'] }} {{ __('pts') }}</span>
                             <div class="mt-2 rounded-t-lg bg-gradient-to-t
                                 @if($index === 0) from-yellow-500 to-yellow-300 w-24 h-32
@@ -194,7 +192,7 @@
                     <ol class="space-y-2">
                         @foreach($leaderboard as $index => $entry)
                             <li data-test="spectator-leaderboard-row" data-player-nickname="{{ $entry['nickname'] }}" class="flex justify-between text-zinc-700 dark:text-zinc-300">
-                                <span>{{ $index + 1 }}. {{ $entry['nickname'] }}</span>
+                                <span>{{ $index + 1 }}. <x-player-name :emoji="$entry['emoji'] ?? null" :nickname="$entry['nickname']" /></span>
                                 <span class="font-bold">{{ $entry['score'] }}</span>
                             </li>
                         @endforeach

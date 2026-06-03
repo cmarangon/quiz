@@ -31,6 +31,7 @@ class PlayerJoined implements ShouldBroadcastNow
         return [
             'player_id' => $this->player->id,
             'nickname' => $this->player->nickname,
+            'emoji' => $this->player->emoji,
             'player_count' => $this->session->players()->count(),
         ];
     }

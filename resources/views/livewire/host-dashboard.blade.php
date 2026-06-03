@@ -74,7 +74,7 @@
             <ul class="space-y-2">
                 @foreach($players as $player)
                     <li data-test="host-player-row" data-player-nickname="{{ $player->nickname }}" class="flex items-center justify-between gap-2 rounded-lg border border-zinc-200 px-4 py-2 dark:border-zinc-700">
-                        <span class="text-zinc-900 dark:text-white">{{ $player->nickname }}</span>
+                        <x-player-name :emoji="$player->emoji" :nickname="$player->nickname" class="text-zinc-900 dark:text-white" />
                         <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ $player->score }} {{ __('pts') }}</span>
                     </li>
                 @endforeach

@@ -58,6 +58,18 @@ class GameSession extends Model
         return $this->belongsTo(Quiz::class);
     }
 
+    /**
+     * The per-quiz presentation ("house") style for theme-independent screens.
+     * One of: party-pop, game-show, bright-bouncy. Defaults to party-pop.
+     */
+    public function presentationStyle(): string
+    {
+        $allowed = ['party-pop', 'game-show', 'bright-bouncy'];
+        $style = $this->quiz->settings['presentation_style'] ?? 'party-pop';
+
+        return in_array($style, $allowed, true) ? $style : 'party-pop';
+    }
+
     public function host(): BelongsTo
     {
         return $this->belongsTo(User::class, 'host_user_id');

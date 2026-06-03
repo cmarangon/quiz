@@ -47,7 +47,7 @@ class PlayerScreen extends Component
             $this->leaderboard = $this->session->players()
                 ->orderByDesc('score')
                 ->get()
-                ->map(fn ($p) => ['nickname' => $p->nickname, 'score' => $p->score])
+                ->map(fn ($p) => ['nickname' => $p->nickname, 'emoji' => $p->emoji, 'score' => $p->score])
                 ->toArray();
         }
     }
@@ -88,7 +88,7 @@ class PlayerScreen extends Component
                 $this->leaderboard = $this->session->players()
                     ->orderByDesc('score')
                     ->get()
-                    ->map(fn ($p) => ['nickname' => $p->nickname, 'score' => $p->score])
+                    ->map(fn ($p) => ['nickname' => $p->nickname, 'emoji' => $p->emoji, 'score' => $p->score])
                     ->toArray();
             }
 

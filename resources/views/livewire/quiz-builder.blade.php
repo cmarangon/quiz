@@ -26,6 +26,25 @@
                 </label>
             </div>
 
+            <div class="flex flex-col gap-2">
+                <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300">{{ __('Presentation style') }}</span>
+                <div class="flex flex-wrap gap-2" data-test="presentation-style-picker">
+                    @foreach(['party-pop' => 'Party Pop', 'game-show' => 'Game Show', 'bright-bouncy' => 'Bright & Bouncy'] as $key => $label)
+                        <button type="button"
+                            wire:click="$set('presentationStyle', '{{ $key }}')"
+                            data-test="presentation-style-option"
+                            data-style="{{ $key }}"
+                            @class([
+                                'rounded-lg border px-4 py-2 text-sm font-medium transition',
+                                'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-200' => $presentationStyle === $key,
+                                'border-neutral-300 text-neutral-600 dark:border-neutral-600 dark:text-neutral-300' => $presentationStyle !== $key,
+                            ])>
+                            {{ __($label) }}
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+
             <div>
                 <flux:button wire:click="save" variant="primary">
                     {{ $this->quiz ? __('Update Quiz') : __('Create Quiz') }}

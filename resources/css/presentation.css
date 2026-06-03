@@ -1,0 +1,138 @@
+/* =========================================================================
+   Per-quiz "house" styles for theme-independent screens (join + final result).
+   Scoped under .qz-stage--{style}. Plain CSS so it never fights Tailwind.
+   ========================================================================= */
+
+.qz-stage { position: relative; width: 100%; }
+
+.qz-stage .qz-card {
+    border-radius: 30px;
+    padding: 26px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.qz-stage .qz-code-pill {
+    font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px;
+}
+.qz-stage .qz-code-pill .qz-codeval { font-family: 'Anton', sans-serif; letter-spacing: 3px; }
+
+.qz-stage .qz-title { font-size: 30px; line-height: 1.05; text-align: center; }
+
+.qz-stage .qz-emoji-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%;
+}
+.qz-stage .qz-emoji-btn {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    font-size: 24px; border-radius: 14px; cursor: pointer; border: 1.5px solid transparent;
+    background: rgba(255, 255, 255, 0.08); transition: transform .12s, box-shadow .12s, background .12s;
+}
+.qz-stage .qz-input {
+    width: 100%; padding: 13px 16px; border-radius: 14px; font-size: 16px; font-family: inherit;
+}
+.qz-stage .qz-btn {
+    width: 100%; padding: 14px; border-radius: 14px; font-weight: 800; font-size: 17px;
+    font-family: 'Baloo 2', sans-serif; cursor: pointer; border: none; transition: filter .12s, transform .12s;
+}
+.qz-stage .qz-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.qz-stage .qz-btn:not(:disabled):hover { filter: brightness(1.05); transform: translateY(-1px); }
+.qz-stage .qz-blob { position: absolute; border-radius: 50%; pointer-events: none; }
+
+/* ---------- PARTY POP ---------- */
+.qz-stage--party-pop .qz-card {
+    background: linear-gradient(160deg, #3b0764, #1e1b4b 55%, #0f172a);
+    box-shadow: 0 24px 60px rgba(124, 58, 237, .35), inset 0 0 60px rgba(168, 85, 247, .12);
+    border: 2px solid rgba(168, 85, 247, .4);
+    font-family: 'Fredoka', sans-serif; color: #fff;
+}
+.qz-stage--party-pop .qz-blob.b1 { width: 120px; height: 120px; background: radial-gradient(circle at 30% 30%, #f472b6, #db2777); top: -30px; right: -30px; opacity: .5; }
+.qz-stage--party-pop .qz-blob.b2 { width: 90px; height: 90px; background: radial-gradient(circle at 30% 30%, #5eead4, #0d9488); bottom: 60px; left: -26px; opacity: .5; }
+.qz-stage--party-pop .qz-code-pill { background: rgba(244, 114, 182, .18); border: 1.5px solid #f472b6; color: #f9a8d4; }
+.qz-stage--party-pop .qz-title { font-family: 'Bangers', sans-serif; letter-spacing: 1.5px; color: #fff; text-shadow: 0 3px 0 #db2777, 0 0 22px rgba(244, 114, 182, .5); font-size: 38px; }
+.qz-stage--party-pop .qz-emoji-btn { border-color: rgba(255, 255, 255, .12); }
+.qz-stage--party-pop .qz-emoji-btn.is-selected { background: rgba(244, 114, 182, .25); border-color: #f472b6; box-shadow: 0 0 16px rgba(244, 114, 182, .6); transform: scale(1.08); }
+.qz-stage--party-pop .qz-input { background: rgba(255, 255, 255, .07); border: 1.5px solid rgba(255, 255, 255, .18); color: #fff; }
+.qz-stage--party-pop .qz-input::placeholder { color: rgba(255, 255, 255, .45); }
+.qz-stage--party-pop .qz-btn { background: linear-gradient(90deg, #ec4899, #a855f7); color: #fff; box-shadow: 0 8px 24px rgba(236, 72, 153, .45); }
+
+/* ---------- GAME SHOW ---------- */
+.qz-stage--game-show .qz-card {
+    background: radial-gradient(ellipse at top, #1f2937, #0b0f1a 70%);
+    border: 2px solid rgba(251, 191, 36, .45);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .6), inset 0 0 50px rgba(251, 191, 36, .06);
+    font-family: 'Fredoka', sans-serif; color: #fff;
+}
+.qz-stage--game-show .qz-blob.spot { top: -60px; left: 50%; transform: translateX(-50%); width: 240px; height: 240px; background: radial-gradient(circle, rgba(251, 191, 36, .35), transparent 60%); }
+.qz-stage--game-show .qz-code-pill { background: rgba(251, 191, 36, .12); border: 1.5px solid #fbbf24; color: #fcd34d; }
+.qz-stage--game-show .qz-title { font-family: 'Anton', sans-serif; letter-spacing: 1px; color: #fde68a; text-transform: uppercase; font-size: 32px; text-shadow: 0 0 18px rgba(251, 191, 36, .4); }
+.qz-stage--game-show .qz-emoji-btn { background: rgba(255, 255, 255, .04); border-color: rgba(251, 191, 36, .2); }
+.qz-stage--game-show .qz-emoji-btn.is-selected { background: rgba(251, 191, 36, .2); border-color: #fbbf24; box-shadow: 0 0 16px rgba(251, 191, 36, .6); transform: scale(1.08); }
+.qz-stage--game-show .qz-input { background: rgba(0, 0, 0, .4); border: 1.5px solid rgba(251, 191, 36, .35); color: #fde68a; }
+.qz-stage--game-show .qz-input::placeholder { color: rgba(253, 230, 138, .4); }
+.qz-stage--game-show .qz-btn { background: linear-gradient(90deg, #f59e0b, #fbbf24); color: #3b2a00; box-shadow: 0 8px 24px rgba(245, 158, 11, .4); }
+
+/* ---------- BRIGHT & BOUNCY ---------- */
+.qz-stage--bright-bouncy .qz-card {
+    background: linear-gradient(165deg, #0f766e, #0e7490 50%, #1e3a8a);
+    box-shadow: 0 24px 60px rgba(13, 148, 136, .4);
+    font-family: 'Baloo 2', sans-serif; color: #fff;
+}
+.qz-stage--bright-bouncy .qz-blob.u1 { width: 80px; height: 80px; top: -20px; left: -20px; background: rgba(255, 255, 255, .1); }
+.qz-stage--bright-bouncy .qz-blob.u2 { width: 50px; height: 50px; bottom: 90px; right: 10px; background: rgba(255, 255, 255, .1); }
+.qz-stage--bright-bouncy .qz-code-pill { background: rgba(255, 255, 255, .18); border: 1.5px solid rgba(255, 255, 255, .35); color: #fff; }
+.qz-stage--bright-bouncy .qz-title { font-family: 'Baloo 2', sans-serif; font-weight: 800; color: #fff; font-size: 30px; }
+.qz-stage--bright-bouncy .qz-emoji-btn { background: rgba(255, 255, 255, .16); border: 2px solid transparent; }
+.qz-stage--bright-bouncy .qz-emoji-btn.is-selected { background: #fff; border-color: #fff; transform: scale(1.12) rotate(-6deg); box-shadow: 0 6px 16px rgba(0, 0, 0, .25); }
+.qz-stage--bright-bouncy .qz-input { background: rgba(255, 255, 255, .92); border: none; color: #0f172a; }
+.qz-stage--bright-bouncy .qz-btn { background: #fff; color: #0e7490; box-shadow: 0 8px 20px rgba(0, 0, 0, .25); }
+
+/* ---------- Shared error text ---------- */
+.qz-stage .qz-error { color: #fca5a5; font-size: 13px; text-align: center; }
+
+/* =========================== FINAL RESULT ================================ */
+.qz-stage .qz-final { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+.qz-stage .qz-final__title { font-size: 30px; font-weight: 800; text-align: center; }
+.qz-stage--party-pop .qz-final__title { font-family: 'Bangers', sans-serif; letter-spacing: 1.5px; }
+.qz-stage--game-show .qz-final__title { font-family: 'Anton', sans-serif; text-transform: uppercase; }
+
+.qz-stage .qz-podium { display: flex; align-items: flex-end; justify-content: center; gap: 10px; width: 100%; }
+.qz-stage .qz-podium__col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.qz-stage .qz-podium__emoji { font-size: 34px; }
+.qz-stage .qz-podium__name { font-size: 13px; font-weight: 700; text-align: center; opacity: .95; }
+.qz-stage .qz-podium__score { font-size: 12px; opacity: .8; }
+.qz-stage .qz-podium__bar {
+    width: 100%; border-radius: 14px 14px 0 0; display: flex; align-items: flex-start;
+    justify-content: center; padding-top: 8px; font-weight: 800; color: rgba(0, 0, 0, .55);
+    animation: qz-bar-rise 0.6s cubic-bezier(.2, 1.1, .3, 1) both;
+}
+@keyframes qz-bar-rise { from { transform: scaleY(0); transform-origin: bottom; } to { transform: scaleY(1); } }
+.qz-stage .qz-podium__col--1 .qz-podium__bar { height: 96px; background: linear-gradient(180deg, #fde68a, #f59e0b); }
+.qz-stage .qz-podium__col--2 .qz-podium__bar { height: 70px; background: linear-gradient(180deg, #e5e7eb, #9ca3af); }
+.qz-stage .qz-podium__col--3 .qz-podium__bar { height: 52px; background: linear-gradient(180deg, #fed7aa, #d97706); }
+
+.qz-stage .qz-scorecard {
+    width: 100%; text-align: center; border-radius: 20px; padding: 18px;
+    background: rgba(255, 255, 255, 0.08); border: 1.5px solid rgba(255, 255, 255, 0.18);
+}
+.qz-stage .qz-scorecard__label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: .7; }
+.qz-stage .qz-scorecard__value { font-size: 44px; font-weight: 800; line-height: 1.1; }
+
+.qz-stage .qz-board { width: 100%; border-radius: 20px; padding: 16px; background: rgba(0, 0, 0, 0.22); }
+.qz-stage .qz-board__row { display: flex; justify-content: space-between; gap: 8px; padding: 6px 4px; }
+.qz-stage .qz-board__row.is-me { font-weight: 800; }
+.qz-stage .qz-name-emoji { display: inline-block; }
+
+/* Confetti */
+.qz-confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 5; }
+.qz-confetti i {
+    position: absolute; top: -12px; width: 9px; height: 14px; opacity: .9;
+    animation: qz-confetti-fall linear forwards;
+}
+@keyframes qz-confetti-fall {
+    to { transform: translateY(108vh) rotate(540deg); opacity: 1; }
+}

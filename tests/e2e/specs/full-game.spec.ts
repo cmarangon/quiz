@@ -37,7 +37,9 @@ test('full game: host + spectator + 2 players play through every question', asyn
 
     // 3. Players join
     const alicePage = await joinAsPlayer(aliceContext, code, 'Alice');
-    const bobPage = await joinAsPlayer(bobContext, code, 'Bob');
+    await expect(alicePage.locator('[data-test="player-nickname"]')).toContainText('🚀');
+    const bobPage = await joinAsPlayer(bobContext, code, 'Bob', '🦖');
+    await expect(bobPage.locator('[data-test="player-nickname"]')).toContainText('🦖');
 
     // WebSocket fan-out: host and spectator both see both players
     await expect(hostPage.locator('[data-test="host-player-row"][data-player-nickname="Alice"]')).toBeVisible();
