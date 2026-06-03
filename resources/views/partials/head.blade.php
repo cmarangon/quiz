@@ -12,13 +12,16 @@
 <link rel="preconnect" href="https://fonts.bunny.net">
 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
-<script type="application/json" id="reverb-config">
-    @json([
+@php
+    $reverbConfig = [
         'key' => config('broadcasting.connections.reverb.key'),
         'host' => config('broadcasting.connections.reverb.options.host'),
         'port' => (int) config('broadcasting.connections.reverb.options.port', 443),
         'scheme' => config('broadcasting.connections.reverb.options.scheme', 'https'),
-    ])
+    ];
+@endphp
+<script type="application/json" id="reverb-config">
+    @json($reverbConfig)
 </script>
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
