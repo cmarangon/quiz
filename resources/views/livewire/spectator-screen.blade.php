@@ -62,21 +62,9 @@
     {{-- QUESTION PHASE --}}
     @elseif($phase === 'question')
         @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
-            <div class="w-full max-w-4xl space-y-8">
-                @include('question-types.geo-guesser-spectator')
-                <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-                    <span>{{ __(':answered / :total answered', ['answered' => $answeredCount, 'total' => $totalPlayers]) }}</span>
-                    <span>{{ $currentQuestion['time_limit_seconds'] ?? 30 }}s</span>
-                </div>
-            </div>
+            @include('question-types.geo-guesser-spectator')
         @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
-            <div class="w-full max-w-4xl space-y-8">
-                @include('question-types.ordering-spectator')
-                <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-                    <span>{{ __(':answered / :total answered', ['answered' => $answeredCount, 'total' => $totalPlayers]) }}</span>
-                    <span>{{ $currentQuestion['time_limit_seconds'] ?? 30 }}s</span>
-                </div>
-            </div>
+            @include('question-types.ordering-spectator')
         @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
             @include('themes.'.$themeKey.'.spectator-question')
         @elseif($currentQuestion)
@@ -114,15 +102,15 @@
 
     {{-- REVIEW PHASE --}}
     @elseif($phase === 'review')
-        @if($currentQuestion && ! empty($currentQuestion['options']) && ($currentQuestion['type'] ?? null) !== 'geo_guesser' && ($currentQuestion['type'] ?? null) !== 'ordering' && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
+        @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
+            @include('question-types.geo-guesser-spectator')
+        @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
+            @include('question-types.ordering-spectator')
+        @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
             @include('themes.'.$themeKey.'.spectator-review')
         @else
         <div class="w-full max-w-4xl space-y-8">
-            @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
-                @include('question-types.geo-guesser-spectator')
-            @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
-                @include('question-types.ordering-spectator')
-            @elseif($currentQuestion && ! empty($currentQuestion['options']))
+            @if($currentQuestion && ! empty($currentQuestion['options']))
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-zinc-900 dark:text-white">
                         {{ $currentQuestion['body'] ?? '' }}
