@@ -14,10 +14,10 @@
 
 @php
     $reverbConfig = [
-        'key' => config('broadcasting.connections.reverb.key'),
-        'host' => config('broadcasting.connections.reverb.options.host'),
-        'port' => (int) config('broadcasting.connections.reverb.options.port', 443),
-        'scheme' => config('broadcasting.connections.reverb.options.scheme', 'https'),
+        'key' => config('broadcasting.connections.vite_reverb.key'),
+        'host' => config('broadcasting.connections.vite_reverb.host'),
+        'port' => (int) config('broadcasting.connections.vite_reverb.port', 443),
+        'scheme' => config('broadcasting.connections.vite_reverb.scheme', 'https'),
     ];
 @endphp
 <script type="application/json" id="reverb-config">

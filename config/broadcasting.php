@@ -46,6 +46,17 @@ return [
             ],
         ],
 
+        // Public Reverb settings rendered into the page and consumed by Laravel
+        // Echo in the browser. They must point at the publicly reachable Reverb
+        // endpoint (e.g. the app domain over wss), which differs from the
+        // internal REVERB_HOST the server process binds to and publishes through.
+        'vite_reverb' => [
+            'key' => env('VITE_REVERB_APP_KEY', env('REVERB_APP_KEY')),
+            'host' => env('VITE_REVERB_HOST'),
+            'port' => (int) env('VITE_REVERB_PORT', 443),
+            'scheme' => env('VITE_REVERB_SCHEME', 'https'),
+        ],
+
         'pusher' => [
             'driver' => 'pusher',
             'key' => env('PUSHER_APP_KEY'),
