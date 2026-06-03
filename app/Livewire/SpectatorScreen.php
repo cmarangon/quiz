@@ -37,6 +37,8 @@ class SpectatorScreen extends Component
 
     public string $joinUrl = '';
 
+    public string $spectatorUrl = '';
+
     public string $qrCodeSvg = '';
 
     public function mount(string $code): void
@@ -45,6 +47,7 @@ class SpectatorScreen extends Component
         $this->session->loadMissing('quiz');
         $this->quizTitle = $this->session->quiz->title ?? '';
         $this->joinUrl = route('game.join', $this->session->join_code);
+        $this->spectatorUrl = route('game.spectator', $this->session->join_code);
         $this->qrCodeSvg = QrCodeService::svg($this->joinUrl, 250);
         $this->loadPlayers();
         $this->totalPlayers = $this->session->players()->count();
@@ -93,12 +96,23 @@ class SpectatorScreen extends Component
 
     public function onCategoryChanged(array $payload): void
     {
-        $this->phase = 'category-intro';
         $theme = $payload['theme'] ?? 'default';
         $this->themeKey = $theme;
         $this->currentTheme = config("themes.{$theme}", config('themes.default'));
         $this->currentTheme['name'] = $payload['name'] ?? '';
         $this->currentTheme['key'] = $theme;
+
+        // category.changed and question.started are broadcast back-to-back. Only
+        // show the "Up Next" intro while we are still waiting for that category's
+        // question. If the question has already started (events may be delivered
+        // or processed out of order), keep showing it instead of reverting to the
+        // intro and losing the themed question screen.
+        $questionAlreadyStarted = $this->currentQuestion !== null
+            && ($this->currentQuestion['category_name'] ?? null) === ($payload['name'] ?? null);
+
+        if (! $questionAlreadyStarted) {
+            $this->phase = 'category-intro';
+        }
     }
 
     public function onQuestionStarted(array $payload): void

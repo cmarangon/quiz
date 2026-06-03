@@ -80,6 +80,24 @@ test('spectator question and review screens render the themed partial', function
         ->assertSee('is-correct', false);
 })->with($themes);
 
+test('spectator keeps showing the themed question when category.changed is processed after question.started', function (string $theme) {
+    $session = themedSession($theme);
+
+    // Simulate the game-start race where category.changed is delivered/processed
+    // after question.started. The styled question must remain visible instead of
+    // reverting to the category intro screen.
+    Livewire::test(SpectatorScreen::class, ['code' => $session->join_code])
+        ->call('onQuestionStarted', questionPayload($theme))
+        ->call('onCategoryChanged', [
+            'theme' => $theme,
+            'name' => ucfirst($theme),
+            'category_id' => 1,
+        ])
+        ->assertSet('phase', 'question')
+        ->assertSee('qz-theme--'.$theme, false)
+        ->assertSee('spectator-question-body', false);
+})->with($themes);
+
 test('an unknown theme falls back to the default markup', function () {
     $session = themedSession('default');
     $player = Player::factory()->for($session, 'gameSession')->create();

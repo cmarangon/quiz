@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\GameSessionFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +14,10 @@ class GameSession extends Model
 {
     /** @use HasFactory<GameSessionFactory> */
     use HasFactory;
+
+    public const OPEN_STATUSES = ['waiting', 'playing', 'reviewing'];
+
+    public const IDLE_TIMEOUT_MINUTES = 120;
 
     protected $fillable = [
         'quiz_id',
@@ -39,6 +44,13 @@ class GameSession extends Model
                 $session->join_code = strtoupper(Str::random(6));
             }
         });
+    }
+
+    public function scopeStale(Builder $query): Builder
+    {
+        return $query
+            ->whereIn('status', self::OPEN_STATUSES)
+            ->where('updated_at', '<', now()->subMinutes(self::IDLE_TIMEOUT_MINUTES));
     }
 
     public function quiz(): BelongsTo

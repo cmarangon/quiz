@@ -195,3 +195,218 @@ test('geo guesser question requires valid coordinates', function () {
 
     expect($category->questions()->count())->toBe(0);
 });
+
+test('editing a question loads its data into the form', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = $category->questions()->create([
+        'type' => 'multiple_choice',
+        'body' => 'What is 2+2?',
+        'options' => ['3', '4', '5', '6'],
+        'correct_answer' => '4',
+        'points' => 10,
+        'time_limit_seconds' => 30,
+        'order' => 1,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('editQuestion', $question->id)
+        ->assertSet('editingQuestionId', $question->id)
+        ->assertSet('questionBody', 'What is 2+2?')
+        ->assertSet('questionType', 'multiple_choice')
+        ->assertSet('questionOptions', ['3', '4', '5', '6'])
+        ->assertSet('questionCorrectAnswer', '4')
+        ->assertSet('questionPoints', 10)
+        ->assertSet('questionTimeLimit', 30);
+});
+
+test('user can update an existing question', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = $category->questions()->create([
+        'type' => 'multiple_choice',
+        'body' => 'What is 2+2?',
+        'options' => ['3', '4', '5', '6'],
+        'correct_answer' => '4',
+        'points' => 10,
+        'time_limit_seconds' => 30,
+        'order' => 1,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('editQuestion', $question->id)
+        ->set('questionBody', 'What is 3+3?')
+        ->set('questionOptions', ['5', '6', '7', '8'])
+        ->set('questionCorrectAnswer', '6')
+        ->set('questionPoints', 20)
+        ->set('questionTimeLimit', 45)
+        ->call('saveQuestion')
+        ->assertHasNoErrors()
+        ->assertSet('editingQuestionId', null);
+
+    $question->refresh();
+    expect($question->body)->toBe('What is 3+3?');
+    expect($question->correct_answer)->toBe('6');
+    expect($question->points)->toBe(20);
+    expect($question->time_limit_seconds)->toBe(45);
+    expect($question->order)->toBe(1);
+    expect($category->questions()->count())->toBe(1);
+});
+
+test('editing an ordering question loads the correct order into the form', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = $category->questions()->create([
+        'type' => 'ordering',
+        'body' => 'Order the planets',
+        'options' => [['label' => 'Mars'], ['label' => 'Earth'], ['label' => 'Venus'], ['label' => 'Mercury']],
+        'correct_answer' => ['Mercury', 'Venus', 'Earth', 'Mars'],
+        'points' => 10,
+        'time_limit_seconds' => 30,
+        'order' => 1,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('editQuestion', $question->id)
+        ->assertSet('questionType', 'ordering')
+        ->assertSet('questionOptions', ['Mercury', 'Venus', 'Earth', 'Mars']);
+});
+
+test('editing a geo guesser question loads its coordinates', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = $category->questions()->create([
+        'type' => 'geo_guesser',
+        'body' => 'Where is the Eiffel Tower?',
+        'options' => [],
+        'correct_answer' => ['lat' => 48.8584, 'lng' => 2.2945],
+        'points' => 100,
+        'time_limit_seconds' => 30,
+        'order' => 1,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('editQuestion', $question->id)
+        ->assertSet('questionType', 'geo_guesser')
+        ->assertSet('questionGeoLat', '48.8584')
+        ->assertSet('questionGeoLng', '2.2945');
+});
+
+test('user can set per-question threshold and max distance on a geo guesser question', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'Where is the Eiffel Tower?')
+        ->set('questionType', 'geo_guesser')
+        ->set('questionGeoLat', '48.8584')
+        ->set('questionGeoLng', '2.2945')
+        ->set('questionGeoThresholdKm', '25')
+        ->set('questionGeoMaxDistanceKm', '1000')
+        ->set('questionPoints', 100)
+        ->set('questionTimeLimit', 30)
+        ->call('saveQuestion')
+        ->assertHasNoErrors();
+
+    $question = $category->questions()->where('type', 'geo_guesser')->firstOrFail();
+    expect((float) $question->options['threshold_km'])->toBe(25.0);
+    expect((float) $question->options['max_distance_km'])->toBe(1000.0);
+});
+
+test('geo guesser threshold and max distance default to empty options when blank', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'Where is the Eiffel Tower?')
+        ->set('questionType', 'geo_guesser')
+        ->set('questionGeoLat', '48.8584')
+        ->set('questionGeoLng', '2.2945')
+        ->set('questionPoints', 100)
+        ->set('questionTimeLimit', 30)
+        ->call('saveQuestion')
+        ->assertHasNoErrors();
+
+    $question = $category->questions()->where('type', 'geo_guesser')->firstOrFail();
+    expect($question->options)->toBe([]);
+});
+
+test('geo guesser threshold must be less than max distance', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'Where is the Eiffel Tower?')
+        ->set('questionType', 'geo_guesser')
+        ->set('questionGeoLat', '48.8584')
+        ->set('questionGeoLng', '2.2945')
+        ->set('questionGeoThresholdKm', '1000')
+        ->set('questionGeoMaxDistanceKm', '500')
+        ->set('questionPoints', 100)
+        ->set('questionTimeLimit', 30)
+        ->call('saveQuestion')
+        ->assertHasErrors(['questionGeoThresholdKm']);
+
+    expect($category->questions()->count())->toBe(0);
+});
+
+test('editing a geo guesser question loads its per-question scoring options', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = $category->questions()->create([
+        'type' => 'geo_guesser',
+        'body' => 'Where is the Eiffel Tower?',
+        'options' => ['threshold_km' => 25.0, 'max_distance_km' => 1000.0],
+        'correct_answer' => ['lat' => 48.8584, 'lng' => 2.2945],
+        'points' => 100,
+        'time_limit_seconds' => 30,
+        'order' => 1,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('editQuestion', $question->id)
+        ->assertSet('questionGeoThresholdKm', '25')
+        ->assertSet('questionGeoMaxDistanceKm', '1000');
+});
+
+test('user cannot edit a question belonging to another users quiz', function () {
+    $owner = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $owner->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = $category->questions()->create([
+        'type' => 'multiple_choice',
+        'body' => 'What is 2+2?',
+        'options' => ['3', '4'],
+        'correct_answer' => '4',
+        'points' => 10,
+        'time_limit_seconds' => 30,
+        'order' => 1,
+    ]);
+
+    $otherQuiz = Quiz::factory()->create(['user_id' => $otherUser->id]);
+
+    Livewire::actingAs($otherUser)
+        ->test(QuizBuilder::class, ['quiz' => $otherQuiz])
+        ->call('editQuestion', $question->id)
+        ->assertStatus(403);
+});

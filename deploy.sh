@@ -27,6 +27,9 @@ npm run build
 echo "==> Running database migrations"
 php artisan migrate --force
 
+echo "==> Pruning stale game sessions"
+php artisan games:prune-stale
+
 echo "==> Caching configuration"
 php artisan config:cache
 php artisan route:cache

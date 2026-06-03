@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Category;
+use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -28,6 +29,8 @@ class QuizBuilder extends Component
 
     public ?int $addingQuestionToCategoryId = null;
 
+    public ?int $editingQuestionId = null;
+
     public string $questionBody = '';
 
     public string $questionType = 'multiple_choice';
@@ -39,6 +42,10 @@ class QuizBuilder extends Component
     public string $questionGeoLat = '';
 
     public string $questionGeoLng = '';
+
+    public string $questionGeoThresholdKm = '';
+
+    public string $questionGeoMaxDistanceKm = '';
 
     public int $questionPoints = 10;
 
@@ -106,13 +113,52 @@ class QuizBuilder extends Component
 
     public function showAddQuestion(int $categoryId): void
     {
+        $this->editingQuestionId = null;
         $this->addingQuestionToCategoryId = $categoryId;
         $this->resetQuestionForm();
+    }
+
+    public function editQuestion(int $questionId): void
+    {
+        $question = Question::findOrFail($questionId);
+        $category = $question->category;
+
+        if ($category->quiz_id !== $this->quiz?->id) {
+            abort(403);
+        }
+
+        $this->resetQuestionForm();
+        $this->addingQuestionToCategoryId = null;
+        $this->editingQuestionId = $question->id;
+
+        $this->questionBody = $question->body;
+        $this->questionType = $question->type;
+        $this->questionPoints = $question->points;
+        $this->questionTimeLimit = $question->time_limit_seconds;
+
+        if ($question->type === 'multiple_choice') {
+            $options = $question->options ?: [];
+            $this->questionOptions = count($options) >= 2 ? $options : ['', ''];
+            $this->questionCorrectAnswer = is_scalar($question->correct_answer) ? (string) $question->correct_answer : '';
+        } elseif ($question->type === 'true_false') {
+            $this->questionCorrectAnswer = is_scalar($question->correct_answer) ? (string) $question->correct_answer : '';
+        } elseif ($question->type === 'ordering') {
+            $labels = is_array($question->correct_answer) ? $question->correct_answer : [];
+            $this->questionOptions = count($labels) >= 2 ? $labels : ['', ''];
+        } elseif ($question->type === 'geo_guesser') {
+            $this->questionGeoLat = (string) ($question->correct_answer['lat'] ?? '');
+            $this->questionGeoLng = (string) ($question->correct_answer['lng'] ?? '');
+
+            $options = $question->options ?? [];
+            $this->questionGeoThresholdKm = isset($options['threshold_km']) ? (string) $options['threshold_km'] : '';
+            $this->questionGeoMaxDistanceKm = isset($options['max_distance_km']) ? (string) $options['max_distance_km'] : '';
+        }
     }
 
     public function cancelAddQuestion(): void
     {
         $this->addingQuestionToCategoryId = null;
+        $this->editingQuestionId = null;
         $this->resetQuestionForm();
     }
 
@@ -152,31 +198,67 @@ class QuizBuilder extends Component
         if ($this->questionType === 'geo_guesser') {
             $rules['questionGeoLat'] = 'required|numeric|between:-90,90';
             $rules['questionGeoLng'] = 'required|numeric|between:-180,180';
+
+            if ($this->questionGeoThresholdKm !== '') {
+                $rules['questionGeoThresholdKm'] = 'numeric|min:0';
+            }
+
+            if ($this->questionGeoMaxDistanceKm !== '') {
+                $rules['questionGeoMaxDistanceKm'] = 'numeric|gt:0';
+            }
         }
 
         $this->validate($rules);
 
-        $category = Category::findOrFail($this->addingQuestionToCategoryId);
+        if ($this->questionType === 'geo_guesser'
+            && $this->questionGeoThresholdKm !== ''
+            && $this->questionGeoMaxDistanceKm !== ''
+            && (float) $this->questionGeoThresholdKm >= (float) $this->questionGeoMaxDistanceKm) {
+            $this->addError('questionGeoThresholdKm', __('The threshold must be less than the max distance.'));
 
-        if ($category->quiz_id !== $this->quiz?->id) {
-            abort(403);
+            return;
         }
 
         [$options, $correctAnswer] = $this->buildQuestionPayload();
 
-        $nextOrder = $category->questions()->max('order') + 1;
+        if ($this->editingQuestionId) {
+            $question = Question::findOrFail($this->editingQuestionId);
+            $category = $question->category;
 
-        $category->questions()->create([
-            'type' => $this->questionType,
-            'body' => $this->questionBody,
-            'options' => $options,
-            'correct_answer' => $correctAnswer,
-            'points' => $this->questionPoints,
-            'time_limit_seconds' => $this->questionTimeLimit,
-            'order' => $nextOrder,
-        ]);
+            if ($category->quiz_id !== $this->quiz?->id) {
+                abort(403);
+            }
+
+            $question->update([
+                'type' => $this->questionType,
+                'body' => $this->questionBody,
+                'options' => $options,
+                'correct_answer' => $correctAnswer,
+                'points' => $this->questionPoints,
+                'time_limit_seconds' => $this->questionTimeLimit,
+            ]);
+        } else {
+            $category = Category::findOrFail($this->addingQuestionToCategoryId);
+
+            if ($category->quiz_id !== $this->quiz?->id) {
+                abort(403);
+            }
+
+            $nextOrder = $category->questions()->max('order') + 1;
+
+            $category->questions()->create([
+                'type' => $this->questionType,
+                'body' => $this->questionBody,
+                'options' => $options,
+                'correct_answer' => $correctAnswer,
+                'points' => $this->questionPoints,
+                'time_limit_seconds' => $this->questionTimeLimit,
+                'order' => $nextOrder,
+            ]);
+        }
 
         $this->addingQuestionToCategoryId = null;
+        $this->editingQuestionId = null;
         $this->resetQuestionForm();
     }
 
@@ -196,7 +278,17 @@ class QuizBuilder extends Component
         }
 
         if ($this->questionType === 'geo_guesser') {
-            return [[], ['lat' => (float) $this->questionGeoLat, 'lng' => (float) $this->questionGeoLng]];
+            $options = [];
+
+            if ($this->questionGeoThresholdKm !== '') {
+                $options['threshold_km'] = (float) $this->questionGeoThresholdKm;
+            }
+
+            if ($this->questionGeoMaxDistanceKm !== '') {
+                $options['max_distance_km'] = (float) $this->questionGeoMaxDistanceKm;
+            }
+
+            return [$options, ['lat' => (float) $this->questionGeoLat, 'lng' => (float) $this->questionGeoLng]];
         }
 
         if ($this->questionType === 'ordering') {
@@ -235,6 +327,8 @@ class QuizBuilder extends Component
         $this->questionCorrectAnswer = '';
         $this->questionGeoLat = '';
         $this->questionGeoLng = '';
+        $this->questionGeoThresholdKm = '';
+        $this->questionGeoMaxDistanceKm = '';
         $this->questionPoints = 10;
         $this->questionTimeLimit = 30;
     }

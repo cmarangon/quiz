@@ -12,7 +12,8 @@ class WelcomePage extends Component
     public function render()
     {
         $activeGames = GameSession::with(['quiz', 'players'])
-            ->whereIn('status', ['waiting', 'playing', 'reviewing'])
+            ->whereIn('status', GameSession::OPEN_STATUSES)
+            ->where('updated_at', '>=', now()->subMinutes(GameSession::IDLE_TIMEOUT_MINUTES))
             ->latest()
             ->get();
 
