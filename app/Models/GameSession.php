@@ -19,13 +19,6 @@ class GameSession extends Model
 
     public const IDLE_TIMEOUT_MINUTES = 120;
 
-    public function scopeStale(Builder $query): Builder
-    {
-        return $query
-            ->whereIn('status', self::OPEN_STATUSES)
-            ->where('updated_at', '<', now()->subMinutes(self::IDLE_TIMEOUT_MINUTES));
-    }
-
     protected $fillable = [
         'quiz_id',
         'host_user_id',
@@ -51,6 +44,13 @@ class GameSession extends Model
                 $session->join_code = strtoupper(Str::random(6));
             }
         });
+    }
+
+    public function scopeStale(Builder $query): Builder
+    {
+        return $query
+            ->whereIn('status', self::OPEN_STATUSES)
+            ->where('updated_at', '<', now()->subMinutes(self::IDLE_TIMEOUT_MINUTES));
     }
 
     public function quiz(): BelongsTo
