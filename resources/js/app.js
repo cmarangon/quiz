@@ -11,12 +11,15 @@ document.addEventListener('alpine:init', () => {
 });
 
 
+const reverbConfigElement = document.getElementById('reverb-config');
+const reverbConfig = reverbConfigElement ? JSON.parse(reverbConfigElement.textContent) : {};
+
 window.Echo = new Echo({
     broadcaster: 'reverb',
-    key: import.meta.env.VITE_REVERB_APP_KEY,
-    wsHost: import.meta.env.VITE_REVERB_HOST,
-    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
-    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
-    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
+    key: reverbConfig.key,
+    wsHost: reverbConfig.host,
+    wsPort: reverbConfig.port ?? 80,
+    wssPort: reverbConfig.port ?? 443,
+    forceTLS: (reverbConfig.scheme ?? 'https') === 'https',
     enabledTransports: ['ws', 'wss'],
 });
