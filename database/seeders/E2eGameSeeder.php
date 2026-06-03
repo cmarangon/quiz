@@ -16,7 +16,7 @@ class E2eGameSeeder extends Seeder
         $email = env('E2E_HOST_EMAIL', 'e2e-host@test.local');
         $password = env('E2E_HOST_PASSWORD', 'password');
 
-        $user = User::firstOrCreate(
+        $user = User::updateOrCreate(
             ['email' => $email],
             [
                 'name' => 'E2E Host',

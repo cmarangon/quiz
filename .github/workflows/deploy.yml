@@ -59,10 +59,14 @@ jobs:
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
+        env:
+          E2E_HOST_EMAIL: ${{ secrets.E2E_HOST_EMAIL }}
+          E2E_HOST_PASSWORD: ${{ secrets.E2E_HOST_PASSWORD }}
         with:
           host: ${{ vars.SSH_HOST }}
           username: ${{ vars.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
+          envs: E2E_HOST_EMAIL,E2E_HOST_PASSWORD
           script: |
             set -euo pipefail
             DEPLOY_PATH="${{ vars.DEPLOY_PATH }}"
@@ -97,7 +101,7 @@ jobs:
             php artisan migrate --force
 
             echo "==> Seeding e2e fixture data (idempotent)"
-            php artisan db:seed --class=E2eGameSeeder --force
+            E2E_HOST_EMAIL="${E2E_HOST_EMAIL:-}" E2E_HOST_PASSWORD="${E2E_HOST_PASSWORD:-}" php artisan db:seed --class=E2eGameSeeder --force
 
             echo "==> Caching framework files"
             php artisan optimize
