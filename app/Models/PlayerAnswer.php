@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\PlayerAnswerFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PlayerAnswer extends Model
 {
-    /** @use HasFactory<\Database\Factories\PlayerAnswerFactory> */
+    /** @use HasFactory<PlayerAnswerFactory> */
     use HasFactory;
 
     protected $fillable = [

@@ -98,7 +98,7 @@ class GameService
         $session->refresh();
 
         if ($nextQuestion->category_id !== $prevCategoryId) {
-             $this->broadcastSafely(fn () => broadcast(new CategoryChanged($session, $nextQuestion->category)));
+            $this->broadcastSafely(fn () => broadcast(new CategoryChanged($session, $nextQuestion->category)));
         }
 
         $this->broadcastSafely(fn () => broadcast(new QuestionStarted($session, $nextQuestion)));
