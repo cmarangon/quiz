@@ -1,4 +1,4 @@
-<div class="flex flex-col items-center gap-6 text-center">
+<div class="flex flex-col items-center gap-6 text-center" @if(in_array($phase, ['waiting', 'answered', 'review'], true)) wire:poll.2s="pollState" @endif>
     @if($player)
         <h1 data-test="player-nickname" class="text-2xl font-bold text-zinc-900 dark:text-white">
             {{ $player->nickname }}
