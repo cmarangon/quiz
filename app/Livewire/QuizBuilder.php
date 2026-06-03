@@ -36,6 +36,10 @@ class QuizBuilder extends Component
 
     public string $questionCorrectAnswer = '';
 
+    public string $questionGeoLat = '';
+
+    public string $questionGeoLng = '';
+
     public int $questionPoints = 10;
 
     public int $questionTimeLimit = 30;
@@ -127,7 +131,7 @@ class QuizBuilder extends Component
     {
         $rules = [
             'questionBody' => 'required|min:3',
-            'questionType' => 'required|in:multiple_choice,true_false,ordering',
+            'questionType' => 'required|in:multiple_choice,true_false,ordering,geo_guesser',
             'questionPoints' => 'required|integer|min:1',
             'questionTimeLimit' => 'required|integer|min:5',
         ];
@@ -141,8 +145,13 @@ class QuizBuilder extends Component
             $rules['questionOptions.*'] = 'required|string|distinct';
         }
 
-        if ($this->questionType !== 'ordering') {
+        if ($this->questionType === 'multiple_choice' || $this->questionType === 'true_false') {
             $rules['questionCorrectAnswer'] = 'required';
+        }
+
+        if ($this->questionType === 'geo_guesser') {
+            $rules['questionGeoLat'] = 'required|numeric|between:-90,90';
+            $rules['questionGeoLng'] = 'required|numeric|between:-180,180';
         }
 
         $this->validate($rules);
@@ -186,6 +195,10 @@ class QuizBuilder extends Component
             return [['True', 'False'], $this->questionCorrectAnswer];
         }
 
+        if ($this->questionType === 'geo_guesser') {
+            return [[], ['lat' => (float) $this->questionGeoLat, 'lng' => (float) $this->questionGeoLng]];
+        }
+
         if ($this->questionType === 'ordering') {
             $labels = array_values(array_filter(
                 array_map('trim', $this->questionOptions),
@@ -220,6 +233,8 @@ class QuizBuilder extends Component
         $this->questionType = 'multiple_choice';
         $this->questionOptions = ['', '', '', ''];
         $this->questionCorrectAnswer = '';
+        $this->questionGeoLat = '';
+        $this->questionGeoLng = '';
         $this->questionPoints = 10;
         $this->questionTimeLimit = 30;
     }
