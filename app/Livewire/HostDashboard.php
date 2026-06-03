@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\GameSession;
 use App\Services\GameService;
+use App\Services\QrCodeService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -19,11 +20,18 @@ class HostDashboard extends Component
 
     public string $phase = 'lobby';
 
+    public string $spectatorUrl = '';
+
+    public string $spectatorQrCodeSvg = '';
+
     public function mount(string $code): void
     {
         $this->session = GameSession::where('join_code', strtoupper($code))->firstOrFail();
 
         abort_unless($this->session->host_user_id === Auth::id(), 403);
+
+        $this->spectatorUrl = route('game.spectator', $this->session->join_code);
+        $this->spectatorQrCodeSvg = QrCodeService::svg($this->spectatorUrl, 200);
 
         $this->totalPlayers = $this->session->players()->count();
         $this->phase = match ($this->session->status) {

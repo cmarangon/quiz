@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\GameSession;
 use App\Models\Player;
 use App\Models\Quiz;
+use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -111,6 +112,8 @@ class Dashboard extends Component
             'clear-players' => $this->clearPlayerEntries(),
             default => null,
         };
+
+        Flux::modal('confirm-action')->close();
     }
 
     public function render()

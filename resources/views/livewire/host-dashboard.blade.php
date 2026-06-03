@@ -19,6 +19,35 @@
         </p>
     </div>
 
+    {{-- Spectator link --}}
+    <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Spectator Screen') }}</p>
+        <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            {{ __('Open this on a shared display so everyone can follow along.') }}
+        </p>
+        <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div class="flex flex-col items-start gap-2">
+                <flux:button
+                    :href="$spectatorUrl"
+                    target="_blank"
+                    variant="primary"
+                    icon="arrow-top-right-on-square"
+                    data-test="spectator-link-button"
+                >
+                    {{ __('Open Spectator Screen') }}
+                </flux:button>
+                <a href="{{ $spectatorUrl }}" target="_blank" data-test="spectator-link"
+                   class="break-all font-mono text-xs text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+                    {{ $spectatorUrl }}
+                </a>
+            </div>
+            <div class="rounded-lg border border-zinc-200 bg-white p-2 dark:border-zinc-700 dark:bg-zinc-900"
+                 data-test="spectator-qr-code">
+                {!! $spectatorQrCodeSvg !!}
+            </div>
+        </div>
+    </div>
+
     {{-- Answer Progress --}}
     @if($phase === 'playing')
         <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">

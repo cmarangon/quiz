@@ -29,7 +29,7 @@
                                     <a href="{{ route('quizzes.edit', $quiz) }}" class="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">{{ __('Edit') }}</a>
                                     <form action="{{ route('game.create', $quiz) }}" method="POST" class="ml-3 inline">
                                         @csrf
-                                        <button type="submit" class="rounded bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-500">{{ __('Play') }}</button>
+                                        <flux:button type="submit" size="sm" variant="primary">{{ __('Play') }}</flux:button>
                                     </form>
                                     <flux:modal.trigger name="confirm-action">
                                         <flux:button size="sm" variant="danger" class="ml-3"

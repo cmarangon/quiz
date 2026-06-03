@@ -42,6 +42,12 @@
             @endif
 
             <p class="text-lg text-zinc-500 dark:text-zinc-400 animate-pulse">{{ __('Waiting for the host to start...') }}</p>
+
+            {{-- Spectator link --}}
+            <a href="{{ $spectatorUrl }}" data-test="spectator-link"
+               class="block break-all font-mono text-sm text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300">
+                {{ $spectatorUrl }}
+            </a>
         </div>
 
     {{-- CATEGORY INTRO PHASE --}}

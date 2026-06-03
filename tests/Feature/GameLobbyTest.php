@@ -85,3 +85,28 @@ test('spectator page is accessible without auth', function () {
     $this->get(route('game.spectator', $session->join_code))
         ->assertStatus(200);
 });
+
+test('host dashboard shows the spectator link as a button and qr code', function () {
+    $host = User::factory()->create();
+    $session = GameSession::factory()->create(['host_user_id' => $host->id]);
+
+    $spectatorUrl = route('game.spectator', $session->join_code);
+
+    Livewire::actingAs($host)
+        ->test(\App\Livewire\HostDashboard::class, ['code' => $session->join_code])
+        ->assertSet('spectatorUrl', $spectatorUrl)
+        ->assertSeeHtml('data-test="spectator-link-button"')
+        ->assertSeeHtml('data-test="spectator-qr-code"')
+        ->assertSeeHtml($spectatorUrl);
+});
+
+test('spectator screen shows its own link in the lobby', function () {
+    $session = GameSession::factory()->create(['status' => 'waiting']);
+
+    $spectatorUrl = route('game.spectator', $session->join_code);
+
+    Livewire::test(\App\Livewire\SpectatorScreen::class, ['code' => $session->join_code])
+        ->assertSet('spectatorUrl', $spectatorUrl)
+        ->assertSeeHtml('data-test="spectator-link"')
+        ->assertSeeHtml($spectatorUrl);
+});
