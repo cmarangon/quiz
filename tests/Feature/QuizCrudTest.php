@@ -300,6 +300,94 @@ test('editing a geo guesser question loads its coordinates', function () {
         ->assertSet('questionGeoLng', '2.2945');
 });
 
+test('user can set per-question threshold and max distance on a geo guesser question', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'Where is the Eiffel Tower?')
+        ->set('questionType', 'geo_guesser')
+        ->set('questionGeoLat', '48.8584')
+        ->set('questionGeoLng', '2.2945')
+        ->set('questionGeoThresholdKm', '25')
+        ->set('questionGeoMaxDistanceKm', '1000')
+        ->set('questionPoints', 100)
+        ->set('questionTimeLimit', 30)
+        ->call('saveQuestion')
+        ->assertHasNoErrors();
+
+    $question = $category->questions()->where('type', 'geo_guesser')->firstOrFail();
+    expect((float) $question->options['threshold_km'])->toBe(25.0);
+    expect((float) $question->options['max_distance_km'])->toBe(1000.0);
+});
+
+test('geo guesser threshold and max distance default to empty options when blank', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'Where is the Eiffel Tower?')
+        ->set('questionType', 'geo_guesser')
+        ->set('questionGeoLat', '48.8584')
+        ->set('questionGeoLng', '2.2945')
+        ->set('questionPoints', 100)
+        ->set('questionTimeLimit', 30)
+        ->call('saveQuestion')
+        ->assertHasNoErrors();
+
+    $question = $category->questions()->where('type', 'geo_guesser')->firstOrFail();
+    expect($question->options)->toBe([]);
+});
+
+test('geo guesser threshold must be less than max distance', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'Where is the Eiffel Tower?')
+        ->set('questionType', 'geo_guesser')
+        ->set('questionGeoLat', '48.8584')
+        ->set('questionGeoLng', '2.2945')
+        ->set('questionGeoThresholdKm', '1000')
+        ->set('questionGeoMaxDistanceKm', '500')
+        ->set('questionPoints', 100)
+        ->set('questionTimeLimit', 30)
+        ->call('saveQuestion')
+        ->assertHasErrors(['questionGeoThresholdKm']);
+
+    expect($category->questions()->count())->toBe(0);
+});
+
+test('editing a geo guesser question loads its per-question scoring options', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = $category->questions()->create([
+        'type' => 'geo_guesser',
+        'body' => 'Where is the Eiffel Tower?',
+        'options' => ['threshold_km' => 25.0, 'max_distance_km' => 1000.0],
+        'correct_answer' => ['lat' => 48.8584, 'lng' => 2.2945],
+        'points' => 100,
+        'time_limit_seconds' => 30,
+        'order' => 1,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('editQuestion', $question->id)
+        ->assertSet('questionGeoThresholdKm', '25')
+        ->assertSet('questionGeoMaxDistanceKm', '1000');
+});
+
 test('user cannot edit a question belonging to another users quiz', function () {
     $owner = User::factory()->create();
     $otherUser = User::factory()->create();

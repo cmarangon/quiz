@@ -152,6 +152,14 @@
                                     </div>
                                     @error('questionGeoLat') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                                     @error('questionGeoLng') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+
+                                    <div class="mt-3 flex gap-2">
+                                        <flux:input wire:model="questionGeoThresholdKm" :label="__('Full-points radius (km)')" type="number" step="any" min="0" size="sm" :placeholder="__('Default')" />
+                                        <flux:input wire:model="questionGeoMaxDistanceKm" :label="__('Zero-points distance (km)')" type="number" step="any" min="0" size="sm" :placeholder="__('Default')" />
+                                    </div>
+                                    <p class="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{{ __('Leave blank to use the quiz defaults. Guesses within the radius earn full points; points decay to zero at the max distance.') }}</p>
+                                    @error('questionGeoThresholdKm') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                    @error('questionGeoMaxDistanceKm') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                                 </div>
                                 @endif
 

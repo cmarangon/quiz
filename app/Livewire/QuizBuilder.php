@@ -43,6 +43,10 @@ class QuizBuilder extends Component
 
     public string $questionGeoLng = '';
 
+    public string $questionGeoThresholdKm = '';
+
+    public string $questionGeoMaxDistanceKm = '';
+
     public int $questionPoints = 10;
 
     public int $questionTimeLimit = 30;
@@ -144,6 +148,10 @@ class QuizBuilder extends Component
         } elseif ($question->type === 'geo_guesser') {
             $this->questionGeoLat = (string) ($question->correct_answer['lat'] ?? '');
             $this->questionGeoLng = (string) ($question->correct_answer['lng'] ?? '');
+
+            $options = $question->options ?? [];
+            $this->questionGeoThresholdKm = isset($options['threshold_km']) ? (string) $options['threshold_km'] : '';
+            $this->questionGeoMaxDistanceKm = isset($options['max_distance_km']) ? (string) $options['max_distance_km'] : '';
         }
     }
 
@@ -190,9 +198,26 @@ class QuizBuilder extends Component
         if ($this->questionType === 'geo_guesser') {
             $rules['questionGeoLat'] = 'required|numeric|between:-90,90';
             $rules['questionGeoLng'] = 'required|numeric|between:-180,180';
+
+            if ($this->questionGeoThresholdKm !== '') {
+                $rules['questionGeoThresholdKm'] = 'numeric|min:0';
+            }
+
+            if ($this->questionGeoMaxDistanceKm !== '') {
+                $rules['questionGeoMaxDistanceKm'] = 'numeric|gt:0';
+            }
         }
 
         $this->validate($rules);
+
+        if ($this->questionType === 'geo_guesser'
+            && $this->questionGeoThresholdKm !== ''
+            && $this->questionGeoMaxDistanceKm !== ''
+            && (float) $this->questionGeoThresholdKm >= (float) $this->questionGeoMaxDistanceKm) {
+            $this->addError('questionGeoThresholdKm', __('The threshold must be less than the max distance.'));
+
+            return;
+        }
 
         [$options, $correctAnswer] = $this->buildQuestionPayload();
 
@@ -253,7 +278,17 @@ class QuizBuilder extends Component
         }
 
         if ($this->questionType === 'geo_guesser') {
-            return [[], ['lat' => (float) $this->questionGeoLat, 'lng' => (float) $this->questionGeoLng]];
+            $options = [];
+
+            if ($this->questionGeoThresholdKm !== '') {
+                $options['threshold_km'] = (float) $this->questionGeoThresholdKm;
+            }
+
+            if ($this->questionGeoMaxDistanceKm !== '') {
+                $options['max_distance_km'] = (float) $this->questionGeoMaxDistanceKm;
+            }
+
+            return [$options, ['lat' => (float) $this->questionGeoLat, 'lng' => (float) $this->questionGeoLng]];
         }
 
         if ($this->questionType === 'ordering') {
@@ -292,6 +327,8 @@ class QuizBuilder extends Component
         $this->questionCorrectAnswer = '';
         $this->questionGeoLat = '';
         $this->questionGeoLng = '';
+        $this->questionGeoThresholdKm = '';
+        $this->questionGeoMaxDistanceKm = '';
         $this->questionPoints = 10;
         $this->questionTimeLimit = 30;
     }
