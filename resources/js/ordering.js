@@ -9,11 +9,21 @@
 export function orderingList(config) {
     return {
         items: [],
+        colors: {},
         dragIndex: null,
         submitted: false,
 
         init() {
             this.items = Array.from(config.items || []);
+            const palette = ['a', 'b', 'c', 'd'];
+            this.colors = {};
+            this.items.forEach((item, index) => {
+                this.colors[item] = palette[index % palette.length];
+            });
+        },
+
+        colorFor(item) {
+            return this.colors[item] ?? 'a';
         },
 
         onDragStart(index) {

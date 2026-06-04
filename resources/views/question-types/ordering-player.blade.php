@@ -44,7 +44,7 @@
                         data-test="ordering-item"
                         x-bind:data-answer-label="item"
                         class="qz-option qz-order"
-                        x-bind:class="['a', 'b', 'c', 'd'][index % 4]"
+                        x-bind:class="colorFor(item)"
                     >
                         <span class="qz-key" x-text="index + 1"></span>
                         <span class="qz-order__label" x-text="item"></span>
