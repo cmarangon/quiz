@@ -75,7 +75,7 @@
     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35), inset 0 0 30px rgba(34, 211, 238, 0.06);
     color: #fff;
 }
-.qz-theme--science .qz-question .qz-emoji { font-size: 1em; display: block; margin-bottom: 6px; }
+.qz-theme--science .qz-question .qz-emoji { font-size: 4em; display: block; margin-bottom: 6px; }
 .qz-theme--science .qz-question .qz-qlabel { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: #a5b4fc; }
 
 .qz-theme--science .qz-options {
@@ -172,7 +172,7 @@
     box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5), inset 0 0 70px rgba(120, 80, 40, 0.18);
 }
 .qz-theme--history .qz-question h2 { font-family: 'MedievalSharp', serif; }
-.qz-theme--history .qz-question .qz-emoji { display: block; margin-bottom: 8px; }
+.qz-theme--history .qz-question .qz-emoji { font-size: 4em; display: block; margin-bottom: 8px; }
 .qz-theme--history .qz-question .qz-qlabel { font-family: 'MedievalSharp', serif; letter-spacing: 1px; text-transform: uppercase; color: var(--burg); }
 .qz-theme--history .qz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .qz-theme--history .qz-option {
@@ -257,7 +257,7 @@
     border-top-color: #fff; filter: drop-shadow(0 6px 0 var(--pop-ink));
 }
 .qz-theme--pop-culture .qz-question h2 { font-family: 'Bangers', system-ui, sans-serif; letter-spacing: 1.5px; }
-.qz-theme--pop-culture .qz-question .qz-emoji { display: block; margin-bottom: 6px; }
+.qz-theme--pop-culture .qz-question .qz-emoji { font-size: 4em; display: block; margin-bottom: 6px; }
 .qz-theme--pop-culture .qz-question .qz-qlabel { font-family: 'Bangers', system-ui, sans-serif; letter-spacing: 1px; color: var(--pop-purple); }
 .qz-theme--pop-culture .qz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .qz-theme--pop-culture .qz-option {
@@ -312,7 +312,7 @@
     border-radius: 26px; padding: 30px 40px; text-align: center; box-shadow: 10px 10px 0 var(--gk-ink);
 }
 .qz-theme--general-knowledge .qz-question h2 { font-weight: 800; }
-.qz-theme--general-knowledge .qz-question .qz-emoji { display: block; margin-bottom: 6px; }
+.qz-theme--general-knowledge .qz-question .qz-emoji { font-size: 4em; display: block; margin-bottom: 6px; }
 .qz-theme--general-knowledge .qz-question .qz-qlabel { font-weight: 700; letter-spacing: 0.5px; color: var(--gk-indigo); }
 .qz-theme--general-knowledge .qz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .qz-theme--general-knowledge .qz-option {
@@ -381,7 +381,7 @@
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
 }
 .qz-theme--geography .qz-question h2 { font-family: 'Cabin Sketch', system-ui, cursive; font-weight: 700; }
-.qz-theme--geography .qz-question .qz-emoji { display: block; margin-bottom: 6px; }
+.qz-theme--geography .qz-question .qz-emoji { font-size: 4em; display: block; margin-bottom: 6px; }
 .qz-theme--geography .qz-question .qz-qlabel { font-family: 'Cabin Sketch', system-ui, cursive; font-weight: 700; color: var(--geo-route); }
 .qz-theme--geography .qz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .qz-theme--geography .qz-option {
@@ -445,7 +445,7 @@
 .qz-theme--nature .qz-question::before { content: "🌼"; position: absolute; left: 30px; top: -22px; font-size: 38px; }
 .qz-theme--nature .qz-question::after { content: "🌱"; position: absolute; right: 36px; bottom: -24px; font-size: 40px; }
 .qz-theme--nature .qz-question h2 { font-family: 'Sniglet', system-ui, sans-serif; font-weight: 800; }
-.qz-theme--nature .qz-question .qz-emoji { display: block; margin-bottom: 6px; }
+.qz-theme--nature .qz-question .qz-emoji { font-size: 4em; display: block; margin-bottom: 6px; }
 .qz-theme--nature .qz-question .qz-qlabel { font-family: 'Sniglet', system-ui, sans-serif; font-weight: 800; color: var(--nat-emerald); }
 .qz-theme--nature .qz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .qz-theme--nature .qz-option {
@@ -512,7 +512,7 @@
     background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 4px);
 }
 .qz-theme--sports .qz-question h2 { font-family: 'Anton', system-ui, sans-serif; letter-spacing: 1.5px; text-transform: uppercase; color: #eaf2ff; text-shadow: 0 0 18px rgba(120, 170, 255, 0.6); }
-.qz-theme--sports .qz-question .qz-emoji { display: block; margin-bottom: 6px; }
+.qz-theme--sports .qz-question .qz-emoji { font-size: 4em; display: block; margin-bottom: 6px; }
 .qz-theme--sports .qz-question .qz-qlabel { font-family: 'Anton', system-ui, sans-serif; letter-spacing: 1px; text-transform: uppercase; color: #6f8bd0; }
 .qz-theme--sports .qz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .qz-theme--sports .qz-option {
