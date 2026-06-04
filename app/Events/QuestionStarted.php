@@ -34,6 +34,7 @@ class QuestionStarted implements ShouldBroadcastNow
             'type' => $this->question->type,
             'options' => $this->question->options,
             'time_limit_seconds' => $this->question->time_limit_seconds,
+            'started_at' => $this->session->current_question_started_at?->getTimestampMs(),
             'question_index' => $this->session->current_question_index,
             'theme' => $this->question->category?->theme ?? 'default',
             'category_name' => $this->question->category?->name,

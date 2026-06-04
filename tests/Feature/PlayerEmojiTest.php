@@ -56,8 +56,31 @@ test('joining with an emoji outside the curated set fails validation', function 
         ->assertHasErrors(['emoji']);
 });
 
-test('finish leaderboard includes player emojis', function () {
+test('lewd list is non-empty and unique', function () {
+    $lewd = PlayerEmojis::lewd();
+
+    expect($lewd)->toBeArray()
+        ->and(count($lewd))->toBeGreaterThanOrEqual(1)
+        ->and($lewd)->toEqual(array_values(array_unique($lewd)));
+});
+
+test('surprise me sets a lewd emoji that passes validation', function () {
     $quiz = Quiz::factory()->create();
+    $session = GameSession::factory()->create(['quiz_id' => $quiz->id, 'status' => 'waiting']);
+
+    Livewire::test(JoinGame::class, ['code' => $session->join_code])
+        ->call('surpriseMe')
+        ->tap(fn ($c) => expect(PlayerEmojis::lewd())->toContain($c->get('emoji')))
+        ->set('nickname', 'Cheeky')
+        ->call('join')
+        ->assertHasNoErrors()
+        ->assertRedirectContains('/game/'.$session->join_code.'/play');
+
+    expect(PlayerEmojis::lewd())
+        ->toContain(Player::where('game_session_id', $session->id)->first()->emoji);
+});
+
+test('finish leaderboard includes player emojis', function () {    $quiz = Quiz::factory()->create();
     $session = GameSession::factory()->create(['quiz_id' => $quiz->id, 'status' => 'finished']);
     Player::factory()->create(['game_session_id' => $session->id, 'nickname' => 'A', 'emoji' => '🚀', 'score' => 10]);
 

@@ -16,6 +16,7 @@
                 @php $label = $option['label'] ?? $option; @endphp
                 <button
                     wire:click="submitAnswer('{{ $label }}')"
+                    x-bind:disabled="expired"
                     data-test="player-answer-option"
                     data-answer-label="{{ $label }}"
                     class="qz-option {{ $letters[$index % 4] }}">

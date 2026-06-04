@@ -41,7 +41,7 @@ class JoinGame extends Component
 
         $this->validate([
             'nickname' => 'required|string|min:1|max:50',
-            'emoji' => ['required', Rule::in(PlayerEmojis::all())],
+            'emoji' => ['required', Rule::in(PlayerEmojis::selectable())],
         ]);
 
         $nickname = $this->resolveUniqueNickname($session, trim($this->nickname));
@@ -63,6 +63,11 @@ class JoinGame extends Component
             'code' => $session->join_code,
             'player_id' => $player->id,
         ]);
+    }
+
+    public function surpriseMe(): void
+    {
+        $this->emoji = PlayerEmojis::randomLewd();
     }
 
     private function resolveUniqueNickname(GameSession $session, string $nickname): string
