@@ -1,49 +1,51 @@
+@php
+    $style = $session->presentationStyle();
+@endphp
 <div class="flex min-h-svh flex-col items-center justify-center p-8" @if($phase === 'lobby') wire:poll.2s="pollPlayers" @endif>
     <div data-test="spectator-phase" data-phase="{{ $phase }}" class="hidden"></div>
     {{-- LOBBY PHASE --}}
     @if($phase === 'lobby')
-        <div class="text-center space-y-8">
+        <div class="qz-stage qz-stage--{{ $style }} qz-lobby">
+            <span class="qz-blob l1"></span><span class="qz-blob l2"></span><span class="qz-blob l3"></span>
+
             @if($quizTitle)
-                <h1 class="text-5xl font-extrabold text-zinc-900 dark:text-white">{{ $quizTitle }}</h1>
+                <h1 class="qz-title">{{ $quizTitle }}</h1>
             @endif
 
-            <p class="text-xl text-zinc-500 dark:text-zinc-400">{{ __('Scan the QR code or enter the code below to join') }}</p>
+            <p class="qz-lobby__subtitle">{{ __('Scan the QR code or enter the code below to join') }}</p>
 
-            <div class="flex flex-col items-center gap-6 sm:flex-row sm:justify-center sm:gap-12">
+            <div class="qz-lobby__join">
                 {{-- Join code --}}
-                <div class="rounded-2xl border-2 border-zinc-200 bg-white p-8 dark:border-zinc-700 dark:bg-zinc-900">
-                    <p class="text-sm uppercase tracking-wider text-zinc-500 dark:text-zinc-400">{{ __('Enter this code') }}</p>
-                    <p class="font-mono text-7xl font-bold tracking-widest text-zinc-900 dark:text-white">
-                        {{ $session->join_code }}
-                    </p>
+                <div class="qz-joincard">
+                    <p class="qz-joincard__label">{{ __('Enter this code') }}</p>
+                    <p class="qz-joincode">{{ $session->join_code }}</p>
                 </div>
 
                 {{-- QR code --}}
-                <div class="rounded-2xl border-2 border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+                <div class="qz-qrcard">
                     {!! $qrCodeSvg !!}
                 </div>
             </div>
 
             {{-- Player count --}}
-            <p class="text-2xl text-zinc-600 dark:text-zinc-300">
-                <span data-test="spectator-player-count" class="font-bold text-zinc-900 dark:text-white">{{ $playerCount }}</span>
+            <p class="qz-players">
+                <span data-test="spectator-player-count" class="qz-players__count">{{ $playerCount }}</span>
                 {{ trans_choice('{1} player|[2,*] players', $playerCount) }} {{ __('joined') }}
             </p>
 
             {{-- Player name list --}}
             @if(count($playerNames) > 0)
-                <div class="flex flex-wrap justify-center gap-3">
+                <div class="qz-chips">
                     @foreach($playerNames as $name)
-                        <x-player-name data-test="spectator-player-chip" data-player-nickname="{{ $name['nickname'] }}" :emoji="$name['emoji'] ?? null" :nickname="$name['nickname']" class="rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300" />
+                        <x-player-name data-test="spectator-player-chip" data-player-nickname="{{ $name['nickname'] }}" :emoji="$name['emoji'] ?? null" :nickname="$name['nickname']" class="qz-chip" />
                     @endforeach
                 </div>
             @endif
 
-            <p class="text-lg text-zinc-500 dark:text-zinc-400 animate-pulse">{{ __('Waiting for the host to start...') }}</p>
+            <p class="qz-waiting">{{ __('Waiting for the host to start...') }}</p>
 
             {{-- Join link --}}
-            <a href="{{ $joinUrl }}" data-test="spectator-link"
-               class="block break-all font-mono text-sm text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300">
+            <a href="{{ $joinUrl }}" data-test="spectator-link" class="qz-joinlink">
                 {{ $joinUrl }}
             </a>
         </div>
