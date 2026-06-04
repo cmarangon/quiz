@@ -113,6 +113,51 @@ test('player markTimedOut locks the player and records the timeout', function ()
         ->exists())->toBeTrue();
 });
 
+test('player markTimedOut submits the current selection instead of a blank timeout', function () {
+    Event::fake([PlayerAnswered::class]);
+    app(GameService::class)->start($this->session);
+
+    Livewire::withQueryParams(['player_id' => $this->player->id])
+        ->test(PlayerScreen::class, ['code' => $this->session->join_code])
+        ->call('pollState')
+        ->assertSet('phase', 'answering')
+        ->call('markTimedOut', 'Option A')
+        ->assertSet('phase', 'answered')
+        ->assertSet('timedOut', false);
+
+    $answer = PlayerAnswer::where('player_id', $this->player->id)
+        ->where('question_id', $this->question->id)
+        ->first();
+
+    expect($answer)->not->toBeNull();
+    expect($answer->answer)->toBe('Option A');
+    expect($answer->is_correct)->toBeTrue();
+    // Time bonus is disabled in this suite, so a correct buzzer-beating answer
+    // still earns its full base points rather than being wasted.
+    expect($answer->points_earned)->toBeGreaterThan(0);
+});
+
+test('player markTimedOut keeps the timeout penalty when nothing is selected', function () {
+    Event::fake([PlayerAnswered::class]);
+    app(GameService::class)->start($this->session);
+
+    Livewire::withQueryParams(['player_id' => $this->player->id])
+        ->test(PlayerScreen::class, ['code' => $this->session->join_code])
+        ->call('pollState')
+        ->assertSet('phase', 'answering')
+        ->call('markTimedOut', null)
+        ->assertSet('phase', 'answered')
+        ->assertSet('timedOut', true);
+
+    $answer = PlayerAnswer::where('player_id', $this->player->id)
+        ->where('question_id', $this->question->id)
+        ->first();
+
+    expect($answer)->not->toBeNull();
+    expect($answer->answer)->toBeNull();
+    expect($answer->points_earned)->toBe(0);
+});
+
 test('player markTimedOut is a no-op after the player already answered', function () {
     Event::fake();
     app(GameService::class)->start($this->session);

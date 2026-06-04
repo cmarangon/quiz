@@ -5,7 +5,9 @@
  *
  * The countdown is purely visual — the server is authoritative for enforcing
  * the time limit. When time runs out it asks the Livewire component to record a
- * timeout (markTimedOut) so the player is locked out and the round can complete.
+ * timeout (markTimedOut). If the player had a pending selection (registered by a
+ * nested answer component via the `answer-provider` event), that selection is
+ * passed along so it can be auto-submitted instead of wasting the round.
  */
 export function questionTimer(config) {
     return {
@@ -14,11 +16,16 @@ export function questionTimer(config) {
         remaining: config.limit || 30,
         fraction: 0,
         expired: false,
+        answerProvider: null,
         _timer: null,
 
         init() {
-            this.tick();
-            this._timer = setInterval(() => this.tick(), 200);
+            // Defer the first tick so nested answer components have a chance to
+            // register their selection provider before a possible instant expiry.
+            this.$nextTick(() => {
+                this.tick();
+                this._timer = setInterval(() => this.tick(), 200);
+            });
         },
 
         tick() {
@@ -30,7 +37,8 @@ export function questionTimer(config) {
                 this.expired = true;
                 this.stop();
                 if (this.$wire) {
-                    this.$wire.markTimedOut();
+                    const answer = this.answerProvider ? this.answerProvider() : null;
+                    this.$wire.markTimedOut(answer);
                 }
             }
         },

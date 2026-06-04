@@ -19,7 +19,21 @@ class TrueFalseType implements QuestionTypeInterface
 
     public function validateAnswer(mixed $answer, Question $question): bool
     {
-        return (bool) $answer === (bool) $question->correct_answer;
+        $answerBool = $this->toBool($answer);
+        $correctBool = $this->toBool($question->correct_answer);
+
+        return $answerBool !== null && $answerBool === $correctBool;
+    }
+
+    /**
+     * Normalise an answer to a strict boolean. Answers travel as the option
+     * labels "True"/"False" (and the correct answer is persisted the same way),
+     * so a plain (bool) cast is wrong — every non-empty string is truthy. Returns
+     * null for values that don't clearly map to true/false.
+     */
+    private function toBool(mixed $value): ?bool
+    {
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
     }
 
     public function scoreFactor(mixed $answer, Question $question): float

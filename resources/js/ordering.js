@@ -20,6 +20,10 @@ export function orderingList(config) {
             this.items.forEach((item, index) => {
                 this.colors[item] = palette[index % palette.length];
             });
+
+            // Hand the current order to the countdown timer so it can be
+            // auto-submitted if the player runs out of time before pressing submit.
+            this.$dispatch('answer-provider', { provider: () => Array.from(this.items) });
         },
 
         colorFor(item) {

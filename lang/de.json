@@ -1,4 +1,5 @@
 {
+    "Drag the items into the correct order.": "Ziehe die Elemente in die richtige Reihenfolge.",
     "Dashboard": "Dashboard",
     "Admin Login": "Admin-Login",
     "Real-time party trivia": "Echtzeit-Party-Trivia",
@@ -27,6 +28,11 @@
 
     "Waiting for the host to start the game...": "Warte auf den Host, um das Spiel zu starten...",
     "Answer submitted, waiting for other players...": "Antwort abgeschickt, warte auf andere Spieler...",
+    "Tap your answer before time runs out!": "Tippe deine Antwort, bevor die Zeit abläuft!",
+    "Submit order": "Reihenfolge abschicken",
+    "Submit guess": "Schätzung abschicken",
+    "The correct location is marked in green.": "Der richtige Ort ist grün markiert.",
+    "Submit answer": "Antwort abschicken",
     "Correct!": "Richtig!",
     "Wrong!": "Falsch!",
     "points": "Punkte",

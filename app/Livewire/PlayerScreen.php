@@ -92,23 +92,45 @@ class PlayerScreen extends Component
         return max(0, (int) (now()->getTimestampMs() - $startedAt));
     }
 
-    public function markTimedOut(): void
+    public function markTimedOut(mixed $answer = null): void
     {
         if ($this->phase !== 'answering' || ! $this->player || ! $this->currentQuestion) {
             return;
         }
 
+        $action = app(SubmitAnswer::class);
+        $questionId = $this->currentQuestion['question_id'];
+        $hasSelection = ! ($answer === null || $answer === '' || $answer === []);
+
         try {
-            $this->lastResult = app(SubmitAnswer::class)->timeout(
-                $this->session,
-                $this->player,
-                $this->currentQuestion['question_id'],
-            );
+            if ($hasSelection) {
+                // The clock ran out while the player had a pending selection (a
+                // true/false choice, an ordering arrangement, or a dropped map
+                // pin). Submit it on their behalf rather than wasting the round.
+                // Scoring uses the full time limit so it matches a buzzer-beating
+                // manual submit: the time bonus is gone, but a correct answer
+                // still earns base points and keeps the player's streak alive.
+                if (($this->currentQuestion['type'] ?? null) === 'geo_guesser') {
+                    $this->lastGuess = $answer;
+                }
+
+                $this->lastResult = $action->execute(
+                    $this->session,
+                    $this->player,
+                    $questionId,
+                    $answer,
+                    (int) ($this->currentQuestion['time_limit_seconds'] ?? 0) * 1000,
+                );
+            } else {
+                $this->lastResult = $action->timeout($this->session, $this->player, $questionId);
+                $this->timedOut = true;
+            }
         } catch (\Throwable $e) {
-            // Already answered or the round moved on — nothing left to record.
+            // Already answered or the round moved on. Only surface the timeout
+            // state when the player had nothing selected to fall back on.
+            $this->timedOut = $this->timedOut || ! $hasSelection;
         }
 
-        $this->timedOut = true;
         $this->phase = 'answered';
     }
 

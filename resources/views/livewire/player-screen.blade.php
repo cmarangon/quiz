@@ -31,6 +31,7 @@
         @elseif($phase === 'answering')
             <div class="w-full max-w-md space-y-4"
                  wire:key="qtimer-{{ $currentQuestion['question_id'] ?? 'q' }}"
+                 @answer-provider="answerProvider = $event.detail.provider"
                  x-data="questionTimer({ limit: {{ (int) ($currentQuestion['time_limit_seconds'] ?? 30) }}, startedAt: {{ $currentQuestion['started_at'] ?? 'null' }} })">
 
                 {{-- Cartoony countdown: grows bigger and redder as time runs out. --}}
@@ -50,6 +51,8 @@
                     @include('question-types.geo-guesser-player')
                 @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
                     @include('question-types.ordering-player')
+                @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'true_false')
+                    @include('question-types.true-false-player')
                 @elseif($currentQuestion && ! empty($currentQuestion['options']))
                     @if(in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
                         @include('themes.'.$themeKey.'.player-answering')
@@ -75,18 +78,25 @@
 
         {{-- ANSWERED PHASE --}}
         @elseif($phase === 'answered')
-            <div class="space-y-4">
-                @if($timedOut)
-                    <div class="text-6xl">&#9200;</div>
-                    <p class="text-zinc-500 dark:text-zinc-400">
-                        {{ __("Time's up! You ran out of time this round.") }}
-                    </p>
-                @else
-                    <div class="text-6xl">&#128076;</div>
-                    <p class="text-zinc-500 dark:text-zinc-400">
-                        {{ __('Answer submitted, waiting for other players...') }}
-                    </p>
-                @endif
+            <div class="qz-stage qz-stage--{{ $style }} qz-stage--has-bg w-full max-w-md">
+                <div class="qz-card">
+                    @if($style === 'party-pop')
+                        <span class="qz-blob b1"></span><span class="qz-blob b2"></span>
+                    @elseif($style === 'game-show')
+                        <span class="qz-blob spot"></span>
+                    @else
+                        <span class="qz-blob u1"></span><span class="qz-blob u2"></span>
+                    @endif
+
+                    @if($timedOut)
+                        <div class="qz-waiting-emoji">&#9200;</div>
+                        <p class="qz-waiting">{{ __("Time's up! You ran out of time this round.") }}</p>
+                    @else
+                        <div class="qz-waiting-emoji">&#128076;</div>
+                        <p class="qz-waiting">{{ __('Answer submitted, waiting for other players...') }}</p>
+                    @endif
+                    <div class="qz-loader" aria-hidden="true"><span></span><span></span><span></span></div>
+                </div>
             </div>
 
         {{-- REVIEW PHASE --}}
