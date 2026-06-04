@@ -73,7 +73,7 @@
             <button
                 type="button"
                 x-on:click="submit()"
-                x-bind:disabled="submitted"
+                x-bind:disabled="submitted || (typeof expired !== 'undefined' && expired)"
                 data-test="ordering-submit"
                 class="qz-cta"
             >
@@ -135,7 +135,7 @@
         <button
             type="button"
             x-on:click="submit()"
-            x-bind:disabled="submitted"
+            x-bind:disabled="submitted || (typeof expired !== 'undefined' && expired)"
             data-test="ordering-submit"
             class="w-full rounded-xl bg-blue-600 px-4 py-3 text-lg font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
         >

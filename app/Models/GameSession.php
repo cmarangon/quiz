@@ -26,6 +26,7 @@ class GameSession extends Model
         'status',
         'current_question_index',
         'current_category_id',
+        'current_question_started_at',
         'settings',
     ];
 
@@ -34,6 +35,7 @@ class GameSession extends Model
         return [
             'settings' => 'array',
             'current_question_index' => 'integer',
+            'current_question_started_at' => 'datetime',
         ];
     }
 

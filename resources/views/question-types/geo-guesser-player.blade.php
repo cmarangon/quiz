@@ -50,7 +50,7 @@
                 <button
                     type="button"
                     x-on:click="submit()"
-                    x-bind:disabled="!guess"
+                    x-bind:disabled="!guess || (typeof expired !== 'undefined' && expired)"
                     data-test="geo-submit"
                     class="qz-cta"
                 >
@@ -98,7 +98,7 @@
             <button
                 type="button"
                 x-on:click="submit()"
-                x-bind:disabled="!guess"
+                x-bind:disabled="!guess || (typeof expired !== 'undefined' && expired)"
                 data-test="geo-submit"
                 class="w-full rounded-xl bg-blue-600 px-4 py-3 text-lg font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >

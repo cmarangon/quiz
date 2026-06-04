@@ -670,3 +670,78 @@
     overflow: hidden;
 }
 .qz-theme.qz-spectator .qz-geoframe > [x-ref="map"] { height: 28rem; }
+
+/* =========================== QUESTION COUNTDOWN ========================== */
+/* Cartoony per-question timer for the player screen. Driven by Alpine: the
+   --t custom property holds the elapsed fraction (0..1); the badge grows and
+   shifts from green to red as time runs out. */
+.qz-timer {
+    --t: 0;
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%) scale(calc(1 + var(--t) * 0.6));
+    transform-origin: top center;
+    z-index: 60;
+    min-width: 3.2rem;
+    display: grid;
+    place-items: center;
+    padding: 0.15rem 0.35rem;
+    border-radius: 999px;
+    border: 4px solid #1f2937;
+    background: hsl(calc(132 - var(--t) * 132) 85% 52%);
+    box-shadow: 0 5px 0 rgba(31, 41, 55, 0.55), 0 12px 20px rgba(0, 0, 0, 0.28);
+    transition: background 0.25s linear;
+    pointer-events: none;
+    will-change: transform;
+}
+
+.qz-timer__num {
+    font-family: 'Fredoka', 'Baloo 2', ui-rounded, 'Segoe UI', system-ui, sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #fff;
+    padding: 0 0.3em;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35), 0 0 2px rgba(0, 0, 0, 0.25);
+    font-variant-numeric: tabular-nums;
+}
+
+.qz-timer--urgent {
+    animation: qz-timer-wobble 0.55s ease-in-out infinite;
+}
+
+.qz-timer--panic {
+    animation: qz-timer-shake 0.24s linear infinite;
+}
+
+.qz-timer--done {
+    background: #ef4444;
+    border-color: #7f1d1d;
+    animation: qz-timer-pop 0.45s ease-out both;
+}
+
+@keyframes qz-timer-wobble {
+    0%, 100% { transform: translateX(-50%) scale(calc(1 + var(--t) * 0.6)) rotate(-5deg); }
+    50%      { transform: translateX(-50%) scale(calc(1 + var(--t) * 0.6)) rotate(5deg); }
+}
+
+@keyframes qz-timer-shake {
+    0%, 100% { transform: translateX(-50%) scale(calc(1 + var(--t) * 0.65)) rotate(-7deg); }
+    25%      { transform: translateX(calc(-50% - 4px)) scale(calc(1 + var(--t) * 0.7)) rotate(6deg); }
+    75%      { transform: translateX(calc(-50% + 4px)) scale(calc(1 + var(--t) * 0.7)) rotate(-6deg); }
+}
+
+@keyframes qz-timer-pop {
+    0%   { transform: translateX(-50%) scale(1.25) rotate(-8deg); }
+    55%  { transform: translateX(-50%) scale(1.75) rotate(6deg); }
+    100% { transform: translateX(-50%) scale(1.55) rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .qz-timer--urgent,
+    .qz-timer--panic,
+    .qz-timer--done {
+        animation: none;
+    }
+}

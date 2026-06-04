@@ -29,7 +29,23 @@
 
         {{-- ANSWERING PHASE --}}
         @elseif($phase === 'answering')
-            <div class="w-full max-w-md space-y-4">
+            <div class="w-full max-w-md space-y-4"
+                 wire:key="qtimer-{{ $currentQuestion['question_id'] ?? 'q' }}"
+                 x-data="questionTimer({ limit: {{ (int) ($currentQuestion['time_limit_seconds'] ?? 30) }}, startedAt: {{ $currentQuestion['started_at'] ?? 'null' }} })">
+
+                {{-- Cartoony countdown: grows bigger and redder as time runs out. --}}
+                <div class="qz-timer"
+                     data-test="question-timer"
+                     aria-hidden="true"
+                     x-show="!expired"
+                     x-bind:class="{ 'qz-timer--urgent': fraction > 0.6 && !expired, 'qz-timer--panic': fraction > 0.85 && !expired }"
+                     x-bind:style="'--t:' + fraction">
+                    <span class="qz-timer__num" x-text="remaining"></span>
+                </div>
+                <div class="qz-timer qz-timer--done" aria-hidden="true" x-show="expired">
+                    <span class="qz-timer__num">⏰</span>
+                </div>
+
                 @if($currentQuestion && ($currentQuestion['type'] ?? null) === 'geo_guesser')
                     @include('question-types.geo-guesser-player')
                 @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
@@ -45,9 +61,10 @@
                         @foreach($currentQuestion['options'] as $index => $option)
                             <button
                                 wire:click="submitAnswer('{{ $option['label'] ?? $option }}')"
+                                x-bind:disabled="expired"
                                 data-test="player-answer-option"
                                 data-answer-label="{{ $option['label'] ?? $option }}"
-                                class="rounded-xl p-8 text-lg font-bold text-white transition {{ $colors[$index % 4] }}">
+                                class="rounded-xl p-8 text-lg font-bold text-white transition disabled:opacity-40 {{ $colors[$index % 4] }}">
                                 {{ $option['label'] ?? $option }}
                             </button>
                         @endforeach
@@ -59,10 +76,17 @@
         {{-- ANSWERED PHASE --}}
         @elseif($phase === 'answered')
             <div class="space-y-4">
-                <div class="text-6xl">&#128076;</div>
-                <p class="text-zinc-500 dark:text-zinc-400">
-                    {{ __('Answer submitted, waiting for other players...') }}
-                </p>
+                @if($timedOut)
+                    <div class="text-6xl">&#9200;</div>
+                    <p class="text-zinc-500 dark:text-zinc-400">
+                        {{ __("Time's up! You ran out of time this round.") }}
+                    </p>
+                @else
+                    <div class="text-6xl">&#128076;</div>
+                    <p class="text-zinc-500 dark:text-zinc-400">
+                        {{ __('Answer submitted, waiting for other players...') }}
+                    </p>
+                @endif
             </div>
 
         {{-- REVIEW PHASE --}}

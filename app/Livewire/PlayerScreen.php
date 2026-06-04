@@ -25,6 +25,8 @@ class PlayerScreen extends Component
 
     public ?array $lastResult = null;
 
+    public bool $timedOut = false;
+
     public ?array $lastGuess = null;
 
     public mixed $correctAnswer = null;
@@ -70,6 +72,44 @@ class PlayerScreen extends Component
         $this->lastResult = null;
         $this->lastGuess = null;
         $this->correctAnswer = null;
+        $this->timedOut = false;
+    }
+
+    /**
+     * Server-authoritative elapsed time for the current question, derived from
+     * the broadcast start timestamp (epoch ms) and the server clock. Never
+     * trusts a client-supplied duration, so the time limit and time-bonus
+     * scoring cannot be gamed from the browser.
+     */
+    private function elapsedMs(): int
+    {
+        $startedAt = $this->currentQuestion['started_at'] ?? null;
+
+        if (! $startedAt) {
+            return 0;
+        }
+
+        return max(0, (int) (now()->getTimestampMs() - $startedAt));
+    }
+
+    public function markTimedOut(): void
+    {
+        if ($this->phase !== 'answering' || ! $this->player || ! $this->currentQuestion) {
+            return;
+        }
+
+        try {
+            $this->lastResult = app(SubmitAnswer::class)->timeout(
+                $this->session,
+                $this->player,
+                $this->currentQuestion['question_id'],
+            );
+        } catch (\Throwable $e) {
+            // Already answered or the round moved on — nothing left to record.
+        }
+
+        $this->timedOut = true;
+        $this->phase = 'answered';
     }
 
     /**
@@ -128,13 +168,17 @@ class PlayerScreen extends Component
 
         $action = app(SubmitAnswer::class);
 
-        $this->lastResult = $action->execute(
-            $this->session,
-            $this->player,
-            $this->currentQuestion['question_id'],
-            $answer,
-            $this->currentQuestion['time_taken_ms'] ?? 10000,
-        );
+        try {
+            $this->lastResult = $action->execute(
+                $this->session,
+                $this->player,
+                $this->currentQuestion['question_id'],
+                $answer,
+                $this->elapsedMs(),
+            );
+        } catch (\LogicException $e) {
+            $this->timedOut = true;
+        }
 
         $this->phase = 'answered';
     }
@@ -149,13 +193,17 @@ class PlayerScreen extends Component
 
         $action = app(SubmitAnswer::class);
 
-        $this->lastResult = $action->execute(
-            $this->session,
-            $this->player,
-            $this->currentQuestion['question_id'],
-            $this->lastGuess,
-            $this->currentQuestion['time_taken_ms'] ?? 10000,
-        );
+        try {
+            $this->lastResult = $action->execute(
+                $this->session,
+                $this->player,
+                $this->currentQuestion['question_id'],
+                $this->lastGuess,
+                $this->elapsedMs(),
+            );
+        } catch (\LogicException $e) {
+            $this->timedOut = true;
+        }
 
         $this->phase = 'answered';
     }
@@ -168,13 +216,17 @@ class PlayerScreen extends Component
 
         $action = app(SubmitAnswer::class);
 
-        $this->lastResult = $action->execute(
-            $this->session,
-            $this->player,
-            $this->currentQuestion['question_id'],
-            array_values($order),
-            $this->currentQuestion['time_taken_ms'] ?? 10000,
-        );
+        try {
+            $this->lastResult = $action->execute(
+                $this->session,
+                $this->player,
+                $this->currentQuestion['question_id'],
+                array_values($order),
+                $this->elapsedMs(),
+            );
+        } catch (\LogicException $e) {
+            $this->timedOut = true;
+        }
 
         $this->phase = 'answered';
     }

@@ -88,4 +88,52 @@ class SubmitAnswer
             'points_earned' => $pointsEarned,
         ];
     }
+
+    /**
+     * Record a player who ran out of time without answering. Stored as a
+     * null-answer row (0 points, streak reset) so the host's answered-count
+     * based auto-finish can still complete the round.
+     *
+     * @return array{is_correct: bool, points_earned: int, timed_out: bool}
+     */
+    public function timeout(GameSession $session, Player $player, int $questionId): array
+    {
+        if ($session->status !== 'playing') {
+            throw new LogicException('Game is not in playing state.');
+        }
+
+        $existing = PlayerAnswer::where('player_id', $player->id)
+            ->where('question_id', $questionId)
+            ->exists();
+
+        if ($existing) {
+            throw new LogicException('Player already answered this question.');
+        }
+
+        $question = $session->quiz->questions()->findOrFail($questionId);
+
+        $player->update(['streak' => 0]);
+
+        PlayerAnswer::create([
+            'player_id' => $player->id,
+            'game_session_id' => $session->id,
+            'question_id' => $questionId,
+            'answer' => null,
+            'is_correct' => false,
+            'time_taken_ms' => $question->time_limit_seconds * 1000,
+            'points_earned' => 0,
+        ]);
+
+        $answeredCount = PlayerAnswer::where('game_session_id', $session->id)
+            ->where('question_id', $questionId)
+            ->count();
+
+        broadcast(new PlayerAnswered($session, $answeredCount, $session->players()->count(), $questionId));
+
+        return [
+            'is_correct' => false,
+            'points_earned' => 0,
+            'timed_out' => true,
+        ];
+    }
 }

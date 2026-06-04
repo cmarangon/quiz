@@ -27,6 +27,7 @@ class GameService
             'status' => 'playing',
             'current_question_index' => 0,
             'current_category_id' => $firstCategory?->id,
+            'current_question_started_at' => now(),
         ]);
 
         $session->refresh();
@@ -94,6 +95,7 @@ class GameService
         $session->update([
             'current_question_index' => $nextIndex,
             'current_category_id' => $nextQuestion->category_id,
+            'current_question_started_at' => now(),
             'status' => 'playing',
         ]);
 
