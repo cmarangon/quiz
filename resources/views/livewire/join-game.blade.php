@@ -23,6 +23,13 @@
                         {{ $option }}
                     </button>
                 @endforeach
+                <button type="button"
+                    wire:click="surpriseMe"
+                    data-test="join-emoji-random"
+                    title="{{ __('Feeling lucky?') }}"
+                    @class(['qz-emoji-btn', 'is-selected' => in_array($emoji, \App\Support\PlayerEmojis::lewd(), true)])>
+                    🎲
+                </button>
             </div>
 
             @error('emoji')
