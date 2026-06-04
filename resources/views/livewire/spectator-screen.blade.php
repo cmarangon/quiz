@@ -91,20 +91,20 @@
         @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
             @include('themes.'.$themeKey.'.spectator-question')
         @elseif($currentQuestion)
-            <div class="w-full max-w-6xl space-y-10">
+            <div class="w-full max-w-[96rem] space-y-6">
                 <div class="text-center">
-                    <p class="text-2xl text-zinc-500 dark:text-zinc-400">
+                    <p class="text-[clamp(1.6rem,3.2vw,3rem)] text-zinc-500 dark:text-zinc-400">
                         {{ __('Question') }} {{ ($currentQuestion['question_index'] ?? 0) + 1 }}
                     </p>
-                    <h2 data-test="spectator-question-body" class="text-[clamp(2.5rem,5vw,4.5rem)] leading-tight font-bold text-zinc-900 dark:text-white mt-3">
+                    <h2 data-test="spectator-question-body" class="text-[clamp(3.25rem,7.5vw,8rem)] leading-tight font-bold text-zinc-900 dark:text-white mt-3">
                         {{ $currentQuestion['body'] ?? '' }}
                     </h2>
                 </div>
 
                 @if(! empty($currentQuestion['options']))
-                    <div class="grid grid-cols-2 gap-6">
+                    <div class="grid grid-cols-2 gap-8">
                         @foreach($currentQuestion['options'] as $index => $option)
-                            <div class="rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 p-10 text-center text-[clamp(1.5rem,2.6vw,2.5rem)] font-semibold text-zinc-900 dark:text-white
+                            <div class="rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 p-12 text-center text-[clamp(2.25rem,4vw,4.5rem)] font-semibold text-zinc-900 dark:text-white
                                 @if($index === 0) bg-red-50 dark:bg-red-900/20
                                 @elseif($index === 1) bg-blue-50 dark:bg-blue-900/20
                                 @elseif($index === 2) bg-yellow-50 dark:bg-yellow-900/20
@@ -117,7 +117,7 @@
                     </div>
                 @endif
 
-                <div class="flex items-center justify-between text-2xl text-zinc-500 dark:text-zinc-400">
+                <div class="flex items-center justify-between text-[clamp(1.5rem,2.8vw,2.75rem)] text-zinc-500 dark:text-zinc-400">
                     <span>{{ __(':answered / :total answered', ['answered' => $answeredCount, 'total' => $totalPlayers]) }}</span>
                     <span>{{ $currentQuestion['time_limit_seconds'] ?? 30 }}s</span>
                 </div>
@@ -133,21 +133,21 @@
         @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
             @include('themes.'.$themeKey.'.spectator-review')
         @else
-        <div class="w-full max-w-6xl space-y-10">
+        <div class="w-full max-w-[96rem] space-y-6">
             @if($currentQuestion && ! empty($currentQuestion['options']))
                 <div class="text-center">
-                    <h2 class="text-[clamp(2.5rem,5vw,4.5rem)] leading-tight font-bold text-zinc-900 dark:text-white">
+                    <h2 class="text-[clamp(3.25rem,7.5vw,8rem)] leading-tight font-bold text-zinc-900 dark:text-white">
                         {{ $currentQuestion['body'] ?? '' }}
                     </h2>
                 </div>
 
-                <div class="grid grid-cols-2 gap-6">
+                <div class="grid grid-cols-2 gap-8">
                     @foreach($currentQuestion['options'] as $index => $option)
                         @php
                             $label = $option['label'] ?? $option;
                             $isCorrect = $label === $correctAnswer;
                         @endphp
-                        <div class="rounded-2xl border-2 p-10 text-center text-[clamp(1.5rem,2.6vw,2.5rem)] font-semibold
+                        <div class="rounded-2xl border-2 p-12 text-center text-[clamp(2.25rem,4vw,4.5rem)] font-semibold
                             {{ $isCorrect
                                 ? 'border-green-500 bg-green-100 text-green-900 dark:bg-green-900/40 dark:text-green-200'
                                 : 'border-zinc-200 bg-zinc-100 text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500' }}">
@@ -161,11 +161,11 @@
             @endif
 
             @if(! empty($scores))
-                <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-8">
-                    <h3 class="text-3xl font-semibold text-zinc-900 dark:text-white mb-6">{{ __('Leaderboard') }}</h3>
-                    <ol class="space-y-4">
+                <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-10">
+                    <h3 class="text-[clamp(2rem,3.6vw,3.5rem)] font-semibold text-zinc-900 dark:text-white mb-6">{{ __('Leaderboard') }}</h3>
+                    <ol class="space-y-5">
                         @foreach($scores as $entry)
-                            <li class="flex justify-between text-2xl text-zinc-700 dark:text-zinc-300">
+                            <li class="flex justify-between text-[clamp(1.6rem,2.8vw,2.75rem)] text-zinc-700 dark:text-zinc-300">
                                 <x-player-name :emoji="$entry['emoji'] ?? null" :nickname="$entry['nickname'] ?? ''" />
                                 <span class="font-bold">{{ $entry['score'] ?? 0 }}</span>
                             </li>

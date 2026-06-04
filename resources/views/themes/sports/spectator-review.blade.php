@@ -4,7 +4,7 @@
 <div class="qz-theme qz-theme--sports qz-spectator w-full" wire:key="spectator-review-sports-{{ $currentQuestion['question_id'] ?? '' }}">
     @include('themes.sports._deco')
 
-    <div class="mx-auto w-full max-w-4xl space-y-8">
+    <div class="mx-auto w-full max-w-[96rem] space-y-6">
         <div class="qz-question">
             <span class="qz-emoji">⚽</span>
             <h2>{{ $currentQuestion['body'] ?? '' }}</h2>
