@@ -6,9 +6,9 @@ const QUIZ_TITLE = process.env.E2E_QUIZ_TITLE || 'E2E Test Quiz';
 
 export async function loginAsHost(page: Page): Promise<void> {
     await page.goto('/login');
-    await page.getByLabel(/email/i).fill(HOST_EMAIL);
+    await page.locator('input[type="email"]').fill(HOST_EMAIL);
     await page.locator('input[type="password"]').fill(HOST_PASSWORD);
-    await page.getByRole('button', { name: /log in|sign in/i }).click();
+    await page.locator('[data-test="login-button"]').click();
     await page.waitForURL('**/dashboard');
 }
 
@@ -22,7 +22,7 @@ export async function startGameFromDashboardFor(page: Page, title: string): Prom
     // this locator match two elements.
     const row = page.locator('tr[wire\\:key^="quiz-"]', { hasText: title });
     await expect(row).toBeVisible();
-    await row.getByRole('button', { name: /play/i }).click();
+    await row.locator('[data-test="quiz-play"]').click();
     await page.waitForURL(/\/game\/[A-Z0-9]+\/host/);
     const code = await page.locator('[data-test="join-code"]').innerText();
     return code.trim();
@@ -56,7 +56,7 @@ export async function joinAsPlayer(
 }
 
 export async function startGame(hostPage: Page): Promise<void> {
-    await hostPage.getByRole('button', { name: /start game/i }).click();
+    await hostPage.locator('[data-test="host-start-game"]').click();
     await expect(hostPage.locator('[data-test="host-phase"]')).toHaveAttribute('data-phase', 'playing');
 }
 
@@ -80,13 +80,13 @@ export async function answerGeoQuestion(playerPage: Page): Promise<void> {
 }
 
 export async function endQuestion(hostPage: Page): Promise<void> {
-    await hostPage.getByRole('button', { name: /end question/i }).click();
+    await hostPage.locator('[data-test="host-end-question"]').click();
     await expect(hostPage.locator('[data-test="host-phase"]')).toHaveAttribute('data-phase', 'reviewing');
 }
 
 // No phase assertion: on the last question this transitions to 'finished', on others to 'playing'.
 export async function nextQuestion(hostPage: Page): Promise<void> {
-    await hostPage.getByRole('button', { name: /next question/i }).click();
+    await hostPage.locator('[data-test="host-next-question"]').click();
 }
 
 export async function expectFinished(hostPage: Page): Promise<void> {

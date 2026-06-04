@@ -107,19 +107,19 @@
 
     <div class="flex gap-3">
         @if($phase === 'lobby')
-            <flux:button wire:click="startGame" variant="primary">
+            <flux:button wire:click="startGame" variant="primary" data-test="host-start-game">
                 {{ __('Start Game') }}
             </flux:button>
         @endif
 
         @if($phase === 'playing')
-            <flux:button wire:click="finishQuestion" variant="primary">
+            <flux:button wire:click="finishQuestion" variant="primary" data-test="host-end-question">
                 {{ __('End Question') }}
             </flux:button>
         @endif
 
         @if($phase === 'reviewing')
-            <flux:button wire:click="nextQuestion" variant="primary">
+            <flux:button wire:click="nextQuestion" variant="primary" data-test="host-next-question">
                 {{ __('Next Question') }}
             </flux:button>
         @endif
