@@ -10,6 +10,18 @@ test('validates correct answer as boolean', function () {
     expect($type->validateAnswer(false, $question))->toBeFalse();
 });
 
+test('validates string True/False labels against the stored answer', function () {
+    $type = new TrueFalseType;
+
+    $whenTrue = Question::factory()->make(['category_id' => 1, 'correct_answer' => 'True']);
+    expect($type->validateAnswer('True', $whenTrue))->toBeTrue();
+    expect($type->validateAnswer('False', $whenTrue))->toBeFalse();
+
+    $whenFalse = Question::factory()->make(['category_id' => 1, 'correct_answer' => 'False']);
+    expect($type->validateAnswer('False', $whenFalse))->toBeTrue();
+    expect($type->validateAnswer('True', $whenFalse))->toBeFalse();
+});
+
 test('validates options require exactly 2', function () {
     $type = new TrueFalseType;
     expect($type->validateOptions([['label' => 'True'], ['label' => 'False']]))->toBeTrue();

@@ -17,6 +17,15 @@
     pointer-events: none;
 }
 
+/* Staged-but-not-submitted answer highlight (true/false select-then-submit).
+   Theme-agnostic so it reads clearly on every category palette. */
+.qz-theme.qz-player .qz-option.is-selected {
+    outline: 4px solid rgba(255, 255, 255, 0.95);
+    outline-offset: 2px;
+    box-shadow: 0 0 22px rgba(255, 255, 255, 0.55);
+    transform: translateY(-2px);
+}
+
 /* =========================== SCIENCE ===================================== */
 .qz-theme--science {
     --sci-cyan: #22d3ee;

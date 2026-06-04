@@ -1,5 +1,6 @@
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
+import { registerChoiceAnswer } from './choice-answer';
 import { registerGeoMap } from './geo-map';
 import { registerOrdering } from './ordering';
 import { registerQuestionTimer } from './question-timer';
@@ -7,6 +8,7 @@ import { registerQuestionTimer } from './question-timer';
 window.Pusher = Pusher;
 
 document.addEventListener('alpine:init', () => {
+    registerChoiceAnswer(window.Alpine);
     registerGeoMap(window.Alpine);
     registerOrdering(window.Alpine);
     registerQuestionTimer(window.Alpine);

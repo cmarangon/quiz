@@ -54,6 +54,10 @@ export function geoMap(config) {
 
         init() {
             this.$nextTick(() => this.setup());
+
+            // Hand the current pin (if any) to the countdown timer so it can be
+            // auto-submitted if the player runs out of time before pressing submit.
+            this.$dispatch('answer-provider', { provider: () => this.guess });
         },
 
         setup() {

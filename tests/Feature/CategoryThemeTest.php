@@ -136,6 +136,24 @@ test('player applies the theme to ordering and geo_guesser questions', function 
     }
 })->with($themes);
 
+test('player true/false question is select-then-submit, not tap-to-submit', function () {
+    $session = themedSession('default');
+    $player = Player::factory()->for($session, 'gameSession')->create();
+
+    $payload = typedPayload('default', 'true_false');
+    $payload['options'] = ['True', 'False'];
+
+    Livewire::withQueryParams(['player_id' => $player->id])
+        ->test(PlayerScreen::class, ['code' => $session->join_code])
+        ->call('onQuestionStarted', $payload)
+        ->assertSee('choiceAnswer()', false)
+        ->assertSee('true-false-submit', false)
+        ->assertSee('data-answer-label="True"', false)
+        ->assertSee('data-answer-label="False"', false)
+        // Tapping an option must only stage the choice (choose), never submit it.
+        ->assertDontSee('submitAnswer(', false);
+});
+
 test('an unknown theme falls back to the default markup', function () {
     $session = themedSession('default');
     $player = Player::factory()->for($session, 'gameSession')->create();
