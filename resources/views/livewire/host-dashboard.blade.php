@@ -36,10 +36,6 @@
                 >
                     {{ __('Open Spectator Screen') }}
                 </flux:button>
-                <a href="{{ $spectatorUrl }}" target="_blank" data-test="spectator-link"
-                   class="break-all font-mono text-xs text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
-                    {{ $spectatorUrl }}
-                </a>
             </div>
             <div class="rounded-lg border border-zinc-200 bg-white p-2 dark:border-zinc-700 dark:bg-zinc-900"
                  data-test="spectator-qr-code">
