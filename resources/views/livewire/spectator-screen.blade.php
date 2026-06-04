@@ -110,7 +110,8 @@
                                 @elseif($index === 2) bg-yellow-50 dark:bg-yellow-900/20
                                 @else bg-green-50 dark:bg-green-900/20
                                 @endif">
-                                {{ $option['label'] ?? $option }}
+                                @php $tfLabel = $option['label'] ?? $option; @endphp
+                                {{ ($currentQuestion['type'] ?? null) === 'true_false' ? __($tfLabel) : $tfLabel }}
                             </div>
                         @endforeach
                     </div>
@@ -150,7 +151,7 @@
                             {{ $isCorrect
                                 ? 'border-green-500 bg-green-100 text-green-900 dark:bg-green-900/40 dark:text-green-200'
                                 : 'border-zinc-200 bg-zinc-100 text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500' }}">
-                            {{ $label }}
+                            {{ ($currentQuestion['type'] ?? null) === 'true_false' ? __($label) : $label }}
                             @if($isCorrect)
                                 <span class="ml-2">&#10003;</span>
                             @endif
