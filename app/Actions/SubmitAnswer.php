@@ -49,15 +49,17 @@ class SubmitAnswer
         $isCorrect = $type->validateAnswer($answer, $question);
         $scoreFactor = $type->scoreFactor($answer, $question);
         $pointsEarned = 0;
+        $breakdown = null;
 
         if ($scoreFactor > 0) {
-            $pointsEarned = $this->scoring->calculate(
+            $breakdown = $this->scoring->breakdown(
                 $question,
                 $timeTakenMs,
                 $player->streak,
                 $session->quiz->settings,
                 $scoreFactor,
             );
+            $pointsEarned = $breakdown['total'];
             $player->increment('score', $pointsEarned);
         }
 
@@ -86,6 +88,7 @@ class SubmitAnswer
         return [
             'is_correct' => $isCorrect,
             'points_earned' => $pointsEarned,
+            'breakdown' => $breakdown,
         ];
     }
 

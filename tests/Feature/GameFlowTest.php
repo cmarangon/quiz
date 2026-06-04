@@ -143,3 +143,47 @@ test('player self-heals a missed game.finished broadcast via pollState', functio
     Livewire::test(PlayerScreen::class, ['code' => $this->session->join_code])
         ->assertSet('phase', 'finished');
 });
+
+test('SubmitAnswer returns the scoring breakdown for the player result screen', function () {
+    Event::fake([PlayerAnswered::class, CategoryChanged::class, QuestionStarted::class]);
+    $this->quiz->update(['settings' => ['enable_time_bonus' => true, 'enable_streaks' => true]]);
+    app(GameService::class)->start($this->session);
+
+    $result = app(SubmitAnswer::class)->execute(
+        session: $this->session->fresh(),
+        player: $this->player,
+        questionId: $this->questions[0]->id,
+        answer: 'Option A',
+        timeTakenMs: 6000,
+    );
+
+    expect($result['breakdown'])->not->toBeNull()
+        ->and($result['breakdown']['correct_points'])->toBe(10)
+        ->and($result['breakdown']['speed_points'])->toBe(8)
+        ->and($result['breakdown']['total'])->toBe($result['points_earned']);
+});
+
+test('player review screen renders the points breakdown ledger', function () {
+    $this->quiz->update(['settings' => ['enable_time_bonus' => true, 'enable_streaks' => true]]);
+    app(GameService::class)->start($this->session->fresh());
+
+    $question = $this->questions[0];
+    $payload = [
+        'question_id' => $question->id,
+        'question_index' => 0,
+        'body' => $question->body,
+        'theme' => $this->category->theme,
+        'time_limit_seconds' => 30,
+        'options' => [['label' => 'Option A'], ['label' => 'Option B']],
+    ];
+
+    Livewire::withQueryParams(['player_id' => $this->player->id])
+        ->test(PlayerScreen::class, ['code' => $this->session->join_code])
+        ->call('onQuestionStarted', $payload)
+        ->call('submitAnswer', 'Option A')
+        ->call('onQuestionEnded', ['correct_answer' => 'Option A'])
+        ->assertSee('player-points-breakdown', false)
+        ->assertSee('Correct answer')
+        ->assertSee('Speed')
+        ->assertSee('Total');
+});

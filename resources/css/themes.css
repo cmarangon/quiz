@@ -590,6 +590,37 @@
     color: #fff;
 }
 
+/* Points breakdown ledger — explains base × accuracy × speed × streak. */
+.qz-theme .qz-breakdown {
+    width: 100%; max-width: 320px; margin-top: 6px;
+    display: flex; flex-direction: column; gap: 2px;
+    border-radius: 16px; padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid color-mix(in srgb, var(--qz-accent, #818cf8) 35%, transparent);
+    animation: qz-breakdown-in 0.45s ease 0.15s both;
+}
+@keyframes qz-breakdown-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.qz-theme .qz-breakdown__row {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+    font-size: 14px; line-height: 1.5; color: rgba(255, 255, 255, .9);
+}
+.qz-theme .qz-breakdown__label { display: inline-flex; align-items: baseline; gap: 5px; }
+.qz-theme .qz-breakdown__label em { font-style: normal; opacity: .6; font-size: 12px; }
+.qz-theme .qz-breakdown__value {
+    font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap;
+    color: color-mix(in srgb, var(--qz-accent-2, #38bdf8) 80%, white);
+}
+.qz-theme .qz-breakdown__mult {
+    font-size: 11px; font-weight: 700; opacity: .65; margin-right: 4px;
+    color: rgba(255, 255, 255, .75);
+}
+.qz-theme .qz-breakdown__row--total {
+    margin-top: 6px; padding-top: 8px; font-size: 16px;
+    border-top: 1px solid rgba(255, 255, 255, .14);
+}
+.qz-theme .qz-breakdown__row--total .qz-breakdown__label { font-weight: 800; color: #fff; }
+.qz-theme .qz-breakdown__row--total .qz-breakdown__value { font-size: 18px; color: var(--qz-accent, #fff); }
+
 /* =========================================================================
    ORDERING + GEO-GUESSER question types.
    These two types share one Blade view across all themes, so their chrome is
