@@ -1,3 +1,6 @@
+@php
+    $style = $session->presentationStyle();
+@endphp
 <div class="flex flex-col items-center gap-6 text-center" @if(in_array($phase, ['waiting', 'answered', 'review'], true)) wire:poll.2s="pollState" @endif>
     @if($player)
         <h1 data-test="player-nickname" data-player-nickname="{{ $player->nickname }}" class="text-2xl font-bold text-zinc-900 dark:text-white">
@@ -7,10 +10,21 @@
 
         {{-- WAITING PHASE --}}
         @if($phase === 'waiting')
-            <div class="space-y-4">
-                <p class="text-zinc-500 dark:text-zinc-400 animate-pulse">
-                    {{ __('Waiting for the host to start the game...') }}
-                </p>
+            <div class="qz-stage qz-stage--{{ $style }} qz-stage--has-bg w-full max-w-md">
+                <div class="qz-card">
+                    @if($style === 'party-pop')
+                        <span class="qz-blob b1"></span><span class="qz-blob b2"></span>
+                    @elseif($style === 'game-show')
+                        <span class="qz-blob spot"></span>
+                    @else
+                        <span class="qz-blob u1"></span><span class="qz-blob u2"></span>
+                    @endif
+
+                    <div class="qz-waiting-emoji">🎉</div>
+                    <h2 class="qz-title">{{ __("You're in!") }}</h2>
+                    <p class="qz-waiting">{{ __('Waiting for the host to start the game...') }}</p>
+                    <div class="qz-loader" aria-hidden="true"><span></span><span></span><span></span></div>
+                </div>
             </div>
 
         {{-- ANSWERING PHASE --}}
@@ -65,7 +79,6 @@
 
         {{-- FINISHED PHASE --}}
         @elseif($phase === 'finished')
-            @php($style = $session->presentationStyle())
             @php($top = array_slice($leaderboard, 0, 3))
             <div class="qz-stage qz-stage--{{ $style }} w-full max-w-md">
                 <div class="qz-confetti" aria-hidden="true">
