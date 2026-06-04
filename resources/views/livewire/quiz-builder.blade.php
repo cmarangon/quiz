@@ -75,9 +75,14 @@
                                         <span class="mt-1 text-neutral-400">&bull;</span>
                                         <span>{{ $question->body }} ({{ $question->points }} {{ __('pts') }}, {{ $question->time_limit_seconds }}s)</span>
                                     </span>
-                                    <flux:button wire:click="editQuestion({{ $question->id }})" size="xs" variant="ghost">
-                                        {{ __('Edit') }}
-                                    </flux:button>
+                                    <span class="flex items-center gap-1">
+                                        <flux:button wire:click="editQuestion({{ $question->id }})" size="xs" variant="ghost">
+                                            {{ __('Edit') }}
+                                        </flux:button>
+                                        <flux:button wire:click="deleteQuestion({{ $question->id }})" wire:confirm="{{ __('Are you sure you want to delete this question?') }}" size="xs" variant="ghost" class="text-red-500">
+                                            {{ __('Delete') }}
+                                        </flux:button>
+                                    </span>
                                 </li>
                             @endforeach
                         </ul>
@@ -163,9 +168,20 @@
                                 @endif
 
                                 @if($questionType === 'geo_guesser')
-                                <div>
+                                <div
+                                    wire:key="geo-picker-{{ $editingQuestionId ?? 'new' }}"
+                                    x-data="geoPicker({ latField: 'questionGeoLat', lngField: 'questionGeoLng', center: { lat: 20, lng: 0 }, zoom: 2 })"
+                                >
                                     <label class="mb-1 block text-sm font-medium dark:text-neutral-300">{{ __('Correct Location') }}</label>
-                                    <div class="flex gap-2">
+                                    <p class="mb-2 text-xs text-neutral-500 dark:text-neutral-400">{{ __('Click the map to drop a pin (drag to fine-tune). The coordinates fill in automatically.') }}</p>
+                                    <div wire:ignore>
+                                        <div
+                                            x-ref="map"
+                                            data-test="geo-picker-map"
+                                            class="h-64 w-full overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700"
+                                        ></div>
+                                    </div>
+                                    <div class="mt-2 flex gap-2">
                                         <flux:input wire:model="questionGeoLat" :label="__('Latitude')" type="number" step="any" min="-90" max="90" size="sm" />
                                         <flux:input wire:model="questionGeoLng" :label="__('Longitude')" type="number" step="any" min="-180" max="180" size="sm" />
                                     </div>
