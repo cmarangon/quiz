@@ -81,10 +81,16 @@
                             {{ $game->players->count() }} {{ __('players') }}
                         </div>
 
-                        <a href="{{ route('game.spectator', $game->join_code) }}"
-                           class="block w-full text-center px-4 py-2 rounded-xl text-sm font-medium bg-white/15 text-white border border-white/20 hover:bg-white/25 hover:text-white transition-all duration-200">
-                            {{ __('Watch') }}
-                        </a>
+                        <div class="flex gap-2">
+                            <a href="{{ route('game.join', $game->join_code) }}"
+                               class="block w-full text-center px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-pink-500 border border-white/20 hover:from-purple-400 hover:to-pink-400 hover:text-white hover:shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all duration-200">
+                                {{ __('Play') }}
+                            </a>
+                            <a href="{{ route('game.spectator', $game->join_code) }}"
+                               class="block w-full text-center px-4 py-2 rounded-xl text-sm font-medium bg-white/15 text-white border border-white/20 hover:bg-white/25 hover:text-white transition-all duration-200">
+                                {{ __('Watch') }}
+                            </a>
+                        </div>
                     </div>
                 @endforeach
             </div>
