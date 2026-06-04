@@ -1,5 +1,5 @@
 @php($style = $session?->presentationStyle() ?? 'party-pop')
-<div class="qz-stage qz-stage--{{ $style }}">
+<div class="qz-stage qz-stage--{{ $style }} qz-stage--has-bg">
     <div class="qz-card">
         @if($style === 'party-pop')
             <span class="qz-blob b1"></span><span class="qz-blob b2"></span>
