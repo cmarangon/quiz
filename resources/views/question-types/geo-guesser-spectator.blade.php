@@ -64,10 +64,10 @@
     <div
         wire:key="geo-spectator-{{ $currentQuestion['question_id'] ?? 'q' }}-{{ $phase }}"
         x-data="geoMap(@js($geoConfig))"
-        class="w-full space-y-4"
+        class="w-full space-y-6"
     >
         <div class="text-center">
-            <h2 data-test="spectator-question-body" class="text-3xl font-bold text-zinc-900 dark:text-white">
+            <h2 data-test="spectator-question-body" class="text-[clamp(2.5rem,5vw,4.5rem)] leading-tight font-bold text-zinc-900 dark:text-white">
                 {{ $currentQuestion['body'] ?? '' }}
             </h2>
         </div>
@@ -76,30 +76,30 @@
             <div
                 x-ref="map"
                 data-test="geo-map"
-                class="h-[28rem] w-full overflow-hidden rounded-2xl border-2 border-zinc-200 dark:border-zinc-700"
+                class="h-[60vh] w-full overflow-hidden rounded-2xl border-2 border-zinc-200 dark:border-zinc-700"
             ></div>
         </div>
 
         @if($phase === 'question')
-            <p class="text-center text-zinc-500 dark:text-zinc-400">
+            <p class="text-center text-2xl text-zinc-500 dark:text-zinc-400">
                 {{ __('Players are dropping their pins...') }}
             </p>
 
-            <div class="mx-auto flex w-full max-w-4xl items-center justify-between text-zinc-500 dark:text-zinc-400">
+            <div class="mx-auto flex w-full max-w-4xl items-center justify-between text-2xl text-zinc-500 dark:text-zinc-400">
                 <span>{{ __(':answered / :total answered', ['answered' => $answeredCount ?? 0, 'total' => $totalPlayers ?? 0]) }}</span>
                 <span>{{ $currentQuestion['time_limit_seconds'] ?? 30 }}s</span>
             </div>
         @elseif($phase === 'review')
-            <p class="text-center text-green-600 dark:text-green-400 font-semibold">
+            <p class="text-center text-2xl text-green-600 dark:text-green-400 font-semibold">
                 {{ __('The correct location is marked in green.') }}
             </p>
 
             @if(! empty($scores ?? []))
-                <div class="mx-auto max-w-4xl rounded-xl border border-zinc-200 dark:border-zinc-700 p-6">
-                    <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">{{ __('Leaderboard') }}</h3>
-                    <ol class="space-y-2">
+                <div class="mx-auto max-w-4xl rounded-xl border border-zinc-200 dark:border-zinc-700 p-8">
+                    <h3 class="text-3xl font-semibold text-zinc-900 dark:text-white mb-6">{{ __('Leaderboard') }}</h3>
+                    <ol class="space-y-4">
                         @foreach($scores as $entry)
-                            <li class="flex justify-between text-zinc-700 dark:text-zinc-300">
+                            <li class="flex justify-between text-2xl text-zinc-700 dark:text-zinc-300">
                                 <x-player-name :emoji="$entry['emoji'] ?? null" :nickname="$entry['nickname'] ?? ''" />
                                 <span class="font-bold">{{ $entry['score'] ?? 0 }}</span>
                             </li>

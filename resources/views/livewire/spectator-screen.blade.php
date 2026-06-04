@@ -54,9 +54,9 @@
     @elseif($phase === 'category-intro')
         <div class="text-center space-y-6">
             @if($currentTheme)
-                <div class="rounded-2xl bg-gradient-to-br {{ $currentTheme['gradient'] ?? '' }} p-12">
-                    <p class="text-sm uppercase tracking-wider text-white/60">{{ __('Up Next') }}</p>
-                    <h2 class="text-5xl font-bold text-white mt-2">{{ $currentTheme['name'] ?? '' }}</h2>
+                <div class="rounded-2xl bg-gradient-to-br {{ $currentTheme['gradient'] ?? '' }} p-16">
+                    <p class="text-xl uppercase tracking-wider text-white/60">{{ __('Up Next') }}</p>
+                    <h2 class="text-7xl font-bold text-white mt-3">{{ $currentTheme['name'] ?? '' }}</h2>
                 </div>
             @endif
         </div>
@@ -77,9 +77,9 @@
                     destroy() { clearInterval(this.timer); }
                  }"
                  data-test="spectator-countdown"
-                 class="fixed inset-x-0 top-8 z-50 flex flex-col items-center gap-2">
-                <p class="text-lg font-semibold text-zinc-600 dark:text-zinc-300">{{ __('Everyone answered!') }}</p>
-                <div class="flex h-20 w-20 items-center justify-center rounded-full bg-green-500 text-4xl font-bold text-white shadow-lg">
+                 class="fixed inset-x-0 top-8 z-50 flex flex-col items-center gap-3">
+                <p class="text-3xl font-semibold text-zinc-600 dark:text-zinc-300">{{ __('Everyone answered!') }}</p>
+                <div class="flex h-28 w-28 items-center justify-center rounded-full bg-green-500 text-6xl font-bold text-white shadow-lg">
                     <span x-text="remaining" data-test="spectator-countdown-value">{{ $countdownSeconds }}</span>
                 </div>
             </div>
@@ -91,20 +91,20 @@
         @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
             @include('themes.'.$themeKey.'.spectator-question')
         @elseif($currentQuestion)
-            <div class="w-full max-w-4xl space-y-8">
+            <div class="w-full max-w-6xl space-y-10">
                 <div class="text-center">
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400">
+                    <p class="text-2xl text-zinc-500 dark:text-zinc-400">
                         {{ __('Question') }} {{ ($currentQuestion['question_index'] ?? 0) + 1 }}
                     </p>
-                    <h2 data-test="spectator-question-body" class="text-3xl font-bold text-zinc-900 dark:text-white mt-2">
+                    <h2 data-test="spectator-question-body" class="text-[clamp(2.5rem,5vw,4.5rem)] leading-tight font-bold text-zinc-900 dark:text-white mt-3">
                         {{ $currentQuestion['body'] ?? '' }}
                     </h2>
                 </div>
 
                 @if(! empty($currentQuestion['options']))
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-6">
                         @foreach($currentQuestion['options'] as $index => $option)
-                            <div class="rounded-xl border-2 border-zinc-200 dark:border-zinc-700 p-6 text-center text-xl font-semibold text-zinc-900 dark:text-white
+                            <div class="rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 p-10 text-center text-[clamp(1.5rem,2.6vw,2.5rem)] font-semibold text-zinc-900 dark:text-white
                                 @if($index === 0) bg-red-50 dark:bg-red-900/20
                                 @elseif($index === 1) bg-blue-50 dark:bg-blue-900/20
                                 @elseif($index === 2) bg-yellow-50 dark:bg-yellow-900/20
@@ -117,7 +117,7 @@
                     </div>
                 @endif
 
-                <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
+                <div class="flex items-center justify-between text-2xl text-zinc-500 dark:text-zinc-400">
                     <span>{{ __(':answered / :total answered', ['answered' => $answeredCount, 'total' => $totalPlayers]) }}</span>
                     <span>{{ $currentQuestion['time_limit_seconds'] ?? 30 }}s</span>
                 </div>
@@ -133,21 +133,21 @@
         @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
             @include('themes.'.$themeKey.'.spectator-review')
         @else
-        <div class="w-full max-w-4xl space-y-8">
+        <div class="w-full max-w-6xl space-y-10">
             @if($currentQuestion && ! empty($currentQuestion['options']))
                 <div class="text-center">
-                    <h2 class="text-3xl font-bold text-zinc-900 dark:text-white">
+                    <h2 class="text-[clamp(2.5rem,5vw,4.5rem)] leading-tight font-bold text-zinc-900 dark:text-white">
                         {{ $currentQuestion['body'] ?? '' }}
                     </h2>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-6">
                     @foreach($currentQuestion['options'] as $index => $option)
                         @php
                             $label = $option['label'] ?? $option;
                             $isCorrect = $label === $correctAnswer;
                         @endphp
-                        <div class="rounded-xl border-2 p-6 text-center text-xl font-semibold
+                        <div class="rounded-2xl border-2 p-10 text-center text-[clamp(1.5rem,2.6vw,2.5rem)] font-semibold
                             {{ $isCorrect
                                 ? 'border-green-500 bg-green-100 text-green-900 dark:bg-green-900/40 dark:text-green-200'
                                 : 'border-zinc-200 bg-zinc-100 text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500' }}">
@@ -161,11 +161,11 @@
             @endif
 
             @if(! empty($scores))
-                <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-6">
-                    <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4">{{ __('Leaderboard') }}</h3>
-                    <ol class="space-y-2">
+                <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-8">
+                    <h3 class="text-3xl font-semibold text-zinc-900 dark:text-white mb-6">{{ __('Leaderboard') }}</h3>
+                    <ol class="space-y-4">
                         @foreach($scores as $entry)
-                            <li class="flex justify-between text-zinc-700 dark:text-zinc-300">
+                            <li class="flex justify-between text-2xl text-zinc-700 dark:text-zinc-300">
                                 <x-player-name :emoji="$entry['emoji'] ?? null" :nickname="$entry['nickname'] ?? ''" />
                                 <span class="font-bold">{{ $entry['score'] ?? 0 }}</span>
                             </li>
@@ -178,32 +178,32 @@
 
     {{-- FINISHED PHASE --}}
     @elseif($phase === 'finished')
-        <div class="w-full max-w-2xl space-y-8 text-center">
-            <h1 class="text-4xl font-bold text-zinc-900 dark:text-white">{{ __('Game Over!') }}</h1>
+        <div class="w-full max-w-4xl space-y-10 text-center">
+            <h1 class="text-7xl font-bold text-zinc-900 dark:text-white">{{ __('Game Over!') }}</h1>
 
             @if(! empty($leaderboard))
                 {{-- Podium --}}
-                <div class="flex items-end justify-center gap-4 mt-8">
+                <div class="flex items-end justify-center gap-6 mt-8">
                     @foreach(array_slice($leaderboard, 0, 3) as $index => $entry)
                         <div class="flex flex-col items-center">
-                            <x-player-name :emoji="$entry['emoji'] ?? null" :nickname="$entry['nickname']" class="text-lg font-bold text-zinc-900 dark:text-white" />
-                            <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ $entry['score'] }} {{ __('pts') }}</span>
-                            <div class="mt-2 rounded-t-lg bg-gradient-to-t
-                                @if($index === 0) from-yellow-500 to-yellow-300 w-24 h-32
-                                @elseif($index === 1) from-zinc-400 to-zinc-300 w-20 h-24
-                                @else from-amber-700 to-amber-500 w-20 h-16
+                            <x-player-name :emoji="$entry['emoji'] ?? null" :nickname="$entry['nickname']" class="text-3xl font-bold text-zinc-900 dark:text-white" />
+                            <span class="text-xl text-zinc-500 dark:text-zinc-400">{{ $entry['score'] }} {{ __('pts') }}</span>
+                            <div class="mt-3 rounded-t-lg bg-gradient-to-t
+                                @if($index === 0) from-yellow-500 to-yellow-300 w-36 h-48
+                                @elseif($index === 1) from-zinc-400 to-zinc-300 w-32 h-36
+                                @else from-amber-700 to-amber-500 w-32 h-24
                                 @endif flex items-center justify-center">
-                                <span class="text-2xl font-bold text-white">{{ $index + 1 }}</span>
+                                <span class="text-4xl font-bold text-white">{{ $index + 1 }}</span>
                             </div>
                         </div>
                     @endforeach
                 </div>
 
                 {{-- Full leaderboard --}}
-                <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-6 text-left">
-                    <ol class="space-y-2">
+                <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-8 text-left">
+                    <ol class="space-y-4">
                         @foreach($leaderboard as $index => $entry)
-                            <li data-test="spectator-leaderboard-row" data-player-nickname="{{ $entry['nickname'] }}" class="flex justify-between text-zinc-700 dark:text-zinc-300">
+                            <li data-test="spectator-leaderboard-row" data-player-nickname="{{ $entry['nickname'] }}" class="flex justify-between text-2xl text-zinc-700 dark:text-zinc-300">
                                 <span>{{ $index + 1 }}. <x-player-name :emoji="$entry['emoji'] ?? null" :nickname="$entry['nickname']" /></span>
                                 <span class="font-bold">{{ $entry['score'] }}</span>
                             </li>
