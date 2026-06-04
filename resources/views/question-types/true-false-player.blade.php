@@ -45,7 +45,7 @@
                         class="qz-option {{ $tfLetters[$index % 2] }}"
                     >
                         <span class="qz-key">{{ strtoupper($tfLetters[$index % 2]) }}</span>
-                        {{ $label }}
+                        {{ __($label) }}
                     </button>
                 @endforeach
             </div>
@@ -85,7 +85,7 @@
                     data-answer-label="{{ $label }}"
                     class="rounded-xl p-8 text-lg font-bold text-white transition disabled:opacity-40 {{ $tfColors[$index % 2] }}"
                 >
-                    {{ $label }}
+                    {{ __($label) }}
                 </button>
             @endforeach
         </div>

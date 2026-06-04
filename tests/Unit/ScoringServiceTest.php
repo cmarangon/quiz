@@ -103,3 +103,53 @@ test('accuracy factor combines with time bonus and streak', function () {
     $points = $service->calculate($question, timeTakenMs: 15000, streak: 5, settings: $settings, accuracyFactor: 0.5);
     expect($points)->toBe(50);
 });
+
+test('breakdown exposes running subtotals after each factor', function () {
+    $service = new ScoringService;
+    $question = Question::factory()->make(['category_id' => 1, 'points' => 100, 'time_limit_seconds' => 30]);
+    $settings = ['enable_time_bonus' => true, 'enable_streaks' => true];
+
+    // 80% time left (answered at 6s of 30s) with a 1.5x streak.
+    $bd = $service->breakdown($question, timeTakenMs: 6000, streak: 3, settings: $settings, accuracyFactor: 1.0);
+
+    expect($bd['base'])->toBe(100)
+        ->and($bd['accuracy'])->toBe(1.0)
+        ->and(round($bd['time_factor'], 2))->toBe(0.8)
+        ->and($bd['streak_multiplier'])->toBe(1.5)
+        ->and($bd['time_bonus_enabled'])->toBeTrue()
+        ->and($bd['streak_enabled'])->toBeTrue()
+        ->and($bd['correct_points'])->toBe(100)
+        ->and($bd['speed_points'])->toBe(80)
+        ->and($bd['total'])->toBe(120);
+});
+
+test('breakdown total always matches calculate', function () {
+    $service = new ScoringService;
+    $question = Question::factory()->make(['category_id' => 1, 'points' => 100, 'time_limit_seconds' => 30]);
+    $settings = ['enable_time_bonus' => true, 'enable_streaks' => true];
+
+    foreach ([0, 6000, 15000, 30000] as $ms) {
+        foreach ([0, 3, 5] as $streak) {
+            foreach ([0.5, 1.0] as $acc) {
+                $bd = $service->breakdown($question, $ms, $streak, $settings, $acc);
+                $calc = $service->calculate($question, $ms, $streak, $settings, $acc);
+                expect($bd['total'])->toBe($calc);
+            }
+        }
+    }
+});
+
+test('breakdown reflects disabled time bonus and streaks', function () {
+    $service = new ScoringService;
+    $question = Question::factory()->make(['category_id' => 1, 'points' => 100, 'time_limit_seconds' => 30]);
+    $settings = ['enable_time_bonus' => false, 'enable_streaks' => false];
+
+    $bd = $service->breakdown($question, timeTakenMs: 15000, streak: 5, settings: $settings, accuracyFactor: 1.0);
+
+    expect($bd['time_bonus_enabled'])->toBeFalse()
+        ->and($bd['streak_enabled'])->toBeFalse()
+        ->and($bd['time_factor'])->toBe(1.0)
+        ->and($bd['streak_multiplier'])->toBe(1.0)
+        ->and($bd['speed_points'])->toBe(100)
+        ->and($bd['total'])->toBe(100);
+});
