@@ -318,3 +318,255 @@
 @keyframes qz-confetti-fall {
     to { transform: translateY(108vh) rotate(540deg); opacity: 1; }
 }
+
+/* =========================================================================
+   SPECTATOR ULTRA RESULT — fireworks, fire, searchlights, full energy.
+   Big-screen "Game Over" celebration. Themed via --qz-accent / --qz-glow.
+   ========================================================================= */
+.qz-result {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100svh - 4rem);
+    width: 100%;
+    color: #fff;
+    padding: 4vh 2vw;
+}
+.qz-result__inner {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(16px, 2.6vh, 32px);
+    width: 100%;
+    max-width: 1100px;
+}
+.qz-result__kicker {
+    text-transform: uppercase;
+    letter-spacing: .4em;
+    font-size: clamp(.8rem, 1.8vw, 1.3rem);
+    opacity: .85;
+    margin: 0;
+}
+.qz-result__title {
+    margin: 0;
+    text-align: center;
+    font-size: clamp(3rem, 9vw, 7rem);
+    font-weight: 800;
+    line-height: .95;
+    color: #fff;
+    text-shadow: 0 0 30px var(--qz-glow, transparent), 0 6px 0 rgba(0, 0, 0, .3);
+    animation: qz-title-pop .8s cubic-bezier(.2, 1.2, .3, 1) both,
+               qz-title-glow 2.4s ease-in-out 1s infinite;
+}
+.qz-stage--party-pop .qz-result__title { font-family: 'Bangers', sans-serif; letter-spacing: 2px; }
+.qz-stage--game-show .qz-result__title { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
+.qz-stage--bright-bouncy .qz-result__title { font-family: 'Baloo 2', sans-serif; }
+@keyframes qz-title-pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes qz-title-glow {
+    0%, 100% { text-shadow: 0 0 30px var(--qz-glow, transparent), 0 6px 0 rgba(0, 0, 0, .3); }
+    50% { text-shadow: 0 0 64px var(--qz-glow, transparent), 0 0 24px rgba(255, 255, 255, .85), 0 6px 0 rgba(0, 0, 0, .3); }
+}
+
+/* ---------- Champion spotlight ---------- */
+.qz-champion {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: clamp(14px, 2.4vh, 26px) clamp(28px, 5vw, 64px);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, .08);
+    border: 2px solid var(--qz-accent, #fff);
+    box-shadow: 0 0 50px var(--qz-glow, transparent), inset 0 0 40px rgba(255, 255, 255, .08);
+    backdrop-filter: blur(6px);
+    animation: qz-champion-rise .9s cubic-bezier(.2, 1.2, .3, 1) both,
+               qz-champion-glow 2s ease-in-out infinite;
+}
+.qz-champion__crown {
+    font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+    line-height: 1;
+    filter: drop-shadow(0 0 14px var(--qz-glow, transparent));
+    animation: qz-crown-bob 2s ease-in-out infinite;
+}
+.qz-champion__emoji { font-size: clamp(2.6rem, 7vw, 5rem); line-height: 1; }
+.qz-champion__name { font-size: clamp(1.7rem, 5vw, 3.4rem); font-weight: 800; line-height: 1.05; text-align: center; }
+.qz-champion__score {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(1.1rem, 3vw, 2rem);
+    color: var(--qz-accent, #fff);
+    letter-spacing: .06em;
+}
+@keyframes qz-champion-rise { from { transform: translateY(40px) scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes qz-champion-glow {
+    0%, 100% { box-shadow: 0 0 50px var(--qz-glow, transparent), inset 0 0 40px rgba(255, 255, 255, .08); }
+    50% { box-shadow: 0 0 95px var(--qz-glow, transparent), inset 0 0 60px rgba(255, 255, 255, .15); }
+}
+@keyframes qz-crown-bob { 0%, 100% { transform: translateY(0) rotate(-7deg); } 50% { transform: translateY(-10px) rotate(7deg); } }
+
+/* ---------- XL podium ---------- */
+.qz-result .qz-podium--xl { max-width: 740px; gap: clamp(10px, 2vw, 26px); }
+.qz-result .qz-podium--xl .qz-podium__emoji { font-size: clamp(2rem, 5vw, 3.4rem); }
+.qz-result .qz-podium--xl .qz-podium__name { font-size: clamp(1rem, 2.4vw, 1.6rem); }
+.qz-result .qz-podium--xl .qz-podium__score { font-size: clamp(.9rem, 2vw, 1.3rem); opacity: .9; }
+.qz-result .qz-podium--xl .qz-podium__bar {
+    font-size: clamp(1.4rem, 3vw, 2.4rem);
+    color: rgba(0, 0, 0, .6);
+    box-shadow: 0 0 26px rgba(0, 0, 0, .35), inset 0 2px 0 rgba(255, 255, 255, .55);
+}
+.qz-result .qz-podium--xl .qz-podium__col--1 .qz-podium__bar {
+    height: clamp(120px, 22vh, 200px);
+    box-shadow: 0 0 44px var(--qz-glow, transparent), inset 0 2px 0 rgba(255, 255, 255, .6);
+    animation: qz-bar-rise .7s cubic-bezier(.2, 1.1, .3, 1) both, qz-winner-glow 1.6s ease-in-out infinite;
+}
+.qz-result .qz-podium--xl .qz-podium__col--2 .qz-podium__bar { height: clamp(86px, 15vh, 140px); }
+.qz-result .qz-podium--xl .qz-podium__col--3 .qz-podium__bar { height: clamp(60px, 11vh, 100px); }
+@keyframes qz-winner-glow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.28); } }
+
+/* ---------- XL leaderboard ---------- */
+.qz-result .qz-board--xl {
+    max-width: 740px;
+    background: rgba(0, 0, 0, .32);
+    padding: clamp(10px, 2vh, 20px) clamp(16px, 3vw, 30px);
+    border: 1.5px solid var(--qz-accent, rgba(255, 255, 255, .3));
+    box-shadow: 0 0 40px var(--qz-glow, transparent);
+    backdrop-filter: blur(6px);
+    max-height: 46svh;
+    overflow-y: auto;
+}
+.qz-result .qz-board--xl .qz-board__row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    font-size: clamp(1.05rem, 2.6vw, 1.8rem);
+    padding: clamp(6px, 1.1vh, 12px) 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    animation: qz-row-in .5s ease both;
+}
+.qz-result .qz-board--xl .qz-board__row:last-child { border-bottom: none; }
+.qz-result .qz-board--xl .qz-board__row:first-child {
+    background: linear-gradient(90deg, var(--qz-glow, transparent), transparent 80%);
+    border-radius: 12px;
+}
+.qz-board__rank { font-family: 'Anton', sans-serif; color: var(--qz-accent, #fff); min-width: 1.5em; }
+.qz-board__name { text-align: left; }
+.qz-board__score { font-weight: 800; font-variant-numeric: tabular-nums; }
+@keyframes qz-row-in { from { transform: translateX(-26px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ---------- Searchlights ---------- */
+.qz-searchlights { position: fixed; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+.qz-searchlight {
+    position: absolute;
+    bottom: -18vh;
+    width: 15vmin;
+    height: 145vh;
+    background: linear-gradient(to top, var(--qz-glow, rgba(255, 255, 255, .4)), transparent 72%);
+    transform-origin: bottom center;
+    filter: blur(9px);
+    mix-blend-mode: screen;
+    opacity: .55;
+    animation: qz-sweep 7s ease-in-out infinite alternate;
+}
+.qz-searchlight.s1 { left: 16%; animation-duration: 6s; }
+.qz-searchlight.s2 { left: 38%; animation-duration: 8.5s; animation-delay: -2.5s; }
+.qz-searchlight.s3 { left: 60%; animation-duration: 7.4s; animation-delay: -1.2s; }
+.qz-searchlight.s4 { left: 82%; animation-duration: 9s; animation-delay: -4s; }
+@keyframes qz-sweep { 0% { transform: rotate(-34deg); } 100% { transform: rotate(34deg); } }
+
+/* ---------- Fireworks (pure CSS bursts) ---------- */
+.qz-fireworks { position: fixed; inset: 0; z-index: 4; pointer-events: none; }
+.qz-firework,
+.qz-firework::before,
+.qz-firework::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0.5vmin;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    background:
+        radial-gradient(circle, #ffd166 0.2vmin, #0000 0) 50% 0%,
+        radial-gradient(circle, #ef476f 0.3vmin, #0000 0) 0% 50%,
+        radial-gradient(circle, #ffd166 0.5vmin, #0000 0) 50% 99%,
+        radial-gradient(circle, #06d6a0 0.2vmin, #0000 0) 99% 50%,
+        radial-gradient(circle, #118ab2 0.3vmin, #0000 0) 80% 90%,
+        radial-gradient(circle, #ef476f 0.5vmin, #0000 0) 95% 90%,
+        radial-gradient(circle, #06d6a0 0.5vmin, #0000 0) 10% 60%,
+        radial-gradient(circle, #ffd166 0.2vmin, #0000 0) 31% 80%,
+        radial-gradient(circle, #118ab2 0.3vmin, #0000 0) 80% 10%,
+        radial-gradient(circle, #ef476f 0.2vmin, #0000 0) 90% 23%,
+        radial-gradient(circle, #06d6a0 0.3vmin, #0000 0) 45% 20%,
+        radial-gradient(circle, #ffd166 0.5vmin, #0000 0) 13% 24%;
+    background-size: 0.6vmin 0.6vmin;
+    background-repeat: no-repeat;
+    animation: qz-firework 2.4s infinite;
+}
+.qz-firework::before { transform: translate(-50%, -50%) rotate(25deg); top: 50%; left: 50%; }
+.qz-firework::after { transform: translate(-50%, -50%) rotate(-37deg); top: 50%; left: 50%; }
+.qz-firework:nth-child(2n) { filter: hue-rotate(140deg); }
+.qz-firework:nth-child(3n) { filter: hue-rotate(250deg); }
+@keyframes qz-firework {
+    0% { width: 0.5vmin; opacity: 1; }
+    35% { opacity: 1; }
+    100% { width: 30vmin; opacity: 0; }
+}
+
+/* ---------- Fire ---------- */
+.qz-fire {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 26vh;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    gap: .4vw;
+    padding: 0 1vw;
+    pointer-events: none;
+    filter: blur(3px);
+}
+.qz-fire::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 40%;
+    background: linear-gradient(to top, rgba(255, 80, 0, .55), transparent);
+    filter: blur(8px);
+}
+.qz-flame {
+    flex: 1 1 auto;
+    height: var(--h, 80%);
+    align-self: flex-end;
+    border-radius: 50% 50% 42% 42% / 72% 72% 30% 30%;
+    background: linear-gradient(to top, rgba(255, 255, 255, .55), #ffe169 10%, #ff9a00 38%, #ff3d00 72%, transparent);
+    transform-origin: bottom center;
+    mix-blend-mode: screen;
+    animation: qz-flicker .9s ease-in-out infinite alternate;
+}
+@keyframes qz-flicker {
+    0% { transform: scaleY(.82) scaleX(1.02); opacity: .82; }
+    100% { transform: scaleY(1.18) scaleX(.9); opacity: 1; }
+}
+
+/* ---------- Calm things down for reduced-motion users ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .qz-firework,
+    .qz-searchlight,
+    .qz-flame,
+    .qz-confetti i,
+    .qz-result__title,
+    .qz-champion,
+    .qz-champion__crown,
+    .qz-result .qz-board--xl .qz-board__row,
+    .qz-result .qz-podium__bar { animation: none !important; }
+    .qz-searchlight { transform: rotate(0deg); }
+}

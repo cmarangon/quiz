@@ -176,41 +176,83 @@
         </div>
         @endif
 
-    {{-- FINISHED PHASE --}}
+    {{-- FINISHED PHASE — ULTRA THEMED RESULT --}}
     @elseif($phase === 'finished')
-        <div class="w-full max-w-4xl space-y-10 text-center">
-            <h1 class="text-7xl font-bold text-zinc-900 dark:text-white">{{ __('Game Over!') }}</h1>
+        @php($top = array_slice($leaderboard, 0, 3))
+        @php($champion = $leaderboard[0] ?? null)
+        <div class="qz-stage qz-stage--{{ $style }} qz-stage--has-bg qz-result">
+            {{-- Searchlights sweeping the arena --}}
+            <div class="qz-searchlights" aria-hidden="true">
+                <span class="qz-searchlight s1"></span>
+                <span class="qz-searchlight s2"></span>
+                <span class="qz-searchlight s3"></span>
+                <span class="qz-searchlight s4"></span>
+            </div>
 
-            @if(! empty($leaderboard))
-                {{-- Podium --}}
-                <div class="flex items-end justify-center gap-6 mt-8">
-                    @foreach(array_slice($leaderboard, 0, 3) as $index => $entry)
-                        <div class="flex flex-col items-center">
-                            <x-player-name :emoji="$entry['emoji'] ?? null" :nickname="$entry['nickname']" class="text-3xl font-bold text-zinc-900 dark:text-white" />
-                            <span class="text-xl text-zinc-500 dark:text-zinc-400">{{ $entry['score'] }} {{ __('pts') }}</span>
-                            <div class="mt-3 rounded-t-lg bg-gradient-to-t
-                                @if($index === 0) from-yellow-500 to-yellow-300 w-36 h-48
-                                @elseif($index === 1) from-zinc-400 to-zinc-300 w-32 h-36
-                                @else from-amber-700 to-amber-500 w-32 h-24
-                                @endif flex items-center justify-center">
-                                <span class="text-4xl font-bold text-white">{{ $index + 1 }}</span>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
+            {{-- Fireworks bursting overhead --}}
+            <div class="qz-fireworks" aria-hidden="true">
+                @for($i = 0; $i < 6; $i++)
+                    <span class="qz-firework"
+                          style="left: {{ [12, 31, 50, 69, 86, 44][$i] }}%; top: {{ [30, 16, 40, 20, 34, 12][$i] }}%; animation-delay: {{ $i * 0.5 }}s;"></span>
+                @endfor
+            </div>
 
-                {{-- Full leaderboard --}}
-                <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-8 text-left">
-                    <ol class="space-y-4">
-                        @foreach($leaderboard as $index => $entry)
-                            <li data-test="spectator-leaderboard-row" data-player-nickname="{{ $entry['nickname'] }}" class="flex justify-between text-2xl text-zinc-700 dark:text-zinc-300">
-                                <span>{{ $index + 1 }}. <x-player-name :emoji="$entry['emoji'] ?? null" :nickname="$entry['nickname']" /></span>
-                                <span class="font-bold">{{ $entry['score'] }}</span>
-                            </li>
+            {{-- Confetti rain --}}
+            <div class="qz-confetti" aria-hidden="true">
+                @for($i = 0; $i < 40; $i++)
+                    <i style="left: {{ ($i * 2.5) + 1 }}%; background: hsl({{ ($i * 47) % 360 }}, 90%, 60%); animation-duration: {{ 2.6 + (($i % 6) * 0.45) }}s; animation-delay: {{ ($i % 9) * 0.22 }}s;"></i>
+                @endfor
+            </div>
+
+            {{-- Roaring fire across the base --}}
+            <div class="qz-fire" aria-hidden="true">
+                @for($i = 0; $i < 18; $i++)
+                    <span class="qz-flame" style="animation-delay: {{ ($i % 5) * 0.11 }}s; --h: {{ 65 + (($i * 17) % 70) }}%;"></span>
+                @endfor
+            </div>
+
+            <div class="qz-result__inner">
+                <p class="qz-result__kicker">{{ __('And the champion is') }}</p>
+                <h1 class="qz-result__title" data-test="spectator-game-over">{{ __('Game Over!') }}</h1>
+
+                @if($champion)
+                    <div class="qz-champion">
+                        <span class="qz-champion__crown">👑</span>
+                        <span class="qz-champion__emoji">{{ $champion['emoji'] ?? '🏆' }}</span>
+                        <span class="qz-champion__name">{{ $champion['nickname'] }}</span>
+                        <span class="qz-champion__score">{{ $champion['score'] }} {{ __('pts') }}</span>
+                    </div>
+                @endif
+
+                @if(count($top) > 0)
+                    <div class="qz-podium qz-podium--xl">
+                        @php($order = [1 => $top[1] ?? null, 0 => $top[0] ?? null, 2 => $top[2] ?? null])
+                        @foreach($order as $idx => $entry)
+                            @if($entry)
+                                <div class="qz-podium__col qz-podium__col--{{ $idx + 1 }}">
+                                    <div class="qz-podium__emoji">{{ $entry['emoji'] ?? '🎮' }}</div>
+                                    <div class="qz-podium__name">{{ $entry['nickname'] }}</div>
+                                    <div class="qz-podium__score">{{ $entry['score'] }}</div>
+                                    <div class="qz-podium__bar">{{ $idx + 1 }}</div>
+                                </div>
+                            @endif
                         @endforeach
-                    </ol>
-                </div>
-            @endif
+                    </div>
+                @endif
+
+                @if(! empty($leaderboard))
+                    <div class="qz-board qz-board--xl">
+                        @foreach($leaderboard as $index => $entry)
+                            <div data-test="spectator-leaderboard-row" data-player-nickname="{{ $entry['nickname'] }}"
+                                 class="qz-board__row" style="animation-delay: {{ $index * 0.07 }}s;">
+                                <span class="qz-board__rank">{{ $index + 1 }}</span>
+                                <span class="qz-board__name"><x-player-name :emoji="$entry['emoji'] ?? null" :nickname="$entry['nickname']" /></span>
+                                <span class="qz-board__score">{{ $entry['score'] }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
         </div>
     @endif
 </div>
