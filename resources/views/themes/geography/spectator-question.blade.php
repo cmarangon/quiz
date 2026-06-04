@@ -4,7 +4,7 @@
 <div class="qz-theme qz-theme--geography qz-spectator w-full" wire:key="spectator-question-geography-{{ $currentQuestion['question_id'] ?? '' }}">
     @include('themes.geography._deco')
 
-    <div class="mx-auto w-full max-w-4xl space-y-8">
+    <div class="mx-auto w-full max-w-[96rem] space-y-6">
         <div class="qz-question">
             <span class="qz-emoji">🗺️</span>
             <p class="qz-qlabel">{{ __('Question') }} {{ ($currentQuestion['question_index'] ?? 0) + 1 }}</p>

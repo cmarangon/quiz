@@ -4,7 +4,7 @@
 <div class="qz-theme qz-theme--science qz-spectator w-full" wire:key="spectator-question-science-{{ $currentQuestion['question_id'] ?? '' }}">
     <span class="qz-bubble b1"></span><span class="qz-bubble b2"></span><span class="qz-bubble b3"></span>
 
-    <div class="mx-auto w-full max-w-4xl space-y-8">
+    <div class="mx-auto w-full max-w-[96rem] space-y-6">
         <div class="qz-question">
             <span class="qz-emoji">🧪</span>
             <p class="qz-qlabel">{{ __('Question') }} {{ ($currentQuestion['question_index'] ?? 0) + 1 }}</p>

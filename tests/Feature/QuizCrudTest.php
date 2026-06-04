@@ -3,6 +3,7 @@
 use App\Livewire\QuizBuilder;
 use App\Livewire\QuizIndex;
 use App\Models\Category;
+use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\User;
 use Livewire\Livewire;
@@ -432,4 +433,75 @@ test('user cannot edit a question belonging to another users quiz', function () 
         ->test(QuizBuilder::class, ['quiz' => $otherQuiz])
         ->call('editQuestion', $question->id)
         ->assertStatus(403);
+});
+
+test('user can delete a question', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = $category->questions()->create([
+        'type' => 'multiple_choice',
+        'body' => 'What is 2+2?',
+        'options' => ['3', '4'],
+        'correct_answer' => '4',
+        'points' => 10,
+        'time_limit_seconds' => 30,
+        'order' => 1,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('deleteQuestion', $question->id);
+
+    expect(Question::find($question->id))->toBeNull();
+});
+
+test('deleting the question being edited resets the form', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = $category->questions()->create([
+        'type' => 'multiple_choice',
+        'body' => 'What is 2+2?',
+        'options' => ['3', '4'],
+        'correct_answer' => '4',
+        'points' => 10,
+        'time_limit_seconds' => 30,
+        'order' => 1,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('editQuestion', $question->id)
+        ->assertSet('editingQuestionId', $question->id)
+        ->call('deleteQuestion', $question->id)
+        ->assertSet('editingQuestionId', null)
+        ->assertSet('questionBody', '');
+
+    expect(Question::find($question->id))->toBeNull();
+});
+
+test('user cannot delete a question belonging to another users quiz', function () {
+    $owner = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $owner->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = $category->questions()->create([
+        'type' => 'multiple_choice',
+        'body' => 'What is 2+2?',
+        'options' => ['3', '4'],
+        'correct_answer' => '4',
+        'points' => 10,
+        'time_limit_seconds' => 30,
+        'order' => 1,
+    ]);
+
+    $otherQuiz = Quiz::factory()->create(['user_id' => $otherUser->id]);
+
+    Livewire::actingAs($otherUser)
+        ->test(QuizBuilder::class, ['quiz' => $otherQuiz])
+        ->call('deleteQuestion', $question->id)
+        ->assertStatus(403);
+
+    expect(Question::find($question->id))->not->toBeNull();
 });

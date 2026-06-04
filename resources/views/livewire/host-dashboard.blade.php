@@ -20,26 +20,46 @@
     </div>
 
     {{-- Spectator link --}}
-    <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
-        <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Spectator Screen') }}</p>
-        <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            {{ __('Open this on a shared display so everyone can follow along.') }}
-        </p>
-        <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div class="flex flex-col items-start gap-2">
-                <flux:button
-                    :href="$spectatorUrl"
-                    target="_blank"
-                    variant="primary"
-                    icon="arrow-top-right-on-square"
-                    data-test="spectator-link-button"
-                >
-                    {{ __('Open Spectator Screen') }}
-                </flux:button>
-            </div>
-            <div class="rounded-lg border border-zinc-200 bg-white p-2 dark:border-zinc-700 dark:bg-zinc-900"
-                 data-test="spectator-qr-code">
-                {!! $spectatorQrCodeSvg !!}
+    {{-- Keyed on whether the game has started so Alpine re-initialises and the
+         box auto-minimises once play begins; stays expanded in the lobby. --}}
+    <div
+        wire:key="spectator-info-{{ $phase === 'lobby' ? 'lobby' : 'started' }}"
+        x-data="{ open: {{ $phase === 'lobby' ? 'true' : 'false' }} }"
+        class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700"
+    >
+        <button
+            type="button"
+            x-on:click="open = !open"
+            x-bind:aria-expanded="open"
+            data-test="spectator-info-toggle"
+            class="flex w-full items-center justify-between gap-2 text-left"
+        >
+            <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Spectator Screen') }}</span>
+            <svg class="h-5 w-5 shrink-0 text-zinc-400 transition-transform" x-bind:class="open ? 'rotate-180' : ''"
+                 fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+        </button>
+        <div x-show="open" x-collapse data-test="spectator-info-body">
+            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                {{ __('Open this on a shared display so everyone can follow along.') }}
+            </p>
+            <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
+                <div class="flex flex-col items-start gap-2">
+                    <flux:button
+                        :href="$spectatorUrl"
+                        target="_blank"
+                        variant="primary"
+                        icon="arrow-top-right-on-square"
+                        data-test="spectator-link-button"
+                    >
+                        {{ __('Open Spectator Screen') }}
+                    </flux:button>
+                </div>
+                <div class="rounded-lg border border-zinc-200 bg-white p-2 dark:border-zinc-700 dark:bg-zinc-900"
+                     data-test="spectator-qr-code">
+                    {!! $spectatorQrCodeSvg !!}
+                </div>
             </div>
         </div>
     </div>

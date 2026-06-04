@@ -4,7 +4,7 @@
 <div class="qz-theme qz-theme--pop-culture qz-spectator w-full" wire:key="spectator-question-pop-culture-{{ $currentQuestion['question_id'] ?? '' }}">
     @include('themes.pop-culture._deco')
 
-    <div class="mx-auto w-full max-w-4xl space-y-8">
+    <div class="mx-auto w-full max-w-[96rem] space-y-6">
         <div class="qz-question">
             <span class="qz-emoji">🎤</span>
             <p class="qz-qlabel">{{ __('Question') }} {{ ($currentQuestion['question_index'] ?? 0) + 1 }}</p>

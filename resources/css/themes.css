@@ -785,3 +785,50 @@
         animation: none;
     }
 }
+
+/* =========================================================================
+   SPECTATOR BIG-SCREEN TYPOGRAPHY
+   The spectator view is shown on a TV/projector to a whole room, so its text
+   must read from a distance. These rules scale the question, options and meta
+   far larger than the per-theme defaults. Declared after every theme block and
+   marked !important so a single rule covers all seven themes without
+   duplicating their individual .qz-spectator sizing. Caps are tuned so a
+   typical question plus all four options still fit a 1080p screen.
+   ========================================================================= */
+.qz-theme.qz-spectator .qz-question h2 {
+    font-size: clamp(2.75rem, 5vw, 5.5rem) !important;
+    line-height: 1.1 !important;
+}
+.qz-theme.qz-spectator .qz-question {
+    padding: clamp(16px, 1.6vw, 30px) clamp(20px, 2vw, 34px) !important;
+}
+.qz-theme.qz-spectator .qz-question .qz-emoji {
+    font-size: clamp(2.5rem, 3.6vw, 3.75rem) !important;
+    margin-bottom: 4px !important;
+}
+.qz-theme.qz-spectator .qz-question .qz-qlabel {
+    font-size: clamp(1.5rem, 2.8vw, 2.6rem) !important;
+}
+.qz-theme.qz-spectator .qz-options {
+    gap: clamp(20px, 2vw, 36px) !important;
+}
+.qz-theme.qz-spectator .qz-option {
+    font-size: clamp(2rem, 3.4vw, 3.75rem) !important;
+    padding: clamp(20px, 1.9vw, 36px) clamp(24px, 2.2vw, 44px) !important;
+}
+.qz-theme.qz-spectator .qz-option .qz-key {
+    width: clamp(64px, 4.6vw, 92px) !important;
+    height: clamp(64px, 4.6vw, 92px) !important;
+    font-size: clamp(2rem, 2.8vw, 3rem) !important;
+    flex: none !important;
+}
+.qz-theme.qz-spectator .qz-meta {
+    font-size: clamp(1.5rem, 2.6vw, 2.6rem) !important;
+}
+/* Review-phase leaderboard rendered inside a .qz-question card. */
+.qz-theme.qz-spectator .qz-question ol {
+    font-size: clamp(1.6rem, 2.8vw, 2.75rem) !important;
+}
+.qz-theme.qz-spectator .qz-question ol li {
+    padding: clamp(4px, 0.6vh, 10px) 0 !important;
+}

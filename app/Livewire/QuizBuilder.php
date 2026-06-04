@@ -176,6 +176,23 @@ class QuizBuilder extends Component
         }
     }
 
+    public function deleteQuestion(int $questionId): void
+    {
+        $question = Question::findOrFail($questionId);
+        $category = $question->category;
+
+        if ($category->quiz_id !== $this->quiz?->id) {
+            abort(403);
+        }
+
+        $question->delete();
+
+        if ($this->editingQuestionId === $questionId) {
+            $this->editingQuestionId = null;
+            $this->resetQuestionForm();
+        }
+    }
+
     public function cancelAddQuestion(): void
     {
         $this->addingQuestionToCategoryId = null;
