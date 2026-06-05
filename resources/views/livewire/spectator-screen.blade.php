@@ -54,9 +54,9 @@
     @elseif($phase === 'category-intro')
         <div class="text-center space-y-6">
             @if($currentTheme)
-                <div class="rounded-2xl bg-gradient-to-br {{ $currentTheme['gradient'] ?? '' }} p-16">
-                    <p class="text-xl uppercase tracking-wider text-white/60">{{ __('Up Next') }}</p>
-                    <h2 class="text-7xl font-bold text-white mt-3">{{ $currentTheme['name'] ?? '' }}</h2>
+                <div class="rounded-3xl bg-gradient-to-br {{ $currentTheme['gradient'] ?? '' }} px-[clamp(3rem,8vw,8rem)] py-[clamp(3rem,7vw,7rem)]">
+                    <p class="text-[clamp(1.75rem,3.4vw,3.5rem)] uppercase tracking-wider text-white/60">{{ __('Up Next') }}</p>
+                    <h2 class="text-[clamp(4rem,10vw,12rem)] leading-none font-bold text-white mt-3">{{ $currentTheme['name'] ?? '' }}</h2>
                 </div>
             @endif
         </div>
@@ -77,9 +77,9 @@
                     destroy() { clearInterval(this.timer); }
                  }"
                  data-test="spectator-countdown"
-                 class="fixed inset-x-0 top-8 z-50 flex flex-col items-center gap-3">
-                <p class="text-3xl font-semibold text-zinc-600 dark:text-zinc-300">{{ __('Everyone answered!') }}</p>
-                <div class="flex h-28 w-28 items-center justify-center rounded-full bg-green-500 text-6xl font-bold text-white shadow-lg">
+                 class="fixed inset-x-0 top-8 z-50 flex flex-col items-center gap-4">
+                <p class="text-[clamp(2rem,3.6vw,4rem)] font-semibold text-zinc-600 dark:text-zinc-300">{{ __('Everyone answered!') }}</p>
+                <div class="flex h-[clamp(7rem,12vw,16rem)] w-[clamp(7rem,12vw,16rem)] items-center justify-center rounded-full bg-green-500 text-[clamp(3.5rem,7vw,9rem)] font-bold text-white shadow-lg">
                     <span x-text="remaining" data-test="spectator-countdown-value">{{ $countdownSeconds }}</span>
                 </div>
             </div>

@@ -709,7 +709,7 @@
     border-radius: 16px;
     overflow: hidden;
 }
-.qz-theme.qz-spectator .qz-geoframe > [x-ref="map"] { height: 28rem; }
+.qz-theme.qz-spectator .qz-geoframe > [x-ref="map"] { height: clamp(28rem, 56vh, 60rem); }
 
 /* =========================== QUESTION COUNTDOWN ========================== */
 /* Cartoony per-question timer for the player screen. Driven by Alpine: the
@@ -792,43 +792,46 @@
    must read from a distance. These rules scale the question, options and meta
    far larger than the per-theme defaults. Declared after every theme block and
    marked !important so a single rule covers all seven themes without
-   duplicating their individual .qz-spectator sizing. Caps are tuned so a
-   typical question plus all four options still fit a 1080p screen.
-   ========================================================================= */
+   duplicating their individual .qz-spectator sizing.
+
+   The screen is a TV viewed from across a room, so sizing scales aggressively
+   with the viewport (high vw factors) and the caps are large enough to keep
+   filling 4K panels. min values are still generous so even a small projector
+   reads clearly. */
 .qz-theme.qz-spectator .qz-question h2 {
-    font-size: clamp(2.75rem, 5vw, 5.5rem) !important;
-    line-height: 1.1 !important;
+    font-size: clamp(3rem, 6.5vw, 9rem) !important;
+    line-height: 1.05 !important;
 }
 .qz-theme.qz-spectator .qz-question {
-    padding: clamp(16px, 1.6vw, 30px) clamp(20px, 2vw, 34px) !important;
+    padding: clamp(20px, 2.2vw, 48px) clamp(24px, 2.6vw, 56px) !important;
 }
 .qz-theme.qz-spectator .qz-question .qz-emoji {
-    font-size: clamp(2.5rem, 3.6vw, 3.75rem) !important;
-    margin-bottom: 4px !important;
+    font-size: clamp(3rem, 5vw, 6rem) !important;
+    margin-bottom: 6px !important;
 }
 .qz-theme.qz-spectator .qz-question .qz-qlabel {
-    font-size: clamp(1.5rem, 2.8vw, 2.6rem) !important;
+    font-size: clamp(1.75rem, 3.4vw, 3.5rem) !important;
 }
 .qz-theme.qz-spectator .qz-options {
-    gap: clamp(20px, 2vw, 36px) !important;
+    gap: clamp(24px, 2.6vw, 52px) !important;
 }
 .qz-theme.qz-spectator .qz-option {
-    font-size: clamp(2rem, 3.4vw, 3.75rem) !important;
-    padding: clamp(20px, 1.9vw, 36px) clamp(24px, 2.2vw, 44px) !important;
+    font-size: clamp(2.25rem, 4.2vw, 5.5rem) !important;
+    padding: clamp(24px, 2.4vw, 52px) clamp(28px, 2.8vw, 60px) !important;
 }
 .qz-theme.qz-spectator .qz-option .qz-key {
-    width: clamp(64px, 4.6vw, 92px) !important;
-    height: clamp(64px, 4.6vw, 92px) !important;
-    font-size: clamp(2rem, 2.8vw, 3rem) !important;
+    width: clamp(72px, 5.6vw, 128px) !important;
+    height: clamp(72px, 5.6vw, 128px) !important;
+    font-size: clamp(2.25rem, 3.4vw, 4.25rem) !important;
     flex: none !important;
 }
 .qz-theme.qz-spectator .qz-meta {
-    font-size: clamp(1.5rem, 2.6vw, 2.6rem) !important;
+    font-size: clamp(1.75rem, 3.2vw, 3.5rem) !important;
 }
 /* Review-phase leaderboard rendered inside a .qz-question card. */
 .qz-theme.qz-spectator .qz-question ol {
-    font-size: clamp(1.6rem, 2.8vw, 2.75rem) !important;
+    font-size: clamp(1.85rem, 3.4vw, 3.75rem) !important;
 }
 .qz-theme.qz-spectator .qz-question ol li {
-    padding: clamp(4px, 0.6vh, 10px) 0 !important;
+    padding: clamp(6px, 0.8vh, 14px) 0 !important;
 }
