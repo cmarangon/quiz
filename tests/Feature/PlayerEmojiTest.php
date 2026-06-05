@@ -80,7 +80,8 @@ test('surprise me sets a lewd emoji that passes validation', function () {
         ->toContain(Player::where('game_session_id', $session->id)->first()->emoji);
 });
 
-test('finish leaderboard includes player emojis', function () {    $quiz = Quiz::factory()->create();
+test('finish leaderboard includes player emojis', function () {
+    $quiz = Quiz::factory()->create();
     $session = GameSession::factory()->create(['quiz_id' => $quiz->id, 'status' => 'finished']);
     Player::factory()->create(['game_session_id' => $session->id, 'nickname' => 'A', 'emoji' => '🚀', 'score' => 10]);
 

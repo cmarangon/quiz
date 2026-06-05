@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', WelcomePage::class)->name('home');
 
 Route::get('/locale/{locale}', function (string $locale) {
-    if (in_array($locale, ['en', 'de'])) {
+    if (in_array($locale, config('app.supported_locales'), true)) {
         session()->put('locale', $locale);
     }
 

@@ -86,6 +86,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Supported Locales
+    |--------------------------------------------------------------------------
+    |
+    | The locales a user is allowed to switch the interface to. Used by the
+    | locale switch route and the SetLocale middleware to validate input.
+    |
+    */
+
+    'supported_locales' => ['en', 'de'],
+
+    /*
+    |--------------------------------------------------------------------------
     | Encryption Key
     |--------------------------------------------------------------------------
     |

@@ -1,7 +1,9 @@
 <?php
 
 use App\Events\PlayerJoined;
+use App\Livewire\HostDashboard;
 use App\Livewire\JoinGame;
+use App\Livewire\SpectatorScreen;
 use App\Models\GameSession;
 use App\Models\Player;
 use App\Models\Quiz;
@@ -95,7 +97,7 @@ test('host dashboard shows the spectator link as a button and qr code', function
     $spectatorUrl = route('game.spectator', $session->join_code);
 
     Livewire::actingAs($host)
-        ->test(\App\Livewire\HostDashboard::class, ['code' => $session->join_code])
+        ->test(HostDashboard::class, ['code' => $session->join_code])
         ->assertSet('spectatorUrl', $spectatorUrl)
         ->assertSeeHtml('data-test="spectator-link-button"')
         ->assertSeeHtml('data-test="spectator-qr-code"')
@@ -107,7 +109,7 @@ test('spectator screen shows the join link in the lobby', function () {
 
     $joinUrl = route('game.join', $session->join_code);
 
-    Livewire::test(\App\Livewire\SpectatorScreen::class, ['code' => $session->join_code])
+    Livewire::test(SpectatorScreen::class, ['code' => $session->join_code])
         ->assertSet('joinUrl', $joinUrl)
         ->assertSeeHtml('data-test="spectator-link"')
         ->assertSeeHtml($joinUrl);

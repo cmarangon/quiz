@@ -1,4 +1,4 @@
-# Quiz2
+# Quiz
 
 [![Tests](https://github.com/cmarangon/quiz/actions/workflows/tests.yml/badge.svg)](https://github.com/cmarangon/quiz/actions/workflows/tests.yml)
 
@@ -11,7 +11,7 @@ Built on Laravel 12, Livewire 4, and Reverb, because spinning up a WebSocket sta
 - **Host** a game from your browser — pick a quiz, hit start, read the questions out loud like you're on television.
 - **Players** join from their phones with a 6-character code (or a QR code, because 2008 called and wants its manual entry back).
 - **Spectators** get a big-screen view — scores, questions, drama — no login required.
-- **Question types:** multiple choice and true/false. More welcome; PRs even more welcome.
+- **Question types:** multiple choice, true/false, ordering (sort the options into the right sequence), and geo-guesser (drop a pin on the map — closer guesses score higher). More welcome; PRs even more welcome.
 - **Languages:** English and German (`/locale/en`, `/locale/de`).
 - **Live everything:** Reverb pushes joins, answers, reveals, and category changes to every screen in real time.
 
