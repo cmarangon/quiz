@@ -55,7 +55,7 @@ function typedPayload(string $theme, string $type): array
     ];
 }
 
-$themes = ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'];
+$themes = ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports', 'crime'];
 
 test('QuestionStarted carries the theme for every styled category', function (string $theme) {
     $category = Category::factory()->create(['theme' => $theme]);

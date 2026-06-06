@@ -54,7 +54,7 @@
                 @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'true_false')
                     @include('question-types.true-false-player')
                 @elseif($currentQuestion && ! empty($currentQuestion['options']))
-                    @if(in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
+                    @if(in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports', 'crime'], true))
                         @include('themes.'.$themeKey.'.player-answering')
                     @else
                     @php

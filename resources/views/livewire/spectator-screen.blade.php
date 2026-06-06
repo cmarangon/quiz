@@ -88,7 +88,7 @@
             @include('question-types.geo-guesser-spectator')
         @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
             @include('question-types.ordering-spectator')
-        @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
+        @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports', 'crime'], true))
             @include('themes.'.$themeKey.'.spectator-question')
         @elseif($currentQuestion)
             <div class="w-full max-w-[96rem] space-y-6">
@@ -130,7 +130,7 @@
             @include('question-types.geo-guesser-spectator')
         @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
             @include('question-types.ordering-spectator')
-        @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
+        @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports', 'crime'], true))
             @include('themes.'.$themeKey.'.spectator-review')
         @else
         <div class="w-full max-w-[96rem] space-y-6">

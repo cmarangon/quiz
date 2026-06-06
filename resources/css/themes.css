@@ -553,6 +553,97 @@
 .qz-theme--sports.qz-spectator .qz-option { font-size: clamp(24px, 2.6vw, 36px); padding: 22px 28px; border-radius: 14px; }
 .qz-theme--sports.qz-spectator .qz-option .qz-key { width: 54px; height: 54px; }
 
+/* =========================== CRIME ===================================== */
+/* Film-noir detective case board: aged case-file paper on a dark, spotlit
+   backdrop strung with red evidence thread and wrapped in crime-scene tape. */
+.qz-theme--crime {
+    --crime-ink: #0b0e14;
+    --crime-paper: #e7dcc2;
+    --crime-paper-dark: #d3c4a0;
+    --crime-blood: #b41f2a;
+    --crime-tape: #f2c20e;
+    --crime-steel: #222c3e;
+    --crime-teal: #45b6b6;
+    font-family: 'Special Elite', 'Courier New', ui-monospace, monospace;
+    color: #d9d2c2;
+}
+.qz-theme--crime::before {
+    background:
+        radial-gradient(ellipse at 50% -12%, rgba(242, 194, 14, 0.14), transparent 46%),
+        radial-gradient(circle at 84% 88%, rgba(180, 31, 42, 0.18), transparent 44%),
+        linear-gradient(160deg, #12161f, #06080d);
+}
+/* faint interrogation-room hatch */
+.qz-theme--crime::after {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.05;
+    background-image: repeating-linear-gradient(45deg, #fff 0 1px, transparent 1px 10px);
+}
+.qz-theme--crime .qz-badge {
+    font-family: 'Special Elite', monospace; letter-spacing: 2px; text-transform: uppercase;
+    background: var(--crime-tape); color: var(--crime-ink); border: 2px solid var(--crime-ink);
+    border-radius: 4px; padding: 8px 20px; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
+    transform: rotate(-2deg);
+}
+.qz-theme--crime .qz-question {
+    position: relative;
+    background:
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.018) 0 27px, rgba(0, 0, 0, 0.05) 27px 28px),
+        linear-gradient(180deg, #efe7d2, var(--crime-paper-dark));
+    border: 1px solid #b8a982; border-radius: 6px;
+    padding: 34px 40px; text-align: center; color: #1c1a14;
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.6), inset 0 0 60px rgba(120, 90, 40, 0.12);
+}
+.qz-theme--crime .qz-question::before {
+    content: "CONFIDENTIAL"; position: absolute; top: 14px; right: 12px;
+    font-family: 'Special Elite', monospace; font-size: 12px; letter-spacing: 2px;
+    color: var(--crime-blood); border: 2px solid var(--crime-blood); border-radius: 3px;
+    padding: 2px 7px; transform: rotate(8deg); opacity: 0.65;
+}
+.qz-theme--crime .qz-question h2 { font-family: 'Special Elite', monospace; }
+.qz-theme--crime .qz-question .qz-emoji { font-size: 4em; display: block; margin-bottom: 6px; }
+.qz-theme--crime .qz-question .qz-qlabel { font-family: 'Special Elite', monospace; letter-spacing: 2px; text-transform: uppercase; color: var(--crime-blood); }
+.qz-theme--crime .qz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.qz-theme--crime .qz-option {
+    font-family: 'Special Elite', monospace; cursor: pointer; color: #ece6d6; text-align: left;
+    display: flex; align-items: center; gap: 14px;
+    background: linear-gradient(180deg, var(--crime-steel), #161d2b);
+    border: 2px solid #000;
+    box-shadow: 0 6px 0 #000, 0 10px 20px rgba(0, 0, 0, 0.45);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.qz-theme--crime .qz-option:active { transform: translateY(4px); box-shadow: 0 2px 0 #000; }
+.qz-theme--crime .qz-option .qz-key {
+    flex: 0 0 auto; display: grid; place-items: center; font-family: 'Special Elite', monospace;
+    color: #fff; background: var(--crime-blood); border: 2px solid #000;
+}
+.qz-theme--crime .qz-option.b .qz-key { background: var(--crime-teal); color: #06121a; }
+.qz-theme--crime .qz-option.c .qz-key { background: var(--crime-tape); color: #1a1405; }
+.qz-theme--crime .qz-option.d .qz-key { background: #6b7689; }
+.qz-theme--crime .qz-option.is-correct { outline: 4px solid var(--crime-tape); outline-offset: 2px; }
+.qz-theme--crime .qz-option.is-dim { filter: grayscale(0.55) brightness(0.7); opacity: 0.7; }
+.qz-theme--crime .qz-hint { text-align: center; font-family: 'Special Elite', monospace; color: #9aa6b8; opacity: 0.85; }
+.qz-theme--crime .qz-meta { display: flex; align-items: center; justify-content: space-between; font-family: 'Special Elite', monospace; color: var(--crime-tape); }
+/* crime-scene tape banners + red evidence thread + magnifier */
+.qz-theme--crime .qz-tape {
+    position: fixed; z-index: -1; left: -12%; width: 124%; pointer-events: none; text-align: center;
+    font-family: 'Special Elite', monospace; font-weight: 700; letter-spacing: 6px; font-size: 18px;
+    color: #1a1405; background: var(--crime-tape); white-space: nowrap; overflow: hidden;
+    border-top: 3px dashed rgba(0, 0, 0, 0.55); border-bottom: 3px dashed rgba(0, 0, 0, 0.55);
+    padding: 6px 0; opacity: 0.88; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+.qz-theme--crime .qz-tape.t1 { top: 7%; transform: rotate(-7deg); }
+.qz-theme--crime .qz-tape.t2 { bottom: 7%; transform: rotate(6deg); }
+.qz-theme--crime .qz-strings { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.5; }
+.qz-theme--crime .qz-strings path { fill: none; stroke: var(--crime-blood); stroke-width: 2; }
+.qz-theme--crime .qz-strings circle { fill: var(--crime-blood); }
+.qz-theme--crime .qz-glass { position: fixed; right: 30px; bottom: 26px; z-index: -1; font-size: 64px; opacity: 0.85; transform: rotate(-12deg); filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.6)); }
+.qz-theme--crime.qz-player .qz-option { font-size: 18px; padding: 16px 18px; border-radius: 8px; }
+.qz-theme--crime.qz-player .qz-option .qz-key { width: 36px; height: 36px; border-radius: 6px; font-size: 18px; }
+.qz-theme--crime.qz-spectator .qz-question h2 { font-size: clamp(34px, 4.8vw, 60px); line-height: 1.2; }
+.qz-theme--crime.qz-spectator .qz-options { gap: 24px; }
+.qz-theme--crime.qz-spectator .qz-option { font-size: clamp(22px, 2.4vw, 34px); padding: 24px 28px; border-radius: 10px; }
+.qz-theme--crime.qz-spectator .qz-option .qz-key { width: 56px; height: 56px; border-radius: 10px; font-size: 30px; }
+
 /* =========================== SHARED RESULT CARD ========================== */
 /* Each theme exposes a unified accent so the result card can be DRY. */
 .qz-theme--science        { --qz-accent: #a3e635; --qz-accent-2: #22d3ee; }
@@ -562,6 +653,7 @@
 .qz-theme--sports         { --qz-accent: #f97316; --qz-accent-2: #facc15; }
 .qz-theme--pop-culture    { --qz-accent: #f472b6; --qz-accent-2: #a855f7; }
 .qz-theme--general-knowledge { --qz-accent: #818cf8; --qz-accent-2: #38bdf8; }
+.qz-theme--crime          { --qz-accent: #f2c20e; --qz-accent-2: #b41f2a; }
 
 .qz-theme .qz-result {
     display: flex; flex-direction: column; align-items: center; gap: 14px;
