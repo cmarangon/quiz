@@ -83,3 +83,63 @@ test('finishQuestion broadcasts an empty distribution for geo-guesser questions'
         return true;
     });
 });
+
+test('finishQuestion groups true/false answers by their label', function () {
+    $question = Question::factory()->for($this->category)->create([
+        'order' => 0,
+        'type' => 'true_false',
+        'options' => ['True', 'False'],
+        'correct_answer' => 'True',
+    ]);
+
+    $yes = Player::factory()->for($this->session, 'gameSession')->create(['nickname' => 'Yes', 'emoji' => '✅']);
+    $no = Player::factory()->for($this->session, 'gameSession')->create(['nickname' => 'No', 'emoji' => '❌']);
+
+    app(GameService::class)->start($this->session);
+
+    $this->action->execute($this->session->fresh(), $yes, $question->id, 'True', 5000);
+    $this->action->execute($this->session->fresh(), $no, $question->id, 'False', 5000);
+
+    app(GameService::class)->finishQuestion($this->session->fresh());
+
+    Event::assertDispatched(QuestionEnded::class, function (QuestionEnded $event) {
+        expect($event->distribution)->toBe([
+            'True' => [['nickname' => 'Yes', 'emoji' => '✅']],
+            'False' => [['nickname' => 'No', 'emoji' => '❌']],
+        ]);
+
+        return true;
+    });
+});
+
+test('finishQuestion excludes timed-out players with no answer from the distribution', function () {
+    $question = Question::factory()->for($this->category)->create([
+        'order' => 0,
+        'type' => 'multiple_choice',
+        'options' => [
+            ['label' => 'Option A'],
+            ['label' => 'Option B'],
+            ['label' => 'Option C'],
+            ['label' => 'Option D'],
+        ],
+        'correct_answer' => 'Option A',
+    ]);
+
+    $answered = Player::factory()->for($this->session, 'gameSession')->create(['nickname' => 'Quick', 'emoji' => '🐇']);
+    $timedOut = Player::factory()->for($this->session, 'gameSession')->create(['nickname' => 'Slow', 'emoji' => '🐢']);
+
+    app(GameService::class)->start($this->session);
+
+    $this->action->execute($this->session->fresh(), $answered, $question->id, 'Option A', 5000);
+    $this->action->timeout($this->session->fresh(), $timedOut, $question->id);
+
+    app(GameService::class)->finishQuestion($this->session->fresh());
+
+    Event::assertDispatched(QuestionEnded::class, function (QuestionEnded $event) {
+        expect($event->distribution)->toBe([
+            'Option A' => [['nickname' => 'Quick', 'emoji' => '🐇']],
+        ]);
+
+        return true;
+    });
+});

@@ -126,6 +126,7 @@ class GameService
         $validLabels = collect($question->options ?? [])
             ->map(fn ($option) => is_array($option) ? ($option['label'] ?? null) : $option)
             ->filter(fn ($label) => is_string($label))
+            ->values()
             ->all();
 
         $distribution = [];
