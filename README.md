@@ -107,7 +107,7 @@ A running wishlist — PRs welcome. Roughly ordered by impact-to-effort within e
 ### 🧩 Better game / new content
 
 - [ ] **More question types** — image/audio, "closest number" (Price-is-Right), type-the-answer (fuzzy match), buzzer/fastest-finger. The `QuestionTypeRegistry` + `QuestionTypeInterface` architecture is built for this.
-- [ ] **Answer-distribution bar on reveal** — show how many players picked each option (data already lives in `PlayerAnswer`).
+- [x] **Answer-distribution bar on reveal** — show how many players picked each option (data already lives in `PlayerAnswer`).
 - [ ] **Podium animation** — top-3 reveal (3rd → 2nd → 1st) on the spectator screen.
 - [ ] **AI-generated quizzes** — "generate a 10-question quiz about ___" button in the QuizBuilder.
 

@@ -138,6 +138,13 @@
             @include('question-types.ordering-spectator')
         @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports', 'crime'], true))
             @include('themes.'.$themeKey.'.spectator-review')
+            <div class="mt-8 w-full">
+                <x-answer-distribution
+                    :options="$currentQuestion['options'] ?? []"
+                    :distribution="$answerDistribution"
+                    :correctAnswer="$correctAnswer"
+                    :isTrueFalse="($currentQuestion['type'] ?? null) === 'true_false'" />
+            </div>
         @else
         <div class="w-full max-w-[96rem] space-y-6">
             @if($currentQuestion && ! empty($currentQuestion['options']))
@@ -165,6 +172,12 @@
                     @endforeach
                 </div>
             @endif
+
+            <x-answer-distribution
+                :options="$currentQuestion['options'] ?? []"
+                :distribution="$answerDistribution"
+                :correctAnswer="$correctAnswer"
+                :isTrueFalse="($currentQuestion['type'] ?? null) === 'true_false'" />
 
             @if(! empty($scores))
                 <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-10">
