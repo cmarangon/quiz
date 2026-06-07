@@ -5,6 +5,7 @@ import { registerGeoMap } from './geo-map';
 import { registerGeoPicker } from './geo-picker';
 import { registerOrdering } from './ordering';
 import { registerQuestionTimer } from './question-timer';
+import { registerReactionBar, registerReactionFloat } from './reactions';
 
 window.Pusher = Pusher;
 
@@ -14,6 +15,8 @@ document.addEventListener('alpine:init', () => {
     registerGeoPicker(window.Alpine);
     registerOrdering(window.Alpine);
     registerQuestionTimer(window.Alpine);
+    registerReactionBar(window.Alpine);
+    registerReactionFloat(window.Alpine);
 });
 
 
