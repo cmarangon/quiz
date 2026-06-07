@@ -62,8 +62,49 @@ class GameService
                 'score' => $p->score,
             ])->toArray();
 
-            $this->broadcastSafely(fn () => broadcast(new QuestionEnded($session, $question, $scores)));
+            $guesses = $this->collectGeoGuesses($session, $question);
+
+            $this->broadcastSafely(fn () => broadcast(new QuestionEnded($session, $question, $scores, $guesses)));
         }
+    }
+
+    /**
+     * For geo-guesser questions, gather every player's dropped pin tagged with
+     * their avatar so the spectator review can plot them against the answer.
+     * Returns an empty list for all other question types.
+     *
+     * @return list<array{lat: float, lng: float, nickname: string, emoji: ?string}>
+     */
+    private function collectGeoGuesses(GameSession $session, Question $question): array
+    {
+        if ($question->type !== 'geo_guesser') {
+            return [];
+        }
+
+        return $session->playerAnswers()
+            ->where('question_id', $question->id)
+            ->with('player:id,nickname,emoji')
+            ->get()
+            ->map(function ($answer) {
+                $coord = $answer->answer;
+
+                if (! is_array($coord)
+                    || ! isset($coord['lat'], $coord['lng'])
+                    || ! is_numeric($coord['lat'])
+                    || ! is_numeric($coord['lng'])) {
+                    return null;
+                }
+
+                return [
+                    'lat' => (float) $coord['lat'],
+                    'lng' => (float) $coord['lng'],
+                    'nickname' => $answer->player?->nickname ?? '',
+                    'emoji' => $answer->player?->emoji,
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
     }
 
     public function advanceToNextQuestion(GameSession $session): bool

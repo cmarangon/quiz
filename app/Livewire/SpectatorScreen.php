@@ -26,6 +26,9 @@ class SpectatorScreen extends Component
 
     public array $scores = [];
 
+    /** @var list<array{lat: float, lng: float, nickname: string, emoji: ?string}> */
+    public array $guesses = [];
+
     public array $leaderboard = [];
 
     public string $phase = 'lobby';
@@ -122,6 +125,7 @@ class SpectatorScreen extends Component
         $this->themeKey = $payload['theme'] ?? 'default';
         $this->answeredCount = 0;
         $this->correctAnswer = null;
+        $this->guesses = [];
     }
 
     public function onPlayerAnswered(array $payload): void
@@ -140,6 +144,7 @@ class SpectatorScreen extends Component
         $this->phase = 'review';
         $this->correctAnswer = $payload['correct_answer'];
         $this->scores = $payload['scores'];
+        $this->guesses = $payload['guesses'] ?? [];
     }
 
     public function onGameFinished(array $payload): void

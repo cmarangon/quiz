@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Actions\SubmitAnswer;
 use App\Events\QuestionStarted;
+use App\Events\ReactionSent;
 use App\Models\GameSession;
 use App\Models\Player;
 use App\Services\GameService;
@@ -180,6 +181,31 @@ class PlayerScreen extends Component
     {
         $this->phase = 'finished';
         $this->leaderboard = $payload['leaderboard'];
+    }
+
+    /**
+     * Broadcast a tapped reaction emoji to the spectator screen during the
+     * answer reveal. Guarded server-side on both the review phase and the
+     * configured allowlist so a tampered client cannot float arbitrary content
+     * onto the TV. Changes no component state, so the Livewire re-render is a
+     * no-op. Broadcasting is best-effort: a transport hiccup must never break
+     * the player's screen.
+     */
+    public function react(string $emoji): void
+    {
+        if ($this->phase !== 'review' || ! $this->player) {
+            return;
+        }
+
+        if (! in_array($emoji, config('reactions.emojis'), true)) {
+            return;
+        }
+
+        try {
+            broadcast(new ReactionSent($this->session, $emoji));
+        } catch (\Throwable $e) {
+            // Swallow — see method docblock.
+        }
     }
 
     public function submitAnswer(string $answer): void

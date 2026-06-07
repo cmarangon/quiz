@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\SubmitAnswer;
+use App\Events\QuestionEnded;
 use App\Models\Category;
 use App\Models\GameSession;
 use App\Models\Player;
@@ -75,4 +76,29 @@ test('far geo guess earns zero points', function () {
     expect($result['is_correct'])->toBeFalse();
     expect($result['points_earned'])->toBe(0);
     expect($this->player->fresh()->score)->toBe(0);
+});
+
+test('finishQuestion broadcasts every geo guess tagged with the player avatar', function () {
+    $this->player->update(['emoji' => '🦊']);
+
+    $this->action->execute(
+        $this->session->fresh(),
+        $this->player,
+        $this->question->id,
+        ['lat' => 12.5, 'lng' => -8.0],
+        5000,
+    );
+
+    app(GameService::class)->finishQuestion($this->session->fresh());
+
+    Event::assertDispatched(QuestionEnded::class, function (QuestionEnded $event) {
+        expect($event->guesses)->toHaveCount(1);
+
+        return $event->guesses[0] === [
+            'lat' => 12.5,
+            'lng' => -8.0,
+            'nickname' => 'Geo',
+            'emoji' => '🦊',
+        ];
+    });
 });

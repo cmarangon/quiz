@@ -65,4 +65,12 @@ return [
         'emoji' => '🧠',
         'badge' => '💡',
     ],
+    'crime' => [
+        'gradient' => 'from-slate-900 to-zinc-900',
+        'accent' => 'amber-400',
+        'icon' => 'magnifying-glass',
+        'background_pattern' => 'case-board',
+        'emoji' => '🕵️',
+        'badge' => '🔍',
+    ],
 ];

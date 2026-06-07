@@ -54,7 +54,7 @@
                 @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'true_false')
                     @include('question-types.true-false-player')
                 @elseif($currentQuestion && ! empty($currentQuestion['options']))
-                    @if(in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports'], true))
+                    @if(in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports', 'crime'], true))
                         @include('themes.'.$themeKey.'.player-answering')
                     @else
                     @php
@@ -110,6 +110,20 @@
                     @include('themes._player-result')
                 </div>
             @endif
+
+            {{-- Reaction bar: tap an emoji to float it across the spectator screen.
+                 Throttled client-side; validated + broadcast server-side. --}}
+            <div role="group" class="mt-2 flex flex-wrap items-center justify-center gap-3"
+                 x-data="reactionBar" aria-label="{{ __('Reactions') }}">
+                @foreach(config('reactions.emojis') as $emoji)
+                    <button type="button"
+                            x-on:click="react(@js($emoji))"
+                            class="flex h-14 w-14 items-center justify-center rounded-full bg-white/80 text-3xl shadow transition active:scale-90 dark:bg-zinc-800/80"
+                            aria-label="{{ __('Send :emoji reaction', ['emoji' => $emoji]) }}">
+                        <span aria-hidden="true">{{ $emoji }}</span>
+                    </button>
+                @endforeach
+            </div>
 
         {{-- FINISHED PHASE --}}
         @elseif($phase === 'finished')

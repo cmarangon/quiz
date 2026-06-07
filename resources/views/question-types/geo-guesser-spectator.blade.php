@@ -3,12 +3,14 @@
     $geoCenter = $geoOptions['center'] ?? ['lat' => 20, 'lng' => 0];
     $geoZoom = $geoOptions['zoom'] ?? 2;
     $geoCorrect = ($phase === 'review') ? $correctAnswer : null;
+    $geoGuesses = ($phase === 'review') ? array_values($guesses ?? []) : [];
     $geoConfig = [
         'center' => $geoCenter,
         'zoom' => $geoZoom,
         'interactive' => false,
         'guess' => null,
         'correct' => $geoCorrect,
+        'guesses' => $geoGuesses,
     ];
     $isThemed = ($themeKey ?? null)
         && $themeKey !== 'default'
@@ -42,7 +44,7 @@
                     <span>{{ $currentQuestion['time_limit_seconds'] ?? 30 }}s</span>
                 </div>
             @elseif($phase === 'review')
-                <p class="qz-hint">{{ __('The correct location is marked in green.') }}</p>
+                <p class="qz-hint">{{ __('The correct location is marked in green — each avatar is a player\'s guess.') }}</p>
 
                 @if(! empty($scores ?? []))
                     <div class="qz-question" style="text-align:left">
@@ -91,7 +93,7 @@
             </div>
         @elseif($phase === 'review')
             <p class="text-center text-2xl text-green-600 dark:text-green-400 font-semibold">
-                {{ __('The correct location is marked in green.') }}
+                {{ __('The correct location is marked in green — each avatar is a player\'s guess.') }}
             </p>
 
             @if(! empty($scores ?? []))

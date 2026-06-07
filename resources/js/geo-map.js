@@ -34,6 +34,30 @@ function correctIcon() {
     });
 }
 
+function escapeHtml(value) {
+    return String(value).replace(
+        /[&<>"']/g,
+        (c) =>
+            ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+            })[c],
+    );
+}
+
+// A player's guess rendered as their avatar emoji in a readable badge.
+function guessIcon(emoji) {
+    return L.divIcon({
+        className: 'geo-guess-marker',
+        html: `<div style="display:grid;place-items:center;width:34px;height:34px;border-radius:9999px;background:rgba(255,255,255,.92);border:2px solid #1f2937;box-shadow:0 1px 4px rgba(0,0,0,.45);font-size:20px;line-height:1;">${escapeHtml(emoji || '📍')}</div>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17],
+    });
+}
+
 /**
  * Alpine component backing the geo-guesser map.
  *
@@ -42,6 +66,8 @@ function correctIcon() {
  *   interactive: bool,            // allow the player to drop a pin
  *   guess: {lat,lng}|null,        // a previously placed guess (review)
  *   correct: {lat,lng}|null,      // revealed correct location (review)
+ *   guesses: [{lat,lng,emoji,nickname}]|null, // all players' guesses, plotted
+ *                                             // as avatars on the spectator review
  * }
  */
 export function geoMap(config) {
@@ -95,6 +121,10 @@ export function geoMap(config) {
             if (config.correct) {
                 this.revealResult();
             }
+
+            if (Array.isArray(config.guesses) && config.guesses.length) {
+                this.renderGuesses();
+            }
         },
 
         placeGuess(lat, lng, recenter = false) {
@@ -138,6 +168,40 @@ export function geoMap(config) {
                 this.map.fitBounds(this.line.getBounds(), { padding: [40, 40] });
             } else {
                 this.map.panTo([correct.lat, correct.lng]);
+            }
+        },
+
+        // Spectator review: plot every player's pin as their avatar emoji and
+        // frame the map so all guesses and the correct location are visible.
+        renderGuesses() {
+            const points = [];
+
+            config.guesses.forEach((g) => {
+                if (!Number.isFinite(g.lat) || !Number.isFinite(g.lng)) {
+                    return;
+                }
+
+                const marker = L.marker([g.lat, g.lng], {
+                    icon: guessIcon(g.emoji),
+                }).addTo(this.map);
+
+                if (g.nickname) {
+                    marker.bindTooltip(escapeHtml(g.nickname), {
+                        permanent: false,
+                    });
+                }
+
+                points.push([g.lat, g.lng]);
+            });
+
+            if (config.correct) {
+                points.push([config.correct.lat, config.correct.lng]);
+            }
+
+            if (points.length > 1) {
+                this.map.fitBounds(points, { padding: [50, 50] });
+            } else if (points.length === 1) {
+                this.map.panTo(points[0]);
             }
         },
 

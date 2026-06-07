@@ -1,11 +1,14 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/livewire-starter-kit",
+    "name": "cmarangon/quiz",
     "type": "project",
-    "description": "The official Laravel starter kit for Livewire.",
+    "description": "A real-time, Kahoot-style party trivia game built on Laravel, Livewire, and Reverb.",
     "keywords": [
         "laravel",
-        "framework"
+        "livewire",
+        "quiz",
+        "trivia",
+        "reverb"
     ],
     "license": "MIT",
     "require": {

@@ -8,6 +8,10 @@ use App\Models\Player;
 use App\Models\PlayerAnswer;
 use App\Services\QuestionTypeRegistry;
 use App\Services\ScoringService;
+use Illuminate\Broadcasting\BroadcastException;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use LogicException;
 
 class SubmitAnswer
@@ -60,30 +64,42 @@ class SubmitAnswer
                 $scoreFactor,
             );
             $pointsEarned = $breakdown['total'];
-            $player->increment('score', $pointsEarned);
         }
 
-        if ($isCorrect) {
-            $player->increment('streak');
-        } else {
-            $player->update(['streak' => 0]);
-        }
+        // Insert the answer first so the (player_id, question_id) unique
+        // constraint rejects a concurrent duplicate before we mutate score or
+        // streak, keeping the whole operation atomic.
+        try {
+            DB::transaction(function () use ($session, $player, $questionId, $answer, $isCorrect, $timeTakenMs, $pointsEarned, $scoreFactor) {
+                PlayerAnswer::create([
+                    'player_id' => $player->id,
+                    'game_session_id' => $session->id,
+                    'question_id' => $questionId,
+                    'answer' => $answer,
+                    'is_correct' => $isCorrect,
+                    'time_taken_ms' => $timeTakenMs,
+                    'points_earned' => $pointsEarned,
+                ]);
 
-        PlayerAnswer::create([
-            'player_id' => $player->id,
-            'game_session_id' => $session->id,
-            'question_id' => $questionId,
-            'answer' => $answer,
-            'is_correct' => $isCorrect,
-            'time_taken_ms' => $timeTakenMs,
-            'points_earned' => $pointsEarned,
-        ]);
+                if ($scoreFactor > 0) {
+                    $player->increment('score', $pointsEarned);
+                }
+
+                if ($isCorrect) {
+                    $player->increment('streak');
+                } else {
+                    $player->update(['streak' => 0]);
+                }
+            });
+        } catch (QueryException $e) {
+            throw new LogicException('Player already answered this question.', previous: $e);
+        }
 
         $answeredCount = PlayerAnswer::where('game_session_id', $session->id)
             ->where('question_id', $questionId)
             ->count();
 
-        broadcast(new PlayerAnswered($session, $answeredCount, $session->players()->count(), $questionId));
+        $this->broadcastSafely(fn () => broadcast(new PlayerAnswered($session, $answeredCount, $session->players()->count(), $questionId)));
 
         return [
             'is_correct' => $isCorrect,
@@ -115,28 +131,43 @@ class SubmitAnswer
 
         $question = $session->quiz->questions()->findOrFail($questionId);
 
-        $player->update(['streak' => 0]);
+        try {
+            DB::transaction(function () use ($session, $player, $questionId, $question) {
+                PlayerAnswer::create([
+                    'player_id' => $player->id,
+                    'game_session_id' => $session->id,
+                    'question_id' => $questionId,
+                    'answer' => null,
+                    'is_correct' => false,
+                    'time_taken_ms' => $question->time_limit_seconds * 1000,
+                    'points_earned' => 0,
+                ]);
 
-        PlayerAnswer::create([
-            'player_id' => $player->id,
-            'game_session_id' => $session->id,
-            'question_id' => $questionId,
-            'answer' => null,
-            'is_correct' => false,
-            'time_taken_ms' => $question->time_limit_seconds * 1000,
-            'points_earned' => 0,
-        ]);
+                $player->update(['streak' => 0]);
+            });
+        } catch (QueryException $e) {
+            throw new LogicException('Player already answered this question.', previous: $e);
+        }
 
         $answeredCount = PlayerAnswer::where('game_session_id', $session->id)
             ->where('question_id', $questionId)
             ->count();
 
-        broadcast(new PlayerAnswered($session, $answeredCount, $session->players()->count(), $questionId));
+        $this->broadcastSafely(fn () => broadcast(new PlayerAnswered($session, $answeredCount, $session->players()->count(), $questionId)));
 
         return [
             'is_correct' => false,
             'points_earned' => 0,
             'timed_out' => true,
         ];
+    }
+
+    private function broadcastSafely(callable $fn): void
+    {
+        try {
+            $fn();
+        } catch (BroadcastException $e) {
+            Log::warning('Broadcast failed: '.$e->getMessage());
+        }
     }
 }

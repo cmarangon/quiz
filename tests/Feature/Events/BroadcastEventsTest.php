@@ -55,6 +55,15 @@ test('QuestionEnded broadcasts with correct answer and scores', function () {
     $data = $event->broadcastWith();
     expect($data)->toHaveKey('correct_answer');
     expect($data)->toHaveKey('scores');
+    expect($data['guesses'])->toBe([]);
+});
+
+test('QuestionEnded broadcasts geo guesses for the spectator map', function () {
+    $session = GameSession::factory()->create();
+    $question = Question::factory()->create();
+    $guesses = [['lat' => 1.0, 'lng' => 2.0, 'nickname' => 'Sam', 'emoji' => '🦊']];
+    $event = new QuestionEnded($session, $question, scores: [], guesses: $guesses);
+    expect($event->broadcastWith()['guesses'])->toBe($guesses);
 });
 
 test('GameFinished broadcasts final leaderboard', function () {
