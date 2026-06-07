@@ -27,9 +27,9 @@ beforeEach(function () {
 
 test('reacting during review broadcasts ReactionSent', function () {
     Event::fake([ReactionSent::class]);
+    Livewire::withQueryParams(['player_id' => $this->player->id]);
 
     Livewire::test(PlayerScreen::class, ['code' => $this->session->join_code])
-        ->set('player', $this->player)
         ->set('phase', 'review')
         ->call('react', '🔥');
 
@@ -40,9 +40,9 @@ test('reacting during review broadcasts ReactionSent', function () {
 
 test('reacting outside review broadcasts nothing', function () {
     Event::fake([ReactionSent::class]);
+    Livewire::withQueryParams(['player_id' => $this->player->id]);
 
     Livewire::test(PlayerScreen::class, ['code' => $this->session->join_code])
-        ->set('player', $this->player)
         ->set('phase', 'answering')
         ->call('react', '🔥');
 
@@ -51,9 +51,9 @@ test('reacting outside review broadcasts nothing', function () {
 
 test('reacting with a non-allowlisted emoji broadcasts nothing', function () {
     Event::fake([ReactionSent::class]);
+    Livewire::withQueryParams(['player_id' => $this->player->id]);
 
     Livewire::test(PlayerScreen::class, ['code' => $this->session->join_code])
-        ->set('player', $this->player)
         ->set('phase', 'review')
         ->call('react', '💀');
 
