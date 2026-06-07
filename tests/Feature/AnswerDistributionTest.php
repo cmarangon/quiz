@@ -2,6 +2,7 @@
 
 use App\Actions\SubmitAnswer;
 use App\Events\QuestionEnded;
+use App\Livewire\SpectatorScreen;
 use App\Models\Category;
 use App\Models\GameSession;
 use App\Models\Player;
@@ -10,6 +11,7 @@ use App\Models\Quiz;
 use App\Models\User;
 use App\Services\GameService;
 use Illuminate\Support\Facades\Event;
+use Livewire\Livewire;
 
 beforeEach(function () {
     Event::fake();
@@ -142,4 +144,33 @@ test('finishQuestion excludes timed-out players with no answer from the distribu
 
         return true;
     });
+});
+
+test('spectator stores the broadcast distribution on question end', function () {
+    $this->session->update(['status' => 'playing']);
+
+    $payload = [
+        'question_id' => 1,
+        'correct_answer' => 'Option A',
+        'scores' => [],
+        'guesses' => [],
+        'distribution' => [
+            'Option A' => [['nickname' => 'Alice', 'emoji' => '🦊']],
+        ],
+    ];
+
+    Livewire::test(SpectatorScreen::class, ['code' => $this->session->join_code])
+        ->call('onQuestionEnded', $payload)
+        ->assertSet('answerDistribution', [
+            'Option A' => [['nickname' => 'Alice', 'emoji' => '🦊']],
+        ]);
+});
+
+test('spectator clears the distribution when a new question starts', function () {
+    $this->session->update(['status' => 'playing']);
+
+    Livewire::test(SpectatorScreen::class, ['code' => $this->session->join_code])
+        ->set('answerDistribution', ['Option A' => [['nickname' => 'Alice', 'emoji' => '🦊']]])
+        ->call('onQuestionStarted', ['question_id' => 2, 'options' => [], 'type' => 'multiple_choice'])
+        ->assertSet('answerDistribution', []);
 });
