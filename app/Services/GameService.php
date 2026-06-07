@@ -63,8 +63,9 @@ class GameService
             ])->toArray();
 
             $guesses = $this->collectGeoGuesses($session, $question);
+            $distribution = $this->collectAnswerDistribution($session, $question);
 
-            $this->broadcastSafely(fn () => broadcast(new QuestionEnded($session, $question, $scores, $guesses)));
+            $this->broadcastSafely(fn () => broadcast(new QuestionEnded($session, $question, $scores, $guesses, $distribution)));
         }
     }
 
@@ -105,6 +106,48 @@ class GameService
             ->filter()
             ->values()
             ->all();
+    }
+
+    /**
+     * For choice questions, group every player's answer by the option they
+     * picked, tagged with their avatar, so the spectator review can show how
+     * the room split. Returns an empty map for non-choice question types.
+     *
+     * @return array<string, list<array{nickname: string, emoji: ?string}>>
+     *                                                                      Keyed by option label; only labels that received at least one
+     *                                                                      answer appear (the view seeds zero-pick options from the question).
+     */
+    private function collectAnswerDistribution(GameSession $session, Question $question): array
+    {
+        if (! in_array($question->type, ['multiple_choice', 'true_false'], true)) {
+            return [];
+        }
+
+        $validLabels = collect($question->options ?? [])
+            ->map(fn ($option) => is_array($option) ? ($option['label'] ?? null) : $option)
+            ->filter(fn ($label) => is_string($label))
+            ->all();
+
+        $distribution = [];
+
+        $session->playerAnswers()
+            ->where('question_id', $question->id)
+            ->with('player:id,nickname,emoji')
+            ->get()
+            ->each(function ($answer) use (&$distribution, $validLabels) {
+                $label = $answer->answer;
+
+                if (! is_string($label) || ! in_array($label, $validLabels, true)) {
+                    return;
+                }
+
+                $distribution[$label][] = [
+                    'nickname' => $answer->player?->nickname ?? '',
+                    'emoji' => $answer->player?->emoji,
+                ];
+            });
+
+        return $distribution;
     }
 
     public function advanceToNextQuestion(GameSession $session): bool
