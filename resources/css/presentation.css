@@ -584,5 +584,5 @@
     .qz-result .qz-board--xl .qz-board__row,
     .qz-result .qz-podium__bar { animation: none !important; }
     .qz-searchlight { transform: rotate(0deg); }
-    .qz-react { animation: none !important; }
+    .qz-react { animation: none !important; opacity: 0 !important; }
 }
