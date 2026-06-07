@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\PlayerHeartbeatController;
 use App\Livewire\Dashboard;
 use App\Livewire\HostDashboard;
 use App\Livewire\JoinGame;
@@ -34,5 +35,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/game/{code}/spectator', SpectatorScreen::class)->name('game.spectator');
 Route::get('/game/{code}/play', PlayerScreen::class)->name('game.play');
 Route::get('/join/{code}', JoinGame::class)->name('game.join');
+Route::post('/game/{code}/heartbeat/{player}', PlayerHeartbeatController::class)->name('game.heartbeat');
 
 require __DIR__.'/settings.php';
