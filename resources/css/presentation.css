@@ -557,6 +557,21 @@
     100% { transform: scaleY(1.18) scaleX(.9); opacity: 1; }
 }
 
+/* ---------- Floating reaction emojis (spectator screen) ---------- */
+.qz-react {
+    position: absolute;
+    bottom: -3rem;
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    line-height: 1;
+    will-change: transform, opacity;
+    animation: qz-react-float 5s ease-out forwards;
+}
+@keyframes qz-react-float {
+    0%   { transform: translateY(0) translateX(0) scale(0.6); opacity: 0; }
+    12%  { opacity: 1; transform: translateY(-10vh) translateX(calc(var(--qz-react-drift, 0px) * 0.2)) scale(1); }
+    100% { transform: translateY(-105vh) translateX(var(--qz-react-drift, 0px)) scale(1.1); opacity: 0; }
+}
+
 /* ---------- Calm things down for reduced-motion users ---------- */
 @media (prefers-reduced-motion: reduce) {
     .qz-firework,
@@ -569,4 +584,5 @@
     .qz-result .qz-board--xl .qz-board__row,
     .qz-result .qz-podium__bar { animation: none !important; }
     .qz-searchlight { transform: rotate(0deg); }
+    .qz-react { animation: none !important; }
 }
