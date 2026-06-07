@@ -53,6 +53,7 @@ class JoinGame extends Component
             'score' => 0,
             'streak' => 0,
             'is_connected' => true,
+            'last_seen_at' => now(),
         ]);
 
         $this->player = $player;

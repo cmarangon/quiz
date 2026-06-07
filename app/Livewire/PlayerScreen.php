@@ -18,6 +18,8 @@ class PlayerScreen extends Component
 
     public ?Player $player = null;
 
+    public bool $resumeFailed = false;
+
     public ?array $currentQuestion = null;
 
     public string $phase = 'waiting';
@@ -43,6 +45,11 @@ class PlayerScreen extends Component
             $this->player = Player::where('id', $playerId)
                 ->where('game_session_id', $this->session->id)
                 ->first();
+
+            // A player_id was supplied but does not belong to this session
+            // (game reset, or the code was reused for a new session). Signal
+            // the blade to clear the stale localStorage key and bounce to join.
+            $this->resumeFailed = $this->player === null;
         }
 
         if ($this->session->status === 'finished') {

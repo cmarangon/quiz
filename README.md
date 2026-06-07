@@ -113,7 +113,7 @@ A running wishlist — PRs welcome. Roughly ordered by impact-to-effort within e
 
 ### 🪄 Easier to use
 
-- [ ] **Player reconnect/resume** — persist `player_id` to `localStorage` and auto-rejoin after a phone lock or refresh.
+- [x] **Player reconnect/resume** — persist `player_id` to `localStorage` and auto-rejoin after a phone lock or refresh.
 - [ ] **Host escape hatches** — skip question, extend timer, kick player.
 - [ ] **Sample quiz library** — seed a few ready-to-play quizzes so the first run is instant fun.
 - [ ] **Shareable join link** — copy button + native share for `/join/{code}`.

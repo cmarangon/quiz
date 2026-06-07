@@ -21,6 +21,15 @@ class PlayerFactory extends Factory
             'score' => 0,
             'streak' => 0,
             'is_connected' => true,
+            'last_seen_at' => now(),
         ];
+    }
+
+    public function offline(): static
+    {
+        return $this->state(fn () => [
+            'is_connected' => false,
+            'last_seen_at' => now()->subMinute(),
+        ]);
     }
 }

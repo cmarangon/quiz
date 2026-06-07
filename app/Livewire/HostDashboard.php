@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\GameSession;
+use App\Models\Player;
 use App\Services\GameService;
 use App\Services\QrCodeService;
 use Illuminate\Support\Facades\Auth;
@@ -98,6 +99,17 @@ class HostDashboard extends Component
 
     public function pollPlayers(): void
     {
+        // Flip any player whose heartbeat has gone stale to disconnected. The
+        // roster renders isOnline() directly, so display is correct even before
+        // this runs; persisting the boolean keeps it queryable elsewhere.
+        $this->session->players()
+            ->where('is_connected', true)
+            ->where(function ($query) {
+                $query->whereNull('last_seen_at')
+                    ->orWhere('last_seen_at', '<', now()->subSeconds(Player::PRESENCE_THRESHOLD_SECONDS));
+            })
+            ->update(['is_connected' => false]);
+
         $this->totalPlayers = $this->session->players()->count();
         $this->session->unsetRelation('players');
     }

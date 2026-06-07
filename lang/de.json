@@ -10,6 +10,7 @@
     "Watch": "Zuschauen",
 
     "Join Game": "Spiel beitreten",
+    "Not you? Join as someone else": "Nicht du? Als jemand anderes beitreten",
     "Code": "Code",
     "Your Nickname": "Dein Spitzname",
     "Enter a nickname": "Spitznamen eingeben",
@@ -21,6 +22,7 @@
     "Players": "Spieler",
     "Waiting for players to join...": "Warte auf Spieler...",
     "pts": "Pkt.",
+    "reconnecting...": "Verbindung wird wiederhergestellt...",
     "Start Game": "Spiel starten",
     "End Question": "Frage beenden",
     "Next Question": "Nächste Frage",
