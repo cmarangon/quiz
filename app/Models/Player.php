@@ -21,6 +21,7 @@ class Player extends Model
         'score',
         'streak',
         'is_connected',
+        'last_seen_at',
     ];
 
     protected function casts(): array
@@ -29,7 +30,22 @@ class Player extends Model
             'score' => 'integer',
             'streak' => 'integer',
             'is_connected' => 'boolean',
+            'last_seen_at' => 'datetime',
         ];
+    }
+
+    /**
+     * A player counts as online while their heartbeat is fresh. The player
+     * screen beats every 5s; this tolerates two missed beats before the host
+     * roster shows them as dropped. A locked phone stops the heartbeat, so the
+     * player naturally goes stale and then reconnects on unlock.
+     */
+    public const PRESENCE_THRESHOLD_SECONDS = 12;
+
+    public function isOnline(): bool
+    {
+        return $this->last_seen_at !== null
+            && $this->last_seen_at->gt(now()->subSeconds(self::PRESENCE_THRESHOLD_SECONDS));
     }
 
     public function gameSession(): BelongsTo
