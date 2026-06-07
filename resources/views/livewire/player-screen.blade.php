@@ -1,7 +1,19 @@
 @php
     $style = $session->presentationStyle();
 @endphp
-<div class="flex flex-col items-center gap-6 text-center" @if(in_array($phase, ['waiting', 'answered', 'review'], true)) wire:poll.2s="pollState" @endif>
+<div
+    x-data="playerSession({
+        @if($player)
+        heartbeatUrl: '{{ route('game.heartbeat', ['code' => $session->join_code, 'player' => $player->id]) }}',
+        playerId: {{ $player->id }},
+        @endif
+        joinUrl: '{{ route('game.join', $session->join_code) }}',
+        storageKey: 'quiz:player:{{ $session->join_code }}',
+        resumeFailed: {{ $resumeFailed ? 'true' : 'false' }},
+    })"
+    class="flex flex-col items-center gap-6 text-center"
+    @if(in_array($phase, ['waiting', 'answered', 'review'], true)) wire:poll.2s="pollState" @endif
+>
     @if($player)
         <h1 data-test="player-nickname" data-player-nickname="{{ $player->nickname }}" class="text-2xl font-bold text-zinc-900 dark:text-white">
             <x-player-name :emoji="$player->emoji" :nickname="$player->nickname" />
@@ -26,6 +38,14 @@
                     <div class="qz-loader" aria-hidden="true"><span></span><span></span><span></span></div>
                 </div>
             </div>
+
+            <button type="button"
+                data-test="player-not-you"
+                wire:ignore
+                x-on:click="forget()"
+                class="text-sm text-zinc-400 underline-offset-2 hover:underline dark:text-zinc-500">
+                {{ __('Not you? Join as someone else') }}
+            </button>
 
         {{-- ANSWERING PHASE --}}
         @elseif($phase === 'answering')
