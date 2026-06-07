@@ -3,6 +3,12 @@
 @endphp
 <div class="flex min-h-svh flex-col items-center justify-center p-8" @if($phase === 'lobby') wire:poll.2s="pollPlayers" @endif>
     <div data-test="spectator-phase" data-phase="{{ $phase }}" class="hidden"></div>
+    {{-- Reaction emojis floating layer. Subscribes to the Reverb channel
+         directly in Alpine so emoji bursts never re-render the spectator
+         component. pointer-events-none keeps it purely decorative. --}}
+    <div class="pointer-events-none fixed inset-0 z-50 overflow-hidden"
+         x-data="reactionFloat({{ $session->id }})"
+         aria-hidden="true"></div>
     {{-- LOBBY PHASE --}}
     @if($phase === 'lobby')
         <div class="qz-stage qz-stage--{{ $style }} qz-lobby">
