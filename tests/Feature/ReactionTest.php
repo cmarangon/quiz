@@ -59,3 +59,22 @@ test('reacting with a non-allowlisted emoji broadcasts nothing', function () {
 
     Event::assertNotDispatched(ReactionSent::class);
 });
+
+test('reacting without a player broadcasts nothing', function () {
+    Event::fake([ReactionSent::class]);
+
+    // No player_id query param: an unjoined/spectator client.
+    Livewire::test(PlayerScreen::class, ['code' => $this->session->join_code])
+        ->set('phase', 'review')
+        ->call('react', '🔥');
+
+    Event::assertNotDispatched(ReactionSent::class);
+});
+
+test('ReactionSent broadcasts the contract the spectator JS depends on', function () {
+    $event = new ReactionSent($this->session, '🔥');
+
+    expect($event->broadcastAs())->toBe('reaction.sent');
+    expect($event->broadcastWith())->toBe(['emoji' => '🔥']);
+    expect($event->broadcastOn()[0]->name)->toBe('game.'.$this->session->id);
+});

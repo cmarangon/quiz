@@ -41,10 +41,14 @@ export function reactionFloat(sessionId) {
             this.channel.listen('.reaction.sent', (e) => this.spawn(e.emoji));
         },
         destroy() {
-            // Release the subscription so a Livewire re-mount of the long-lived
-            // spectator page does not stack duplicate listeners on the channel.
+            // Remove only our reaction listener so a Livewire re-mount of the
+            // long-lived spectator page does not stack duplicate handlers. We
+            // must NOT leaveChannel(): Echo caches one channel instance per
+            // name, and the spectator's Livewire component shares this exact
+            // 'game.{id}' channel for its lifecycle events — tearing the whole
+            // channel down would kill all real-time spectator updates.
             if (this.channel) {
-                window.Echo.leaveChannel(this.channelName);
+                this.channel.stopListening('.reaction.sent');
                 this.channel = null;
             }
         },
