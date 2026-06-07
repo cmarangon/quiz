@@ -2,8 +2,8 @@
 // spectator screen. One accepted tap per THROTTLE_MS; extra taps are ignored.
 const THROTTLE_MS = 500;
 
-export function registerReactionBar(Alpine) {
-    Alpine.data('reactionBar', () => ({
+export function reactionBar() {
+    return {
         lastTap: 0,
         react(emoji) {
             const now = Date.now();
@@ -13,7 +13,11 @@ export function registerReactionBar(Alpine) {
             this.lastTap = now;
             this.$wire.react(emoji);
         },
-    }));
+    };
+}
+
+export function registerReactionBar(Alpine) {
+    Alpine.data('reactionBar', reactionBar);
 }
 
 // Spectator-side: subscribe directly to the Reverb channel (NOT through
@@ -22,14 +26,27 @@ export function registerReactionBar(Alpine) {
 const FLOAT_MS = 5000;        // keep in sync with the qz-react-float animation
 const MAX_CONCURRENT = 40;    // bound the DOM on the long-lived spectator page
 
-export function registerReactionFloat(Alpine) {
-    Alpine.data('reactionFloat', (sessionId) => ({
+export function reactionFloat(sessionId) {
+    return {
+        channelName: 'game.' + sessionId,
+        channel: null,
         init() {
+            // window.Echo is assigned synchronously in app.js before Alpine
+            // walks the DOM, so it is normally present here; the guard only
+            // protects against a future load-order change.
             if (!window.Echo) {
                 return;
             }
-            window.Echo.channel('game.' + sessionId)
-                .listen('.reaction.sent', (e) => this.spawn(e.emoji));
+            this.channel = window.Echo.channel(this.channelName);
+            this.channel.listen('.reaction.sent', (e) => this.spawn(e.emoji));
+        },
+        destroy() {
+            // Release the subscription so a Livewire re-mount of the long-lived
+            // spectator page does not stack duplicate listeners on the channel.
+            if (this.channel) {
+                window.Echo.leaveChannel(this.channelName);
+                this.channel = null;
+            }
         },
         spawn(emoji) {
             const layer = this.$el;
@@ -45,12 +62,24 @@ export function registerReactionFloat(Alpine) {
             node.style.left = (5 + Math.random() * 90) + '%';
             node.style.setProperty('--qz-react-drift', (Math.random() * 80 - 40) + 'px');
 
-            const remove = () => node.remove();
+            let removed = false;
+            const remove = () => {
+                if (removed) {
+                    return;
+                }
+                removed = true;
+                node.removeEventListener('animationend', remove);
+                node.remove();
+            };
             node.addEventListener('animationend', remove);
             // Fallback in case animationend never fires (tab backgrounded, etc.).
             setTimeout(remove, FLOAT_MS + 500);
 
             layer.appendChild(node);
         },
-    }));
+    };
+}
+
+export function registerReactionFloat(Alpine) {
+    Alpine.data('reactionFloat', reactionFloat);
 }
