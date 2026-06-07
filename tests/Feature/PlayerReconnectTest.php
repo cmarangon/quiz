@@ -1,8 +1,11 @@
 <?php
 
+use App\Livewire\HostDashboard;
 use App\Livewire\PlayerScreen;
 use App\Models\GameSession;
 use App\Models\Player;
+use App\Models\User;
+use Illuminate\Support\Carbon;
 use Livewire\Livewire;
 
 test('a valid player_id resolves the player and does not fail resume', function () {
@@ -49,4 +52,36 @@ test('no player_id does not flag resume failure', function () {
     Livewire::test(PlayerScreen::class, ['code' => $session->join_code])
         ->assertSet('resumeFailed', false)
         ->assertSet('player', null);
+});
+
+test('the lobby roster marks a stale player as reconnecting and reconciles is_connected', function () {
+    Carbon::setTestNow('2026-06-07 12:00:00');
+
+    $user = User::factory()->create();
+    $session = GameSession::factory()->create([
+        'host_user_id' => $user->id,
+        'status' => 'waiting',
+    ]);
+
+    $online = Player::factory()->create([
+        'game_session_id' => $session->id,
+        'nickname' => 'Fresh',
+        'last_seen_at' => now(),
+        'is_connected' => true,
+    ]);
+    $stale = Player::factory()->create([
+        'game_session_id' => $session->id,
+        'nickname' => 'Dropped',
+        'last_seen_at' => now()->subSeconds(Player::PRESENCE_THRESHOLD_SECONDS + 5),
+        'is_connected' => true,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(HostDashboard::class, ['code' => $session->join_code])
+        ->call('pollPlayers')
+        ->assertSeeHtml('data-player-nickname="Dropped" data-connected="false"')
+        ->assertSeeHtml('data-player-nickname="Fresh" data-connected="true"');
+
+    expect($stale->refresh()->is_connected)->toBeFalse();
+    expect($online->refresh()->is_connected)->toBeTrue();
 });
