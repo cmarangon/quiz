@@ -111,6 +111,20 @@
                 </div>
             @endif
 
+            {{-- Reaction bar: tap an emoji to float it across the spectator screen.
+                 Throttled client-side; validated + broadcast server-side. --}}
+            <div class="mt-2 flex flex-wrap items-center justify-center gap-3"
+                 x-data="reactionBar" aria-label="{{ __('Reactions') }}">
+                @foreach(config('reactions.emojis') as $emoji)
+                    <button type="button"
+                            @click="react('{{ $emoji }}')"
+                            class="flex h-14 w-14 items-center justify-center rounded-full bg-white/80 text-3xl shadow transition active:scale-90 dark:bg-zinc-800/80"
+                            aria-label="{{ __('Send reaction') }} {{ $emoji }}">
+                        {{ $emoji }}
+                    </button>
+                @endforeach
+            </div>
+
         {{-- FINISHED PHASE --}}
         @elseif($phase === 'finished')
             @php($top = array_slice($leaderboard, 0, 3))
