@@ -174,3 +174,40 @@ test('spectator clears the distribution when a new question starts', function ()
         ->call('onQuestionStarted', ['question_id' => 2, 'options' => [], 'type' => 'multiple_choice'])
         ->assertSet('answerDistribution', []);
 });
+
+test('spectator renders the distribution bars on the review screen', function () {
+    $this->session->update(['status' => 'playing']);
+
+    $start = [
+        'question_id' => 1,
+        'type' => 'multiple_choice',
+        'theme' => 'default',
+        'body' => 'Pick one?',
+        'options' => [
+            ['label' => 'Option A'],
+            ['label' => 'Option B'],
+            ['label' => 'Option C'],
+            ['label' => 'Option D'],
+        ],
+    ];
+
+    $end = [
+        'question_id' => 1,
+        'correct_answer' => 'Option A',
+        'scores' => [],
+        'guesses' => [],
+        'distribution' => [
+            'Option A' => [['nickname' => 'Alice', 'emoji' => '🦊']],
+            'Option B' => [['nickname' => 'Bob', 'emoji' => '🐸']],
+        ],
+    ];
+
+    Livewire::test(SpectatorScreen::class, ['code' => $this->session->join_code])
+        ->call('onQuestionStarted', $start)
+        ->call('onQuestionEnded', $end)
+        ->assertSee(__('How everyone answered'))
+        ->assertSeeHtml('qz-distribution__fill')
+        ->assertSeeHtml('is-correct')   // correct option's row is highlighted
+        ->assertSee('🦊')               // Alice's avatar on her option
+        ->assertSee('1 (50%)');         // one of two answers
+});
