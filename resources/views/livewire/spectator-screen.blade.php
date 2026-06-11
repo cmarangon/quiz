@@ -1,7 +1,18 @@
 @php
     $style = $session->presentationStyle();
+    // Long questions/answers step the type down a tier so the screen always
+    // fits without scrolling — see the "fit tiers" section in themes.css.
+    $fitQuestionLength = mb_strlen($currentQuestion['body'] ?? '');
+    $fitOptionLength = collect($currentQuestion['options'] ?? [])
+        ->map(fn ($o) => is_array($o) ? mb_strlen($o['label'] ?? '') : mb_strlen((string) $o))
+        ->max() ?? 0;
+    $fitClass = trim(
+        ($fitQuestionLength > 200 ? 'qz-fit-q-xl' : ($fitQuestionLength > 140 ? 'qz-fit-q-l' : ''))
+        .' '
+        .($fitOptionLength > 65 ? 'qz-fit-o-xl' : ($fitOptionLength > 40 ? 'qz-fit-o-l' : ''))
+    );
 @endphp
-<div class="flex min-h-svh flex-col items-center justify-center p-8" @if($phase === 'lobby') wire:poll.2s="pollPlayers" @endif>
+<div class="flex h-svh flex-col items-center justify-center overflow-hidden p-8 {{ $fitClass }}" @if($phase === 'lobby') wire:poll.2s="pollPlayers" @endif>
     <div data-test="spectator-phase" data-phase="{{ $phase }}" class="hidden"></div>
     {{-- Reaction emojis floating layer. Subscribes to the Reverb channel
          directly in Alpine so emoji bursts never re-render the spectator
@@ -60,9 +71,9 @@
     @elseif($phase === 'category-intro')
         <div class="text-center space-y-6">
             @if($currentTheme)
-                <div class="rounded-3xl bg-gradient-to-br {{ $currentTheme['gradient'] ?? '' }} px-[clamp(3rem,8vw,8rem)] py-[clamp(3rem,7vw,7rem)]">
-                    <p class="text-[clamp(1.75rem,3.4vw,3.5rem)] uppercase tracking-wider text-white/60">{{ __('Up Next') }}</p>
-                    <h2 class="text-[clamp(4rem,10vw,12rem)] leading-none font-bold text-white mt-3">{{ $currentTheme['name'] ?? '' }}</h2>
+                <div class="rounded-3xl bg-gradient-to-br {{ $currentTheme['gradient'] ?? '' }} px-[clamp(3rem,8vw,18rem)] py-[clamp(3rem,7vw,14rem)]">
+                    <p class="text-[clamp(1.75rem,2.4vw,5rem)] uppercase tracking-wider text-white/60">{{ __('Up Next') }}</p>
+                    <h2 class="text-[clamp(4rem,7.5vw,17rem)] leading-none font-bold text-white mt-3">{{ $currentTheme['name'] ?? '' }}</h2>
                 </div>
             @endif
         </div>
@@ -138,7 +149,7 @@
             @include('question-types.ordering-spectator')
         @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports', 'crime'], true))
             @include('themes.'.$themeKey.'.spectator-review')
-            <div class="mt-8 w-full">
+            <div class="mt-[clamp(10px,1.5vh,32px)] w-full">
                 <x-answer-distribution
                     :options="$currentQuestion['options'] ?? []"
                     :distribution="$answerDistribution"

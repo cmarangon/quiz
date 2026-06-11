@@ -1,7 +1,7 @@
 @php
     $letters = ['a', 'b', 'c', 'd'];
 @endphp
-<div class="qz-theme qz-theme--crime qz-spectator w-full" wire:key="spectator-review-crime-{{ $currentQuestion['question_id'] ?? '' }}">
+<div class="qz-theme qz-theme--crime qz-spectator qz-review w-full" wire:key="spectator-review-crime-{{ $currentQuestion['question_id'] ?? '' }}">
     @include('themes.crime._deco')
 
     <div class="mx-auto w-full max-w-[96rem] space-y-6">
