@@ -801,7 +801,8 @@
     border-radius: 16px;
     overflow: hidden;
 }
-.qz-theme.qz-spectator .qz-geoframe > [x-ref="map"] { height: clamp(28rem, 56vh, 60rem); }
+.qz-theme.qz-spectator .qz-geoframe > [x-ref="map"] { height: clamp(28rem, 52vh, 80rem); }
+.qz-theme.qz-spectator.qz-review .qz-geoframe > [x-ref="map"] { height: clamp(24rem, 40vh, 60rem); }
 
 /* =========================== QUESTION COUNTDOWN ========================== */
 /* Cartoony per-question timer for the player screen. Driven by Alpine: the
@@ -890,36 +891,105 @@
    with the viewport (high vw factors) and the caps are large enough to keep
    filling 4K panels. min values are still generous so even a small projector
    reads clearly. */
+/* Let the spectator stage use (nearly) the whole TV width; the themed Blade
+   views cap their inner column at 96rem which strands half of a 4K panel. */
+.qz-theme.qz-spectator > .mx-auto {
+    max-width: min(94vw, 3500px) !important;
+}
+.qz-theme.qz-spectator .qz-orderlist {
+    max-width: min(80vw, 2800px);
+    gap: clamp(12px, 1.4vh, 30px);
+}
+/* Ordering stacks one full-width row per item, so the question and the items
+   step down a size tier to keep four rows plus the meta line on screen. */
+.qz-theme.qz-spectator:has(.qz-orderlist) .qz-question h2 {
+    font-size: clamp(2.5rem, 3.4vw, 8rem) !important;
+}
+.qz-theme.qz-spectator:has(.qz-orderlist) .qz-question .qz-emoji {
+    font-size: clamp(2.5rem, 3vw, 5rem) !important;
+}
+.qz-theme.qz-spectator .qz-orderlist .qz-order {
+    font-size: clamp(2rem, 2.6vw, 5rem) !important;
+    padding: clamp(16px, 1.3vw, 34px) clamp(24px, 2vw, 52px) !important;
+}
+.qz-theme.qz-spectator .qz-orderlist .qz-order .qz-key {
+    width: clamp(56px, 3.4vw, 110px) !important;
+    height: clamp(56px, 3.4vw, 110px) !important;
+    font-size: clamp(2rem, 2.4vw, 4rem) !important;
+}
+.qz-theme.qz-spectator.qz-review .qz-orderlist { gap: clamp(8px, 1vh, 22px); }
+.qz-theme.qz-spectator.qz-review .qz-orderlist .qz-order {
+    font-size: clamp(1.6rem, 1.9vw, 4rem) !important;
+    padding: clamp(10px, 0.9vw, 24px) clamp(20px, 1.6vw, 44px) !important;
+}
+.qz-theme.qz-spectator.qz-review .qz-orderlist .qz-order .qz-key {
+    width: clamp(48px, 2.6vw, 84px) !important;
+    height: clamp(48px, 2.6vw, 84px) !important;
+    font-size: clamp(1.75rem, 1.9vw, 3.25rem) !important;
+}
+.qz-theme.qz-spectator .qz-hint {
+    font-size: clamp(1.5rem, 1.8vw, 3.5rem) !important;
+}
 .qz-theme.qz-spectator .qz-question h2 {
-    font-size: clamp(3rem, 6.5vw, 9rem) !important;
-    line-height: 1.05 !important;
+    font-size: clamp(2.5rem, 4.4vw, 10.5rem) !important;
+    line-height: 1.1 !important;
 }
 .qz-theme.qz-spectator .qz-question {
-    padding: clamp(20px, 2.2vw, 48px) clamp(24px, 2.6vw, 56px) !important;
+    padding: clamp(16px, 1.3vw, 50px) clamp(20px, 1.5vw, 58px) !important;
 }
 .qz-theme.qz-spectator .qz-question .qz-emoji {
-    font-size: clamp(3rem, 5vw, 6rem) !important;
+    font-size: clamp(2.5rem, 2.5vw, 6rem) !important;
     margin-bottom: 6px !important;
 }
 .qz-theme.qz-spectator .qz-question .qz-qlabel {
-    font-size: clamp(1.75rem, 3.4vw, 3.5rem) !important;
+    font-size: clamp(1.25rem, 1.5vw, 3.5rem) !important;
 }
 .qz-theme.qz-spectator .qz-options {
-    gap: clamp(24px, 2.6vw, 52px) !important;
+    gap: clamp(16px, 1.4vw, 54px) !important;
 }
 .qz-theme.qz-spectator .qz-option {
-    font-size: clamp(2.25rem, 4.2vw, 5.5rem) !important;
-    padding: clamp(24px, 2.4vw, 52px) clamp(28px, 2.8vw, 60px) !important;
+    font-size: clamp(1.75rem, 2.6vw, 6.25rem) !important;
+    padding: clamp(16px, 1.4vw, 54px) clamp(20px, 1.8vw, 70px) !important;
 }
 .qz-theme.qz-spectator .qz-option .qz-key {
-    width: clamp(72px, 5.6vw, 128px) !important;
-    height: clamp(72px, 5.6vw, 128px) !important;
-    font-size: clamp(2.25rem, 3.4vw, 4.25rem) !important;
+    width: clamp(48px, 3.4vw, 130px) !important;
+    height: clamp(48px, 3.4vw, 130px) !important;
+    font-size: clamp(1.5rem, 1.8vw, 4.25rem) !important;
     flex: none !important;
 }
 .qz-theme.qz-spectator .qz-meta {
-    font-size: clamp(1.75rem, 3.2vw, 3.5rem) !important;
+    font-size: clamp(1.5rem, 1.7vw, 4rem) !important;
 }
+/* =========================================================================
+   PLAYER PHONE COMPACTNESS
+   The player screen is a phone held in one hand; the question is also read
+   out on the TV, so its card stays modest and the tap targets get the space.
+   Ordering stacks four rows plus a CTA, so it gets the tightest tier — the
+   whole flow must fit a ~844px-tall viewport without scrolling.
+   ========================================================================= */
+.qz-theme.qz-player .qz-question .qz-emoji {
+    font-size: 2em;
+    margin-bottom: 2px;
+}
+.qz-theme.qz-player .qz-question {
+    padding: 16px 18px;
+}
+.qz-theme.qz-player .qz-orderlist { gap: 8px; }
+.qz-theme.qz-player .qz-orderlist .qz-order {
+    font-size: 15px;
+    padding: 10px 12px;
+}
+.qz-theme.qz-player .qz-orderlist .qz-order .qz-key {
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
+}
+.qz-theme.qz-player .qz-move {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+}
+
 /* Review-phase leaderboard rendered inside a .qz-question card. */
 .qz-theme.qz-spectator .qz-question ol {
     font-size: clamp(1.85rem, 3.4vw, 3.75rem) !important;
@@ -927,3 +997,112 @@
 .qz-theme.qz-spectator .qz-question ol li {
     padding: clamp(6px, 0.8vh, 14px) 0 !important;
 }
+
+/* Review phase stacks question + answers + leaderboard + distribution on one
+   screen, so the question recap and options step down from their live-question
+   size to keep the whole reveal above the fold. */
+.qz-theme.qz-spectator.qz-review .qz-question h2 {
+    font-size: clamp(1.75rem, 2.2vw, 5.5rem) !important;
+}
+.qz-theme.qz-spectator.qz-review .qz-question {
+    padding: clamp(12px, 1vw, 36px) clamp(20px, 1.6vw, 56px) !important;
+}
+.qz-theme.qz-spectator.qz-review .qz-question .qz-emoji {
+    font-size: clamp(1.75rem, 1.8vw, 4rem) !important;
+    margin-bottom: 2px !important;
+}
+.qz-theme.qz-spectator.qz-review .qz-options {
+    gap: clamp(14px, 1.2vw, 44px) !important;
+}
+.qz-theme.qz-spectator.qz-review .qz-option {
+    font-size: clamp(1.5rem, 1.9vw, 4.5rem) !important;
+    padding: clamp(12px, 0.9vw, 32px) clamp(18px, 1.4vw, 48px) !important;
+}
+.qz-theme.qz-spectator.qz-review .qz-option .qz-key {
+    width: clamp(44px, 2.2vw, 80px) !important;
+    height: clamp(44px, 2.2vw, 80px) !important;
+    font-size: clamp(1.5rem, 1.6vw, 3rem) !important;
+}
+.qz-theme.qz-spectator.qz-review .qz-question ol {
+    font-size: clamp(1.4rem, 1.5vw, 2.75rem) !important;
+}
+.qz-theme.qz-spectator.qz-review .qz-question ol li {
+    padding: clamp(3px, 0.4vh, 9px) 0 !important;
+}
+
+/* =========================================================================
+   FIT TIERS — long-content safety valve.
+   The Livewire screens bucket the current question by body length
+   (qz-fit-q-l > 140 chars, qz-fit-q-xl > 200) and by longest option label
+   (qz-fit-o-l > 40 chars, qz-fit-o-xl > 65), tagging the page root. These
+   rules step the type down so even very long content stays on one screen.
+   Declared last so they outrank the base spectator/review sizing above.
+   ========================================================================= */
+
+/* ---- Spectator, live question ---- */
+.qz-fit-q-l .qz-theme.qz-spectator:not(.qz-review) .qz-question h2 {
+    font-size: clamp(2.25rem, 3.4vw, 8.25rem) !important;
+}
+.qz-fit-q-xl .qz-theme.qz-spectator:not(.qz-review) .qz-question h2 {
+    font-size: clamp(1.85rem, 2.7vw, 6.5rem) !important;
+}
+.qz-fit-o-l .qz-theme.qz-spectator:not(.qz-review) .qz-option {
+    font-size: clamp(1.6rem, 2.1vw, 5rem) !important;
+    padding: clamp(14px, 1.2vw, 46px) clamp(18px, 1.5vw, 58px) !important;
+}
+.qz-fit-o-xl .qz-theme.qz-spectator:not(.qz-review) .qz-option {
+    font-size: clamp(1.4rem, 1.7vw, 4rem) !important;
+    padding: clamp(12px, 1vw, 38px) clamp(16px, 1.3vw, 50px) !important;
+}
+
+/* ---- Spectator, review (already compact; only trim what would overflow) ---- */
+.qz-fit-q-l .qz-theme.qz-spectator.qz-review .qz-question h2 {
+    font-size: clamp(1.5rem, 1.9vw, 4.75rem) !important;
+}
+.qz-fit-q-xl .qz-theme.qz-spectator.qz-review .qz-question h2 {
+    font-size: clamp(1.3rem, 1.5vw, 3.75rem) !important;
+}
+.qz-fit-o-l .qz-theme.qz-spectator.qz-review .qz-option {
+    font-size: clamp(1.3rem, 1.45vw, 3.5rem) !important;
+    padding: clamp(10px, 0.8vw, 28px) clamp(16px, 1.2vw, 44px) !important;
+}
+.qz-fit-o-xl .qz-theme.qz-spectator.qz-review .qz-option {
+    font-size: clamp(1.15rem, 1.2vw, 3rem) !important;
+    padding: clamp(8px, 0.65vw, 24px) clamp(12px, 1vw, 36px) !important;
+}
+.qz-fit-o-xl .qz-distribution__label {
+    font-size: clamp(1.1rem, 1.1vw, 2.25rem);
+}
+
+/* ---- Generic (un-themed) spectator question body ---- */
+.qz-fit-q-l [data-test="spectator-question-body"] {
+    font-size: clamp(2rem, 3vw, 7.25rem) !important;
+}
+.qz-fit-q-xl [data-test="spectator-question-body"] {
+    font-size: clamp(1.75rem, 2.4vw, 5.75rem) !important;
+}
+
+/* ---- Player phone ---- */
+.qz-fit-q-l .qz-theme.qz-player .qz-question h2 {
+    font-size: 18px !important;
+    line-height: 1.3 !important;
+}
+.qz-fit-q-xl .qz-theme.qz-player .qz-question h2 {
+    font-size: 15px !important;
+    line-height: 1.3 !important;
+}
+.qz-fit-o-l .qz-theme.qz-player .qz-option {
+    font-size: 15px !important;
+}
+.qz-fit-o-xl .qz-theme.qz-player .qz-option {
+    font-size: 13px !important;
+}
+/* Player ordering is the tightest screen (4 rows + controls + CTA); with
+   long content the decorative bits give way before anything functional. */
+.qz-fit-q-l .qz-theme.qz-player .qz-question .qz-emoji,
+.qz-fit-q-xl .qz-theme.qz-player .qz-question .qz-emoji { display: none; }
+.qz-fit-q-xl .qz-theme.qz-player .qz-question { padding: 12px 14px !important; }
+.qz-fit-q-xl .qz-theme.qz-player .qz-hint { display: none; }
+.qz-fit-o-xl .qz-theme.qz-player .qz-orderlist { gap: 6px; }
+.qz-fit-o-xl .qz-theme.qz-player .qz-orderlist .qz-order { padding: 8px 10px !important; }
+.qz-fit-o-xl .qz-theme.qz-player .qz-move { width: 28px; height: 28px; font-size: 14px; }

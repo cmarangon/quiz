@@ -1,5 +1,16 @@
 @php
     $style = $session->presentationStyle();
+    // Long questions/answers step the type down a tier so the phone screen
+    // never scrolls — see the "fit tiers" section in themes.css.
+    $fitQuestionLength = mb_strlen($currentQuestion['body'] ?? '');
+    $fitOptionLength = collect($currentQuestion['options'] ?? [])
+        ->map(fn ($o) => is_array($o) ? mb_strlen($o['label'] ?? '') : mb_strlen((string) $o))
+        ->max() ?? 0;
+    $fitClass = trim(
+        ($fitQuestionLength > 200 ? 'qz-fit-q-xl' : ($fitQuestionLength > 140 ? 'qz-fit-q-l' : ''))
+        .' '
+        .($fitOptionLength > 65 ? 'qz-fit-o-xl' : ($fitOptionLength > 40 ? 'qz-fit-o-l' : ''))
+    );
 @endphp
 <div
     x-data="playerSession({
@@ -11,7 +22,7 @@
         storageKey: 'quiz:player:{{ $session->join_code }}',
         resumeFailed: {{ $resumeFailed ? 'true' : 'false' }},
     })"
-    class="flex flex-col items-center gap-6 text-center"
+    class="flex flex-col items-center gap-6 text-center {{ $fitClass }}"
     @if(in_array($phase, ['waiting', 'answered', 'review'], true)) wire:poll.2s="pollState" @endif
 >
     @if($player)

@@ -22,7 +22,7 @@
     <div
         wire:key="geo-spectator-{{ $currentQuestion['question_id'] ?? 'q' }}-{{ $phase }}"
         x-data="geoMap(@js($geoConfig))"
-        class="qz-theme qz-theme--{{ $themeKey }} qz-spectator w-full"
+        class="qz-theme qz-theme--{{ $themeKey }} qz-spectator {{ $phase === 'review' ? 'qz-review' : '' }} w-full"
     >
         @include('themes._deco')
 

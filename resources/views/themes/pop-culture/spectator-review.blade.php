@@ -1,7 +1,7 @@
 @php
     $letters = ['a', 'b', 'c', 'd'];
 @endphp
-<div class="qz-theme qz-theme--pop-culture qz-spectator w-full" wire:key="spectator-review-pop-culture-{{ $currentQuestion['question_id'] ?? '' }}">
+<div class="qz-theme qz-theme--pop-culture qz-spectator qz-review w-full" wire:key="spectator-review-pop-culture-{{ $currentQuestion['question_id'] ?? '' }}">
     @include('themes.pop-culture._deco')
 
     <div class="mx-auto w-full max-w-[96rem] space-y-6">

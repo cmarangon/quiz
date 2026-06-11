@@ -17,11 +17,11 @@
 @if($isThemed)
     <div
         wire:key="ordering-spectator-{{ $currentQuestion['question_id'] ?? 'q' }}-{{ $phase }}"
-        class="qz-theme qz-theme--{{ $themeKey }} qz-spectator w-full"
+        class="qz-theme qz-theme--{{ $themeKey }} qz-spectator {{ ($phase ?? null) === 'review' ? 'qz-review' : '' }} w-full"
     >
         @include('themes._deco')
 
-        <div class="mx-auto w-full max-w-4xl space-y-8">
+        <div class="mx-auto w-full space-y-8">
             <div class="qz-question">
                 <span class="qz-emoji">{{ $themeEmoji }}</span>
                 <h2 data-test="spectator-question-body">{{ $currentQuestion['body'] ?? '' }}</h2>

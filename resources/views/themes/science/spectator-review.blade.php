@@ -1,7 +1,7 @@
 @php
     $letters = ['a', 'b', 'c', 'd'];
 @endphp
-<div class="qz-theme qz-theme--science qz-spectator w-full" wire:key="spectator-review-science-{{ $currentQuestion['question_id'] ?? '' }}">
+<div class="qz-theme qz-theme--science qz-spectator qz-review w-full" wire:key="spectator-review-science-{{ $currentQuestion['question_id'] ?? '' }}">
     <span class="qz-bubble b1"></span><span class="qz-bubble b2"></span><span class="qz-bubble b3"></span>
 
     <div class="mx-auto w-full max-w-[96rem] space-y-6">

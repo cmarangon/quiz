@@ -1,7 +1,7 @@
 @php
     $letters = ['a', 'b', 'c', 'd'];
 @endphp
-<div class="qz-theme qz-theme--geography qz-spectator w-full" wire:key="spectator-review-geography-{{ $currentQuestion['question_id'] ?? '' }}">
+<div class="qz-theme qz-theme--geography qz-spectator qz-review w-full" wire:key="spectator-review-geography-{{ $currentQuestion['question_id'] ?? '' }}">
     @include('themes.geography._deco')
 
     <div class="mx-auto w-full max-w-[96rem] space-y-6">
