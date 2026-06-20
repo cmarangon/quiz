@@ -64,6 +64,9 @@ export async function answerQuestion(playerPage: Page, label: string): Promise<v
     await playerPage
         .locator(`[data-test="player-answer-option"][data-answer-label="${label}"]`)
         .click();
+    const submit = playerPage.locator('[data-test="multiple-choice-submit"]');
+    await expect(submit).toBeEnabled();
+    await submit.click();
     await expect(playerPage.locator('[data-test="player-phase"]')).toHaveAttribute('data-phase', 'answered');
 }
 
