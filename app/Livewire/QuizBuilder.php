@@ -350,6 +350,8 @@ class QuizBuilder extends Component
      */
     private function validateQuestionPairsContent(): bool
     {
+        $legitimateExistingImagePaths = $this->legitimateExistingImagePaths();
+
         foreach ($this->questionPairs as $index => $pair) {
             foreach (['left', 'right'] as $side) {
                 $kind = $pair[$side]['kind'] ?? 'text';
@@ -365,10 +367,63 @@ class QuizBuilder extends Component
 
                     return false;
                 }
+
+                if ($kind === 'image'
+                    && ($pair[$side]['existingImage'] ?? null)
+                    && ! in_array($pair[$side]['existingImage'], $legitimateExistingImagePaths, true)) {
+                    $this->addError("questionPairs.$index.$side.image", __('Upload an image or switch to text.'));
+
+                    return false;
+                }
             }
         }
 
         return true;
+    }
+
+    /**
+     * The set of image paths a client-submitted `existingImage` value is
+     * allowed to reference: exactly the image-kind values already stored on
+     * the question currently being edited. `existingImage` is a
+     * client-writable Livewire property (it round-trips through every
+     * request while editing), so without this check a tampered request could
+     * point it at an arbitrary path — e.g. another question's image — and
+     * have it persisted verbatim by resolvePairItem().
+     *
+     * @return list<string>
+     */
+    private function legitimateExistingImagePaths(): array
+    {
+        if ($this->editingQuestionId === null) {
+            return [];
+        }
+
+        $question = Question::find($this->editingQuestionId);
+
+        if (! $question) {
+            return [];
+        }
+
+        if ($question->category->quiz_id !== $this->quiz?->id) {
+            return [];
+        }
+
+        if ($question->type !== 'match_pairs') {
+            return [];
+        }
+
+        $options = $question->options ?? [];
+        $paths = [];
+
+        foreach (['left', 'right'] as $side) {
+            foreach ($options[$side] ?? [] as $item) {
+                if (($item['kind'] ?? null) === 'image' && ! empty($item['value'])) {
+                    $paths[] = $item['value'];
+                }
+            }
+        }
+
+        return $paths;
     }
 
     /**

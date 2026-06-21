@@ -2,6 +2,7 @@
 
 use App\Livewire\QuizBuilder;
 use App\Models\Category;
+use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -303,4 +304,135 @@ test('editing a match_pairs question keeps its existing image without requiring 
     $question->refresh();
     expect($question->options['left'][0]['value'])->toBe($path);
     Storage::disk('public')->assertExists($path);
+});
+
+test('saving with the legitimate existingImage populated by editQuestion still works', function () {
+    Storage::fake('public');
+    $path = Storage::disk('public')->put('questions', UploadedFile::fake()->image('flag.png'));
+
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = Question::factory()->matchPairs()->create([
+        'category_id' => $category->id,
+        'options' => [
+            'left' => [
+                ['kind' => 'image', 'value' => $path],
+                ['kind' => 'text', 'value' => 'B'],
+                ['kind' => 'text', 'value' => 'C'],
+                ['kind' => 'text', 'value' => 'D'],
+            ],
+            'right' => [
+                ['kind' => 'text', 'value' => 'France'],
+                ['kind' => 'text', 'value' => 'X'],
+                ['kind' => 'text', 'value' => 'Y'],
+                ['kind' => 'text', 'value' => 'Z'],
+            ],
+        ],
+        'correct_answer' => [0, 1, 2, 3],
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('editQuestion', $question->id)
+        ->assertSet('questionPairs.0.left.existingImage', $path)
+        ->set('questionBody', 'Match the flags (renamed)')
+        ->call('saveQuestion')
+        ->assertHasNoErrors();
+
+    $question->refresh();
+    expect($question->options['left'][0]['kind'])->toBe('image');
+    expect($question->options['left'][0]['value'])->toBe($path);
+    expect($question->body)->toBe('Match the flags (renamed)');
+});
+
+test('tampering existingImage with a path never associated with this question is rejected', function () {
+    Storage::fake('public');
+    $ownPath = Storage::disk('public')->put('questions', UploadedFile::fake()->image('flag.png'));
+    $foreignPath = Storage::disk('public')->put('questions', UploadedFile::fake()->image('other.png'));
+
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = Question::factory()->matchPairs()->create([
+        'category_id' => $category->id,
+        'options' => [
+            'left' => [
+                ['kind' => 'image', 'value' => $ownPath],
+                ['kind' => 'text', 'value' => 'B'],
+                ['kind' => 'text', 'value' => 'C'],
+                ['kind' => 'text', 'value' => 'D'],
+            ],
+            'right' => [
+                ['kind' => 'text', 'value' => 'France'],
+                ['kind' => 'text', 'value' => 'X'],
+                ['kind' => 'text', 'value' => 'Y'],
+                ['kind' => 'text', 'value' => 'Z'],
+            ],
+        ],
+        'correct_answer' => [0, 1, 2, 3],
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('editQuestion', $question->id)
+        ->assertSet('questionPairs.0.left.existingImage', $ownPath)
+        // Simulate a tampered raw Livewire update setting existingImage to a
+        // path that was never legitimately produced for this question.
+        ->set('questionPairs.0.left.existingImage', $foreignPath)
+        ->call('saveQuestion')
+        ->assertHasErrors('questionPairs.0.left.image');
+
+    $question->refresh();
+    expect($question->options['left'][0]['value'])->toBe($ownPath);
+    expect($question->options['left'][0]['value'])->not->toBe($foreignPath);
+});
+
+test('a brand new question can never have a legitimate existingImage', function () {
+    Storage::fake('public');
+    $otherCategory = Category::factory()->create();
+    $otherQuestion = Question::factory()->matchPairs()->create([
+        'category_id' => $otherCategory->id,
+        'options' => [
+            'left' => [
+                ['kind' => 'image', 'value' => Storage::disk('public')->put('questions', UploadedFile::fake()->image('other.png'))],
+                ['kind' => 'text', 'value' => 'B'],
+                ['kind' => 'text', 'value' => 'C'],
+                ['kind' => 'text', 'value' => 'D'],
+            ],
+            'right' => [
+                ['kind' => 'text', 'value' => 'France'],
+                ['kind' => 'text', 'value' => 'X'],
+                ['kind' => 'text', 'value' => 'Y'],
+                ['kind' => 'text', 'value' => 'Z'],
+            ],
+        ],
+        'correct_answer' => [0, 1, 2, 3],
+    ]);
+    $foreignPath = $otherQuestion->options['left'][0]['value'];
+
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'Match the flag to its country')
+        ->set('questionType', 'match_pairs')
+        ->set('questionPairs.0.left.kind', 'image')
+        ->set('questionPairs.0.left.existingImage', $foreignPath)
+        ->set('questionPairs.0.right.text', 'France')
+        ->set('questionPairs.1.left.text', 'B')
+        ->set('questionPairs.1.right.text', 'X')
+        ->set('questionPairs.2.left.text', 'C')
+        ->set('questionPairs.2.right.text', 'Y')
+        ->set('questionPairs.3.left.text', 'D')
+        ->set('questionPairs.3.right.text', 'Z')
+        ->set('questionPoints', 100)
+        ->set('questionTimeLimit', 30)
+        ->call('saveQuestion')
+        ->assertHasErrors('questionPairs.0.left.image');
+
+    expect($category->questions()->count())->toBe(0);
 });
