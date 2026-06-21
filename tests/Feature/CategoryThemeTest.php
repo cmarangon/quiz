@@ -77,7 +77,10 @@ test('player answering screen renders the themed partial', function (string $the
         ->call('onQuestionStarted', questionPayload($theme))
         ->assertSee('qz-theme--'.$theme, false)
         ->assertSee('player-answer-option', false)
-        ->assertSee("submitAnswer('Option A')", false);
+        ->assertSee('choiceAnswer()', false)
+        ->assertSee('multiple-choice-submit', false)
+        // Tapping an option must only stage the choice (choose), never submit it.
+        ->assertDontSee("submitAnswer('Option A')", false);
 })->with($themes);
 
 test('spectator question and review screens render the themed partial', function (string $theme) {
@@ -162,5 +165,9 @@ test('an unknown theme falls back to the default markup', function () {
         ->test(PlayerScreen::class, ['code' => $session->join_code])
         ->call('onQuestionStarted', questionPayload('default'))
         ->assertDontSee('qz-theme--', false)
-        ->assertSee('player-answer-option', false);
+        ->assertSee('player-answer-option', false)
+        ->assertSee('choiceAnswer()', false)
+        ->assertSee('multiple-choice-submit', false)
+        // Tapping an option must only stage the choice (choose), never submit it.
+        ->assertDontSee("submitAnswer('Option A')", false);
 });

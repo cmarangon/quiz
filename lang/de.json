@@ -276,5 +276,17 @@
     "or you can": "oder du kannst",
     "or, enter the code manually": "oder gib den Code manuell ein",
     "s...": "s...",
-    "time left": "verbleibende Zeit"
+    "time left": "verbleibende Zeit",
+    "Match Pairs": "Paare zuordnen",
+    "Pairs (left matches right)": "Paare (links passt zu rechts)",
+    "Left :n": "Links :n",
+    "Right :n": "Rechts :n",
+    "Text": "Text",
+    "Image": "Bild",
+    "Enter text or switch to an image.": "Text eingeben oder zu einem Bild wechseln.",
+    "Upload an image or switch to text.": "Bild hochladen oder zu Text wechseln.",
+    "Tap a card on the left, then its match on the right.": "Tippe eine Karte links an, dann ihre Übereinstimmung rechts.",
+    "Submit matches": "Zuordnung abschicken",
+    "Players are matching pairs...": "Spieler ordnen Paare zu...",
+    "Correct pairs:": "Richtige Paare:"
 }

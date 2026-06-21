@@ -3,6 +3,7 @@ import Pusher from 'pusher-js';
 import { registerChoiceAnswer } from './choice-answer';
 import { registerGeoMap } from './geo-map';
 import { registerGeoPicker } from './geo-picker';
+import { registerMatchPairs } from './match-pairs';
 import { registerOrdering } from './ordering';
 import { registerQuestionTimer } from './question-timer';
 import { registerReactionBar, registerReactionFloat } from './reactions';
@@ -14,6 +15,7 @@ document.addEventListener('alpine:init', () => {
     registerChoiceAnswer(window.Alpine);
     registerGeoMap(window.Alpine);
     registerGeoPicker(window.Alpine);
+    registerMatchPairs(window.Alpine);
     registerOrdering(window.Alpine);
     registerQuestionTimer(window.Alpine);
     registerReactionBar(window.Alpine);

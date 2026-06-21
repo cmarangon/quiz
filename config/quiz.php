@@ -1,6 +1,7 @@
 <?php
 
 use App\QuestionTypes\GeoGuesserType;
+use App\QuestionTypes\MatchPairsType;
 use App\QuestionTypes\MultipleChoiceType;
 use App\QuestionTypes\OrderingType;
 use App\QuestionTypes\TrueFalseType;
@@ -11,6 +12,7 @@ return [
         'true_false' => TrueFalseType::class,
         'geo_guesser' => GeoGuesserType::class,
         'ordering' => OrderingType::class,
+        'match_pairs' => MatchPairsType::class,
     ],
 
     'geo_guesser' => [

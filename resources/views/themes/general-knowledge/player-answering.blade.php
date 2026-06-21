@@ -1,7 +1,7 @@
 @php
     $letters = ['a', 'b', 'c', 'd'];
 @endphp
-<div class="qz-theme qz-theme--general-knowledge qz-player" wire:key="player-answering-general-knowledge-{{ $currentQuestion['question_id'] ?? '' }}">
+<div class="qz-theme qz-theme--general-knowledge qz-player" wire:key="player-answering-general-knowledge-{{ $currentQuestion['question_id'] ?? '' }}" x-data="choiceAnswer()">
     @include('themes.general-knowledge._deco')
 
     <div class="space-y-5">
@@ -15,8 +15,10 @@
             @foreach($currentQuestion['options'] as $index => $option)
                 @php $label = $option['label'] ?? $option; @endphp
                 <button
-                    wire:click="submitAnswer('{{ $label }}')"
-                    x-bind:disabled="expired"
+                    type="button"
+                    x-on:click="choose(@js($label))"
+                    x-bind:class="{ 'is-selected': selected === @js($label) }"
+                    x-bind:disabled="submitted || (typeof expired !== 'undefined' && expired)"
                     data-test="player-answer-option"
                     data-answer-label="{{ $label }}"
                     class="qz-option {{ $letters[$index % 4] }}">
@@ -26,6 +28,13 @@
             @endforeach
         </div>
 
-        <p class="qz-hint">{{ __('Tap your answer before time runs out!') }}</p>
+        <button
+            type="button"
+            x-on:click="submit()"
+            x-bind:disabled="selected === null || submitted || (typeof expired !== 'undefined' && expired)"
+            data-test="multiple-choice-submit"
+            class="qz-cta">
+            {{ __('Submit answer') }}
+        </button>
     </div>
 </div>
