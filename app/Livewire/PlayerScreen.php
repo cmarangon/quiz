@@ -286,6 +286,29 @@ class PlayerScreen extends Component
         $this->phase = 'answered';
     }
 
+    public function submitMatches(array $pairs): void
+    {
+        if (! $this->player || ! $this->currentQuestion) {
+            return;
+        }
+
+        $action = app(SubmitAnswer::class);
+
+        try {
+            $this->lastResult = $action->execute(
+                $this->session,
+                $this->player,
+                $this->currentQuestion['question_id'],
+                array_values($pairs),
+                $this->elapsedMs(),
+            );
+        } catch (\LogicException $e) {
+            $this->timedOut = true;
+        }
+
+        $this->phase = 'answered';
+    }
+
     public function render()
     {
         return view('livewire.player-screen')->title('Playing');

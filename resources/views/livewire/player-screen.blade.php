@@ -82,6 +82,8 @@
                     @include('question-types.geo-guesser-player')
                 @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
                     @include('question-types.ordering-player')
+                @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'match_pairs')
+                    @include('question-types.match-pairs-player')
                 @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'true_false')
                     @include('question-types.true-false-player')
                 @elseif($currentQuestion && ! empty($currentQuestion['options']))
