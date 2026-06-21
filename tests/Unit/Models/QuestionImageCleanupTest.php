@@ -2,6 +2,7 @@
 
 use App\Models\Category;
 use App\Models\Question;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 test('deleting a match_pairs question removes its uploaded images', function () {
@@ -47,7 +48,7 @@ test('deleting a question of another type does not touch the public disk', funct
     expect(Question::find($question->id))->toBeNull();
 });
 
-function UploadedFileStub(): \Illuminate\Http\UploadedFile
+function UploadedFileStub(): UploadedFile
 {
-    return \Illuminate\Http\UploadedFile::fake()->image('flag.png');
+    return UploadedFile::fake()->image('flag.png');
 }
