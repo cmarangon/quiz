@@ -200,18 +200,45 @@
                                 @endif
 
                                 @if($questionType === 'match_pairs')
-                                <div data-test="match-pairs-form">
+                                <div data-test="match-pairs-form" class="space-y-2">
                                     <label class="mb-1 block text-sm font-medium dark:text-neutral-300">{{ __('Pairs (left matches right)') }}</label>
-                                    <div class="space-y-2">
-                                        @foreach($questionPairs as $index => $pair)
-                                            <div class="flex gap-2" wire:key="match-pair-{{ $index }}">
-                                                <flux:input wire:model.live.debounce.300ms="questionPairs.{{ $index }}.left.text" :placeholder="__('Left :n', ['n' => $index + 1])" size="sm" class="flex-1" />
-                                                <flux:input wire:model.live.debounce.300ms="questionPairs.{{ $index }}.right.text" :placeholder="__('Right :n', ['n' => $index + 1])" size="sm" class="flex-1" />
-                                            </div>
-                                            @error("questionPairs.$index.left.text") <span class="text-sm text-red-500">{{ $message }}</span> @enderror
-                                            @error("questionPairs.$index.right.text") <span class="text-sm text-red-500">{{ $message }}</span> @enderror
-                                        @endforeach
-                                    </div>
+                                    @foreach($questionPairs as $index => $pair)
+                                        <div class="grid grid-cols-2 gap-2" wire:key="match-pair-{{ $index }}">
+                                            @foreach(['left', 'right'] as $side)
+                                                <div class="space-y-1 rounded-md border border-neutral-200 p-2 dark:border-neutral-700">
+                                                    <div class="flex gap-1">
+                                                        <flux:button type="button" size="xs" :variant="$pair[$side]['kind'] === 'text' ? 'primary' : 'ghost'"
+                                                                      wire:click="$set('questionPairs.{{ $index }}.{{ $side }}.kind', 'text')"
+                                                                      data-test="match-pair-kind-text-{{ $index }}-{{ $side }}">
+                                                            {{ __('Text') }}
+                                                        </flux:button>
+                                                        <flux:button type="button" size="xs" :variant="$pair[$side]['kind'] === 'image' ? 'primary' : 'ghost'"
+                                                                      wire:click="$set('questionPairs.{{ $index }}.{{ $side }}.kind', 'image')"
+                                                                      data-test="match-pair-kind-image-{{ $index }}-{{ $side }}">
+                                                            {{ __('Image') }}
+                                                        </flux:button>
+                                                    </div>
+
+                                                    @if($pair[$side]['kind'] === 'image')
+                                                        @if($pair[$side]['existingImage'] && ! $pair[$side]['image'])
+                                                            <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($pair[$side]['existingImage']) }}"
+                                                                 class="h-12 w-12 rounded object-cover" alt="" />
+                                                        @endif
+                                                        <input type="file"
+                                                               wire:model="questionPairs.{{ $index }}.{{ $side }}.image"
+                                                               data-test="match-pair-image-{{ $index }}-{{ $side }}"
+                                                               class="block text-xs" />
+                                                        @error("questionPairs.$index.$side.image") <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                                    @else
+                                                        <flux:input wire:model.live.debounce.300ms="questionPairs.{{ $index }}.{{ $side }}.text"
+                                                                    :placeholder="$side === 'left' ? __('Left :n', ['n' => $index + 1]) : __('Right :n', ['n' => $index + 1])"
+                                                                    size="sm" />
+                                                        @error("questionPairs.$index.$side.text") <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endforeach
                                     @error('questionPairs') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                                 </div>
                                 @endif

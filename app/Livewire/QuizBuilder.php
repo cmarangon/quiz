@@ -5,15 +5,19 @@ namespace App\Livewire;
 use App\Models\Category;
 use App\Models\Question;
 use App\Models\Quiz;
+use App\Services\QuestionImageStorage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Layout('layouts.app')]
 class QuizBuilder extends Component
 {
+    use WithFileUploads;
+
     public ?Quiz $quiz = null;
 
     public string $title = '';
@@ -271,6 +275,8 @@ class QuizBuilder extends Component
             foreach (range(0, 3) as $i) {
                 $rules["questionPairs.$i.left.kind"] = 'required|in:text,image';
                 $rules["questionPairs.$i.right.kind"] = 'required|in:text,image';
+                $rules["questionPairs.$i.left.image"] = 'nullable|image|mimes:jpeg,png,webp,gif|max:2048';
+                $rules["questionPairs.$i.right.image"] = 'nullable|image|mimes:jpeg,png,webp,gif|max:2048';
             }
         }
 
@@ -297,6 +303,10 @@ class QuizBuilder extends Component
 
             if ($category->quiz_id !== $this->quiz?->id) {
                 abort(403);
+            }
+
+            if ($question->type === 'match_pairs') {
+                $this->cleanupReplacedImages($question->options ?? [], $options);
             }
 
             $question->update([
@@ -346,6 +356,12 @@ class QuizBuilder extends Component
 
                 if ($kind === 'text' && trim($pair[$side]['text'] ?? '') === '') {
                     $this->addError("questionPairs.$index.$side.text", __('Enter text or switch to an image.'));
+
+                    return false;
+                }
+
+                if ($kind === 'image' && ! ($pair[$side]['image'] ?? null) && ! ($pair[$side]['existingImage'] ?? null)) {
+                    $this->addError("questionPairs.$index.$side.image", __('Upload an image or switch to text.'));
 
                     return false;
                 }
@@ -449,10 +465,17 @@ class QuizBuilder extends Component
 
     /**
      * Resolve one pair slot's stored {kind, value} from its form state.
-     * Text-only for now — Task 7 adds the image-kind branch here.
      */
     private function resolvePairItem(array $item): array
     {
+        if (($item['kind'] ?? 'text') === 'image') {
+            $path = $item['image']
+                ? app(QuestionImageStorage::class)->store($item['image'])
+                : ($item['existingImage'] ?? '');
+
+            return ['kind' => 'image', 'value' => $path];
+        }
+
         return ['kind' => 'text', 'value' => trim($item['text'] ?? '')];
     }
 
@@ -468,11 +491,46 @@ class QuizBuilder extends Component
 
     /**
      * Reconstruct a pair slot's form state from its stored {kind, value}.
-     * Text-only for now — Task 7 adds the image-kind branch here.
      */
     private function pairFormState(array $item): array
     {
+        if (($item['kind'] ?? 'text') === 'image') {
+            return ['kind' => 'image', 'text' => '', 'image' => null, 'existingImage' => $item['value'] ?? null];
+        }
+
         return ['kind' => 'text', 'text' => $item['value'] ?? '', 'image' => null, 'existingImage' => null];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function imagePaths(array $options): array
+    {
+        $paths = [];
+        foreach (['left', 'right'] as $side) {
+            foreach ($options[$side] ?? [] as $item) {
+                if (($item['kind'] ?? null) === 'image' && ! empty($item['value'])) {
+                    $paths[] = $item['value'];
+                }
+            }
+        }
+
+        return $paths;
+    }
+
+    /**
+     * Delete any image that was on the question before this save but isn't
+     * referenced by the freshly-built options anymore (the author replaced it
+     * or switched that slot back to text).
+     */
+    private function cleanupReplacedImages(array $oldOptions, array $newOptions): void
+    {
+        $storage = app(QuestionImageStorage::class);
+        $removed = array_diff($this->imagePaths($oldOptions), $this->imagePaths($newOptions));
+
+        foreach ($removed as $path) {
+            $storage->delete($path);
+        }
     }
 
     private function resetQuestionForm(): void
