@@ -26,6 +26,13 @@
     transform: translateY(-2px);
 }
 
+/* Selected-and-awaiting-match indicator for match-pairs left column.
+   Theme-agnostic outline consistent with is-selected style. */
+.qz-theme.qz-player .qz-option--armed {
+    outline: 4px solid rgba(255, 255, 255, 0.7);
+    outline-offset: 2px;
+}
+
 /* =========================== SCIENCE ===================================== */
 .qz-theme--science {
     --sci-cyan: #22d3ee;
