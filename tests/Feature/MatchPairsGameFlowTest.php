@@ -88,3 +88,13 @@ test('PlayerScreen::submitMatches delegates to SubmitAnswer and advances the pha
 
     expect($this->player->fresh()->score)->toBe(100);
 });
+
+test('player screen renders the match-pairs tap-to-pair UI during the answering phase', function () {
+    Livewire::withQueryParams(['player_id' => $this->player->id])
+        ->test(PlayerScreen::class, ['code' => $this->session->join_code])
+        ->call('pollState')
+        ->assertSet('phase', 'answering')
+        ->assertSeeHtml('data-test="match-pairs-left-item"')
+        ->assertSeeHtml('data-test="match-pairs-right-item"')
+        ->assertSeeHtml('data-test="match-pairs-submit"');
+});
