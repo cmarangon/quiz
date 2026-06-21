@@ -2,6 +2,7 @@
 
 use App\Actions\SubmitAnswer;
 use App\Livewire\PlayerScreen;
+use App\Livewire\SpectatorScreen;
 use App\Models\Category;
 use App\Models\GameSession;
 use App\Models\Player;
@@ -97,4 +98,43 @@ test('player screen renders the match-pairs tap-to-pair UI during the answering 
         ->assertSeeHtml('data-test="match-pairs-left-item"')
         ->assertSeeHtml('data-test="match-pairs-right-item"')
         ->assertSeeHtml('data-test="match-pairs-submit"');
+});
+
+test('spectator screen renders both columns during the question phase', function () {
+    Livewire::test(SpectatorScreen::class, ['code' => $this->session->join_code])
+        ->call('onQuestionStarted', [
+            'question_id' => $this->question->id,
+            'question_index' => 0,
+            'body' => $this->question->body,
+            'type' => 'match_pairs',
+            'category_name' => null,
+            'theme' => 'default',
+            'time_limit_seconds' => $this->question->time_limit_seconds,
+            'options' => $this->question->options,
+        ])
+        ->assertSet('phase', 'question')
+        ->assertSeeHtml('data-test="match-pairs-columns"');
+});
+
+test('spectator screen renders the correct pairs during the review phase', function () {
+    Livewire::test(SpectatorScreen::class, ['code' => $this->session->join_code])
+        ->call('onQuestionStarted', [
+            'question_id' => $this->question->id,
+            'question_index' => 0,
+            'body' => $this->question->body,
+            'type' => 'match_pairs',
+            'category_name' => null,
+            'theme' => 'default',
+            'time_limit_seconds' => $this->question->time_limit_seconds,
+            'options' => $this->question->options,
+        ])
+        ->call('onQuestionEnded', [
+            'question_id' => $this->question->id,
+            'correct_answer' => $this->question->correct_answer,
+            'scores' => [['nickname' => 'Matcher', 'score' => 100]],
+            'guesses' => [],
+            'distribution' => [],
+        ])
+        ->assertSet('phase', 'review')
+        ->assertSeeHtml('data-test="match-pairs-correct-pairs"');
 });

@@ -105,6 +105,8 @@
             @include('question-types.geo-guesser-spectator')
         @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
             @include('question-types.ordering-spectator')
+        @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'match_pairs')
+            @include('question-types.match-pairs-spectator')
         @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports', 'crime'], true))
             @include('themes.'.$themeKey.'.spectator-question')
         @elseif($currentQuestion)
@@ -147,6 +149,8 @@
             @include('question-types.geo-guesser-spectator')
         @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
             @include('question-types.ordering-spectator')
+        @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'match_pairs')
+            @include('question-types.match-pairs-spectator')
         @elseif($currentQuestion && ! empty($currentQuestion['options']) && in_array($themeKey, ['science', 'history', 'pop-culture', 'general-knowledge', 'geography', 'nature', 'sports', 'crime'], true))
             @include('themes.'.$themeKey.'.spectator-review')
             <div class="mt-[clamp(10px,1.5vh,32px)] w-full">
