@@ -50,6 +50,8 @@ class QuizBuilder extends Component
 
     public string $questionGeoMaxDistanceKm = '';
 
+    public array $questionPairs = [];
+
     public int $questionPoints = 10;
 
     public int $questionTimeLimit = 30;
@@ -173,6 +175,24 @@ class QuizBuilder extends Component
             $options = $question->options ?? [];
             $this->questionGeoThresholdKm = isset($options['threshold_km']) ? (string) $options['threshold_km'] : '';
             $this->questionGeoMaxDistanceKm = isset($options['max_distance_km']) ? (string) $options['max_distance_km'] : '';
+        } elseif ($question->type === 'match_pairs') {
+            $options = $question->options ?? [];
+            $left = $options['left'] ?? [];
+            $right = $options['right'] ?? [];
+            $correctAnswer = is_array($question->correct_answer) ? $question->correct_answer : [];
+
+            $pairs = [];
+            foreach ($left as $index => $leftItem) {
+                $rightIndex = $correctAnswer[$index] ?? null;
+                $rightItem = $rightIndex !== null ? ($right[$rightIndex] ?? null) : null;
+
+                $pairs[] = [
+                    'left' => $this->pairFormState($leftItem),
+                    'right' => $this->pairFormState($rightItem ?? ['kind' => 'text', 'value' => '']),
+                ];
+            }
+
+            $this->questionPairs = count($pairs) === 4 ? $pairs : $this->defaultQuestionPairs();
         }
     }
 
@@ -215,7 +235,7 @@ class QuizBuilder extends Component
     {
         $rules = [
             'questionBody' => 'required|min:3',
-            'questionType' => 'required|in:multiple_choice,true_false,ordering,geo_guesser',
+            'questionType' => 'required|in:multiple_choice,true_false,ordering,geo_guesser,match_pairs',
             'questionPoints' => 'required|integer|min:1',
             'questionTimeLimit' => 'required|integer|min:5',
         ];
@@ -246,6 +266,14 @@ class QuizBuilder extends Component
             }
         }
 
+        if ($this->questionType === 'match_pairs') {
+            $rules['questionPairs'] = 'required|array|size:4';
+            foreach (range(0, 3) as $i) {
+                $rules["questionPairs.$i.left.kind"] = 'required|in:text,image';
+                $rules["questionPairs.$i.right.kind"] = 'required|in:text,image';
+            }
+        }
+
         $this->validate($rules);
 
         if ($this->questionType === 'geo_guesser'
@@ -254,6 +282,10 @@ class QuizBuilder extends Component
             && (float) $this->questionGeoThresholdKm >= (float) $this->questionGeoMaxDistanceKm) {
             $this->addError('questionGeoThresholdKm', __('The threshold must be less than the max distance.'));
 
+            return;
+        }
+
+        if ($this->questionType === 'match_pairs' && ! $this->validateQuestionPairsContent()) {
             return;
         }
 
@@ -301,6 +333,29 @@ class QuizBuilder extends Component
     }
 
     /**
+     * Manual cross-field check for each pair slot's content, mirroring the
+     * geo_guesser threshold/max-distance check above: structural shape is
+     * covered by $this->validate(), but "does this slot actually have content
+     * for its chosen kind" depends on a sibling field, so it's checked here.
+     */
+    private function validateQuestionPairsContent(): bool
+    {
+        foreach ($this->questionPairs as $index => $pair) {
+            foreach (['left', 'right'] as $side) {
+                $kind = $pair[$side]['kind'] ?? 'text';
+
+                if ($kind === 'text' && trim($pair[$side]['text'] ?? '') === '') {
+                    $this->addError("questionPairs.$index.$side.text", __('Enter text or switch to an image.'));
+
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Build the [options, correct_answer] pair for the question being saved.
      *
      * For ordering questions the author enters the items in their correct
@@ -311,6 +366,41 @@ class QuizBuilder extends Component
      */
     private function buildQuestionPayload(): array
     {
+        if ($this->questionType === 'match_pairs') {
+            $left = [];
+            $right = [];
+            foreach ($this->questionPairs as $pair) {
+                $left[] = $this->resolvePairItem($pair['left']);
+                $right[] = $this->resolvePairItem($pair['right']);
+            }
+
+            // Shuffle a permutation of right-side *positions* rather than the
+            // values themselves, so two pairs with identical-looking values
+            // can never be confused when computing correct_answer below.
+            $original = range(0, count($right) - 1);
+            $positions = $original;
+            if (count($positions) > 1) {
+                for ($attempt = 0; $attempt < 10 && $positions === $original; $attempt++) {
+                    shuffle($positions);
+                }
+                if ($positions === $original) {
+                    $positions[] = array_shift($positions);
+                }
+            }
+
+            $shuffledRight = array_map(fn ($originalIndex) => $right[$originalIndex], $positions);
+
+            // correct_answer[leftIndex] = position of left[leftIndex]'s match
+            // within the shuffled right array.
+            $correctAnswer = [];
+            foreach ($positions as $newPosition => $originalIndex) {
+                $correctAnswer[$originalIndex] = $newPosition;
+            }
+            ksort($correctAnswer);
+
+            return [['left' => $left, 'right' => $shuffledRight], array_values($correctAnswer)];
+        }
+
         if ($this->questionType === 'true_false') {
             return [['True', 'False'], $this->questionCorrectAnswer];
         }
@@ -357,6 +447,34 @@ class QuizBuilder extends Component
         return [array_values(array_filter($this->questionOptions)), $this->questionCorrectAnswer];
     }
 
+    /**
+     * Resolve one pair slot's stored {kind, value} from its form state.
+     * Text-only for now — Task 7 adds the image-kind branch here.
+     */
+    private function resolvePairItem(array $item): array
+    {
+        return ['kind' => 'text', 'value' => trim($item['text'] ?? '')];
+    }
+
+    /**
+     * @return array<int, array{left: array, right: array}>
+     */
+    private function defaultQuestionPairs(): array
+    {
+        $emptySlot = ['kind' => 'text', 'text' => '', 'image' => null, 'existingImage' => null];
+
+        return array_fill(0, 4, ['left' => $emptySlot, 'right' => $emptySlot]);
+    }
+
+    /**
+     * Reconstruct a pair slot's form state from its stored {kind, value}.
+     * Text-only for now — Task 7 adds the image-kind branch here.
+     */
+    private function pairFormState(array $item): array
+    {
+        return ['kind' => 'text', 'text' => $item['value'] ?? '', 'image' => null, 'existingImage' => null];
+    }
+
     private function resetQuestionForm(): void
     {
         $this->questionBody = '';
@@ -367,6 +485,7 @@ class QuizBuilder extends Component
         $this->questionGeoLng = '';
         $this->questionGeoThresholdKm = '';
         $this->questionGeoMaxDistanceKm = '';
+        $this->questionPairs = $this->defaultQuestionPairs();
         $this->questionPoints = 10;
         $this->questionTimeLimit = 30;
     }

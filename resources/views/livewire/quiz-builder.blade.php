@@ -110,6 +110,7 @@
                                             <option value="true_false">{{ __('True / False') }}</option>
                                             <option value="ordering">{{ __('Ordering') }}</option>
                                             <option value="geo_guesser">{{ __('Geo Guesser') }}</option>
+                                            <option value="match_pairs">{{ __('Match Pairs') }}</option>
                                         </select>
                                     </div>
                                     <div>
@@ -195,6 +196,23 @@
                                     <p class="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{{ __('Leave blank to use the quiz defaults. Guesses within the radius earn full points; points decay to zero at the max distance.') }}</p>
                                     @error('questionGeoThresholdKm') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                                     @error('questionGeoMaxDistanceKm') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                </div>
+                                @endif
+
+                                @if($questionType === 'match_pairs')
+                                <div data-test="match-pairs-form">
+                                    <label class="mb-1 block text-sm font-medium dark:text-neutral-300">{{ __('Pairs (left matches right)') }}</label>
+                                    <div class="space-y-2">
+                                        @foreach($questionPairs as $index => $pair)
+                                            <div class="flex gap-2" wire:key="match-pair-{{ $index }}">
+                                                <flux:input wire:model.live.debounce.300ms="questionPairs.{{ $index }}.left.text" :placeholder="__('Left :n', ['n' => $index + 1])" size="sm" class="flex-1" />
+                                                <flux:input wire:model.live.debounce.300ms="questionPairs.{{ $index }}.right.text" :placeholder="__('Right :n', ['n' => $index + 1])" size="sm" class="flex-1" />
+                                            </div>
+                                            @error("questionPairs.$index.left.text") <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                            @error("questionPairs.$index.right.text") <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                        @endforeach
+                                    </div>
+                                    @error('questionPairs') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                                 </div>
                                 @endif
 
