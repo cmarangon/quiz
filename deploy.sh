@@ -20,6 +20,9 @@ git pull origin "$BRANCH"
 echo "==> Installing PHP dependencies"
 composer install --no-dev --optimize-autoloader --no-interaction
 
+echo "==> Linking public storage"
+php artisan storage:link
+
 echo "==> Installing and building frontend assets"
 npm ci
 npm run build
