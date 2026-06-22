@@ -9,6 +9,7 @@ use App\Models\Player;
 use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\User;
+use Illuminate\Support\Facades\App;
 use Livewire\Livewire;
 
 function themedSession(string $theme): GameSession
@@ -115,6 +116,33 @@ test('spectator keeps showing the themed question when category.changed is proce
         ->assertSet('phase', 'question')
         ->assertSee('qz-theme--'.$theme, false)
         ->assertSee('spectator-question-body', false);
+})->with($themes);
+
+test('spectator translates true/false answers on themed question and review screens', function (string $theme) {
+    App::setLocale('de');
+
+    $session = themedSession($theme);
+
+    $payload = typedPayload($theme, 'true_false');
+    $payload['options'] = ['True', 'False'];
+
+    $component = Livewire::test(SpectatorScreen::class, ['code' => $session->join_code])
+        ->call('onQuestionStarted', $payload)
+        ->assertSee('Wahr', false)
+        ->assertSee('Falsch', false)
+        ->assertDontSee('>True<', false)
+        ->assertDontSee('>False<', false);
+
+    $component->call('onQuestionEnded', [
+        'correct_answer' => 'True',
+        'scores' => [['nickname' => 'Sam', 'score' => 50]],
+    ])
+        ->assertSee('Wahr', false)
+        ->assertSee('Falsch', false)
+        ->assertDontSee('>True<', false)
+        ->assertDontSee('>False<', false);
+
+    App::setLocale('en');
 })->with($themes);
 
 test('spectator applies the theme to ordering and geo_guesser questions', function (string $theme) {
