@@ -28,6 +28,8 @@ class QuizBuilder extends Component
 
     public bool $enableStreaks = true;
 
+    public bool $showScoreboard = true;
+
     public string $presentationStyle = 'party-pop';
 
     public string $newCategoryName = '';
@@ -72,6 +74,7 @@ class QuizBuilder extends Component
             $this->description = $quiz->description ?? '';
             $this->enableTimeBonus = $quiz->settings['enable_time_bonus'] ?? true;
             $this->enableStreaks = $quiz->settings['enable_streaks'] ?? true;
+            $this->showScoreboard = $quiz->settings['show_scoreboard'] ?? true;
             $this->presentationStyle = $quiz->settings['presentation_style'] ?? 'party-pop';
         }
     }
@@ -89,6 +92,7 @@ class QuizBuilder extends Component
             'settings' => [
                 'enable_time_bonus' => $this->enableTimeBonus,
                 'enable_streaks' => $this->enableStreaks,
+                'show_scoreboard' => $this->showScoreboard,
                 'presentation_style' => $this->presentationStyle,
             ],
         ];
