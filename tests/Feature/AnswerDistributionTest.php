@@ -211,3 +211,21 @@ test('spectator renders the distribution bars on the review screen', function ()
         ->assertSee('🦊')               // Alice's avatar on her option
         ->assertSee('1 (50%)');         // one of two answers
 });
+
+test('spectator reads the show_scoreboard setting from the quiz on mount', function () {
+    $quiz = Quiz::factory()->for($this->user)->create([
+        'settings' => ['show_scoreboard' => false],
+    ]);
+    $session = GameSession::factory()->for($quiz)->for($this->user, 'host')->create(['status' => 'playing']);
+
+    Livewire::test(SpectatorScreen::class, ['code' => $session->join_code])
+        ->assertSet('showScoreboard', false);
+});
+
+test('spectator defaults show_scoreboard to true when the quiz has no setting', function () {
+    $quiz = Quiz::factory()->for($this->user)->create(['settings' => ['enable_time_bonus' => true]]);
+    $session = GameSession::factory()->for($quiz)->for($this->user, 'host')->create(['status' => 'playing']);
+
+    Livewire::test(SpectatorScreen::class, ['code' => $session->join_code])
+        ->assertSet('showScoreboard', true);
+});
