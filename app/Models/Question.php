@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\QuestionImageStorage;
 use Database\Factories\QuestionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +23,25 @@ class Question extends Model
         'time_limit_seconds',
         'order',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Question $question) {
+            if ($question->type !== 'match_pairs') {
+                return;
+            }
+
+            $storage = app(QuestionImageStorage::class);
+
+            foreach (['left', 'right'] as $side) {
+                foreach ($question->options[$side] ?? [] as $item) {
+                    if (($item['kind'] ?? null) === 'image' && ! empty($item['value'])) {
+                        $storage->delete($item['value']);
+                    }
+                }
+            }
+        });
+    }
 
     protected function casts(): array
     {

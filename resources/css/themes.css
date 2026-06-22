@@ -26,6 +26,13 @@
     transform: translateY(-2px);
 }
 
+/* Selected-and-awaiting-match indicator for match-pairs left column.
+   Theme-agnostic outline consistent with is-selected style. */
+.qz-theme.qz-player .qz-option--armed {
+    outline: 4px solid rgba(255, 255, 255, 0.7);
+    outline-offset: 2px;
+}
+
 /* =========================== SCIENCE ===================================== */
 .qz-theme--science {
     --sci-cyan: #22d3ee;
@@ -655,9 +662,11 @@
 .qz-theme--general-knowledge { --qz-accent: #818cf8; --qz-accent-2: #38bdf8; }
 .qz-theme--crime          { --qz-accent: #f2c20e; --qz-accent-2: #b41f2a; }
 
+/* Sized in svh so the card compresses when mobile browser chrome (address
+   bar, status/battery bar) shrinks the visible viewport instead of overflowing. */
 .qz-theme .qz-result {
-    display: flex; flex-direction: column; align-items: center; gap: 14px;
-    padding: 28px 22px; border-radius: 24px; text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: clamp(6px, 1.6svh, 14px);
+    padding: clamp(12px, 2.6svh, 28px) 22px; border-radius: 24px; text-align: center;
     background: rgba(0, 0, 0, 0.25);
     border: 2px solid color-mix(in srgb, var(--qz-accent, #818cf8) 55%, transparent);
     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
@@ -665,19 +674,19 @@
 }
 @keyframes qz-result-pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-.qz-theme .qz-result__reaction { font-size: 64px; line-height: 1; animation: qz-result-bounce 0.6s ease both; }
+.qz-theme .qz-result__reaction { font-size: clamp(36px, 7svh, 64px); line-height: 1; animation: qz-result-bounce 0.6s ease both; }
 @keyframes qz-result-bounce { 0% { transform: translateY(-12px); } 50% { transform: translateY(6px); } 100% { transform: translateY(0); } }
 
-.qz-theme .qz-result__title { font-size: 28px; font-weight: 800; }
+.qz-theme .qz-result__title { font-size: clamp(20px, 3.4svh, 28px); font-weight: 800; }
 .qz-theme .qz-result--correct .qz-result__title { color: var(--qz-accent); }
 .qz-theme .qz-result--wrong .qz-result__title { color: #fca5a5; }
 .qz-theme .qz-result__points {
-    font-size: 20px; font-weight: 700;
+    font-size: clamp(16px, 2.4svh, 20px); font-weight: 700;
     color: color-mix(in srgb, var(--qz-accent-2, #38bdf8) 80%, white);
 }
 .qz-theme .qz-result__streak {
-    margin-top: 4px; font-size: 14px; font-weight: 700; letter-spacing: .5px;
-    padding: 6px 14px; border-radius: 999px;
+    margin-top: 4px; font-size: clamp(12px, 1.7svh, 14px); font-weight: 700; letter-spacing: .5px;
+    padding: clamp(4px, 0.8svh, 6px) 14px; border-radius: 999px;
     background: color-mix(in srgb, var(--qz-accent, #818cf8) 30%, transparent);
     color: #fff;
 }
@@ -686,7 +695,7 @@
 .qz-theme .qz-breakdown {
     width: 100%; max-width: 320px; margin-top: 6px;
     display: flex; flex-direction: column; gap: 2px;
-    border-radius: 16px; padding: 10px 14px;
+    border-radius: 16px; padding: clamp(6px, 1.2svh, 10px) 14px;
     background: rgba(0, 0, 0, 0.28);
     border: 1px solid color-mix(in srgb, var(--qz-accent, #818cf8) 35%, transparent);
     animation: qz-breakdown-in 0.45s ease 0.15s both;
@@ -694,7 +703,7 @@
 @keyframes qz-breakdown-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .qz-theme .qz-breakdown__row {
     display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
-    font-size: 14px; line-height: 1.5; color: rgba(255, 255, 255, .9);
+    font-size: clamp(12px, 1.8svh, 14px); line-height: 1.45; color: rgba(255, 255, 255, .9);
 }
 .qz-theme .qz-breakdown__label { display: inline-flex; align-items: baseline; gap: 5px; }
 .qz-theme .qz-breakdown__label em { font-style: normal; opacity: .6; font-size: 12px; }
@@ -707,7 +716,7 @@
     color: rgba(255, 255, 255, .75);
 }
 .qz-theme .qz-breakdown__row--total {
-    margin-top: 6px; padding-top: 8px; font-size: 16px;
+    margin-top: clamp(3px, 0.7svh, 6px); padding-top: clamp(4px, 0.9svh, 8px); font-size: clamp(14px, 2svh, 16px);
     border-top: 1px solid rgba(255, 255, 255, .14);
 }
 .qz-theme .qz-breakdown__row--total .qz-breakdown__label { font-weight: 800; color: #fff; }

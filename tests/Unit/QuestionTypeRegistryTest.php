@@ -16,5 +16,5 @@ test('registry throws on unknown question type', function () {
 
 test('registry lists all registered types', function () {
     $registry = app(QuestionTypeRegistry::class);
-    expect($registry->registered())->toContain('multiple_choice', 'true_false', 'geo_guesser');
+    expect($registry->registered())->toContain('multiple_choice', 'true_false', 'geo_guesser', 'match_pairs');
 });

@@ -82,6 +82,8 @@
                     @include('question-types.geo-guesser-player')
                 @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'ordering')
                     @include('question-types.ordering-player')
+                @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'match_pairs')
+                    @include('question-types.match-pairs-player')
                 @elseif($currentQuestion && ($currentQuestion['type'] ?? null) === 'true_false')
                     @include('question-types.true-false-player')
                 @elseif($currentQuestion && ! empty($currentQuestion['options']))
@@ -91,17 +93,31 @@
                     @php
                         $colors = ['bg-red-500 hover:bg-red-600', 'bg-blue-500 hover:bg-blue-600', 'bg-yellow-500 hover:bg-yellow-600', 'bg-green-500 hover:bg-green-600'];
                     @endphp
-                    <div class="grid grid-cols-2 gap-3">
-                        @foreach($currentQuestion['options'] as $index => $option)
-                            <button
-                                wire:click="submitAnswer('{{ $option['label'] ?? $option }}')"
-                                x-bind:disabled="expired"
-                                data-test="player-answer-option"
-                                data-answer-label="{{ $option['label'] ?? $option }}"
-                                class="rounded-xl p-8 text-lg font-bold text-white transition disabled:opacity-40 {{ $colors[$index % 4] }}">
-                                {{ $option['label'] ?? $option }}
-                            </button>
-                        @endforeach
+                    <div wire:key="mc-player-{{ $currentQuestion['question_id'] ?? 'q' }}" x-data="choiceAnswer()" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            @foreach($currentQuestion['options'] as $index => $option)
+                                @php $label = $option['label'] ?? $option; @endphp
+                                <button
+                                    type="button"
+                                    x-on:click="choose(@js($label))"
+                                    x-bind:class="selected === @js($label) ? 'ring-4 ring-offset-2 ring-zinc-900 dark:ring-white scale-105' : ''"
+                                    x-bind:disabled="submitted || (typeof expired !== 'undefined' && expired)"
+                                    data-test="player-answer-option"
+                                    data-answer-label="{{ $label }}"
+                                    class="rounded-xl p-8 text-lg font-bold text-white transition disabled:opacity-40 {{ $colors[$index % 4] }}">
+                                    {{ $label }}
+                                </button>
+                            @endforeach
+                        </div>
+
+                        <button
+                            type="button"
+                            x-on:click="submit()"
+                            x-bind:disabled="selected === null || submitted || (typeof expired !== 'undefined' && expired)"
+                            data-test="multiple-choice-submit"
+                            class="w-full rounded-xl bg-blue-600 px-4 py-3 text-lg font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
+                            {{ __('Submit answer') }}
+                        </button>
                     </div>
                     @endif
                 @endif

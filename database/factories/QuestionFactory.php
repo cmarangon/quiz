@@ -62,4 +62,30 @@ class QuestionFactory extends Factory
             'correct_answer' => ['Step A', 'Step B', 'Step C', 'Step D'],
         ]);
     }
+
+    public function matchPairs(): static
+    {
+        return $this->state(fn () => [
+            'type' => 'match_pairs',
+            'body' => 'Match each country to its capital.',
+            'options' => [
+                'left' => [
+                    ['kind' => 'text', 'value' => 'France'],
+                    ['kind' => 'text', 'value' => 'Japan'],
+                    ['kind' => 'text', 'value' => 'Egypt'],
+                    ['kind' => 'text', 'value' => 'Brazil'],
+                ],
+                // Shuffled relative to "left" so the broadcast display order
+                // never reveals the correct pairing.
+                'right' => [
+                    ['kind' => 'text', 'value' => 'Cairo'],
+                    ['kind' => 'text', 'value' => 'Paris'],
+                    ['kind' => 'text', 'value' => 'Brasilia'],
+                    ['kind' => 'text', 'value' => 'Tokyo'],
+                ],
+            ],
+            // correct_answer[leftIndex] = rightIndex
+            'correct_answer' => [1, 3, 0, 2],
+        ]);
+    }
 }

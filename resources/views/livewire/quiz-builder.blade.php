@@ -110,6 +110,7 @@
                                             <option value="true_false">{{ __('True / False') }}</option>
                                             <option value="ordering">{{ __('Ordering') }}</option>
                                             <option value="geo_guesser">{{ __('Geo Guesser') }}</option>
+                                            <option value="match_pairs">{{ __('Match Pairs') }}</option>
                                         </select>
                                     </div>
                                     <div>
@@ -195,6 +196,50 @@
                                     <p class="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{{ __('Leave blank to use the quiz defaults. Guesses within the radius earn full points; points decay to zero at the max distance.') }}</p>
                                     @error('questionGeoThresholdKm') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                                     @error('questionGeoMaxDistanceKm') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                </div>
+                                @endif
+
+                                @if($questionType === 'match_pairs')
+                                <div data-test="match-pairs-form" class="space-y-2">
+                                    <label class="mb-1 block text-sm font-medium dark:text-neutral-300">{{ __('Pairs (left matches right)') }}</label>
+                                    @foreach($questionPairs as $index => $pair)
+                                        <div class="grid grid-cols-2 gap-2" wire:key="match-pair-{{ $index }}">
+                                            @foreach(['left', 'right'] as $side)
+                                                <div class="space-y-1 rounded-md border border-neutral-200 p-2 dark:border-neutral-700">
+                                                    <div class="flex gap-1">
+                                                        <flux:button type="button" size="xs" :variant="$pair[$side]['kind'] === 'text' ? 'primary' : 'ghost'"
+                                                                      wire:click="$set('questionPairs.{{ $index }}.{{ $side }}.kind', 'text')"
+                                                                      data-test="match-pair-kind-text-{{ $index }}-{{ $side }}">
+                                                            {{ __('Text') }}
+                                                        </flux:button>
+                                                        <flux:button type="button" size="xs" :variant="$pair[$side]['kind'] === 'image' ? 'primary' : 'ghost'"
+                                                                      wire:click="$set('questionPairs.{{ $index }}.{{ $side }}.kind', 'image')"
+                                                                      data-test="match-pair-kind-image-{{ $index }}-{{ $side }}">
+                                                            {{ __('Image') }}
+                                                        </flux:button>
+                                                    </div>
+
+                                                    @if($pair[$side]['kind'] === 'image')
+                                                        @if($pair[$side]['existingImage'] && ! $pair[$side]['image'])
+                                                            <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($pair[$side]['existingImage']) }}"
+                                                                 class="h-12 w-12 rounded object-cover" alt="" />
+                                                        @endif
+                                                        <input type="file"
+                                                               wire:model="questionPairs.{{ $index }}.{{ $side }}.image"
+                                                               data-test="match-pair-image-{{ $index }}-{{ $side }}"
+                                                               class="block text-xs" />
+                                                        @error("questionPairs.$index.$side.image") <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                                    @else
+                                                        <flux:input wire:model.live.debounce.300ms="questionPairs.{{ $index }}.{{ $side }}.text"
+                                                                    :placeholder="$side === 'left' ? __('Left :n', ['n' => $index + 1]) : __('Right :n', ['n' => $index + 1])"
+                                                                    size="sm" />
+                                                        @error("questionPairs.$index.$side.text") <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endforeach
+                                    @error('questionPairs') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                                 </div>
                                 @endif
 
