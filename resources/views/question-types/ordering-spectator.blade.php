@@ -38,8 +38,8 @@
                     @endforeach
                 </ol>
 
-                @if(! empty($scores ?? []))
-                    <div class="qz-question" style="text-align:left">
+                @if(($showScoreboard ?? true) && ! empty($scores ?? []))
+                    <div class="qz-question mx-auto max-w-3xl" style="text-align:left">
                         <h3 class="qz-qlabel" style="margin-bottom:10px">{{ __('Leaderboard') }}</h3>
                         <ol class="space-y-2">
                             @foreach($scores as $entry)
@@ -94,7 +94,7 @@
                 @endforeach
             </ol>
 
-            @if(! empty($scores ?? []))
+            @if(($showScoreboard ?? true) && ! empty($scores ?? []))
                 <div class="mx-auto max-w-3xl rounded-xl border border-zinc-200 dark:border-zinc-700 p-8">
                     <h3 class="text-3xl font-semibold text-zinc-900 dark:text-white mb-6">{{ __('Leaderboard') }}</h3>
                     <ol class="space-y-4">
