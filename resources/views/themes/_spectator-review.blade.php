@@ -16,10 +16,11 @@
                 @php
                     $label = $option['label'] ?? $option;
                     $isCorrect = $label === $correctAnswer;
+                    $displayLabel = ($currentQuestion['type'] ?? null) === 'true_false' ? __($label) : $label;
                 @endphp
                 <div class="qz-option {{ $letters[$index % 4] }} {{ $isCorrect ? 'is-correct' : 'is-dim' }}">
                     <span class="qz-key">{{ strtoupper($letters[$index % 4]) }}</span>
-                    {{ $label }}
+                    {{ $displayLabel }}
                     @if($isCorrect)<span class="ml-auto">&#10003;</span>@endif
                 </div>
             @endforeach
