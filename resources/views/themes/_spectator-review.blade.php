@@ -16,17 +16,18 @@
                 @php
                     $label = $option['label'] ?? $option;
                     $isCorrect = $label === $correctAnswer;
+                    $displayLabel = ($currentQuestion['type'] ?? null) === 'true_false' ? __($label) : $label;
                 @endphp
                 <div class="qz-option {{ $letters[$index % 4] }} {{ $isCorrect ? 'is-correct' : 'is-dim' }}">
                     <span class="qz-key">{{ strtoupper($letters[$index % 4]) }}</span>
-                    {{ $label }}
+                    {{ $displayLabel }}
                     @if($isCorrect)<span class="ml-auto">&#10003;</span>@endif
                 </div>
             @endforeach
         </div>
 
-        @if(! empty($scores))
-            <div class="qz-question" style="text-align:left">
+        @if($showScoreboard && ! empty($scores))
+            <div class="qz-question mx-auto max-w-3xl" style="text-align:left">
                 <h3 class="qz-qlabel" style="margin-bottom:10px">{{ __('Leaderboard') }}</h3>
                 <ol class="space-y-2">
                     @foreach($scores as $entry)

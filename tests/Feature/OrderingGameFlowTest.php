@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\SubmitAnswer;
+use App\Livewire\SpectatorScreen;
 use App\Models\Category;
 use App\Models\GameSession;
 use App\Models\Player;
@@ -9,6 +10,7 @@ use App\Models\Quiz;
 use App\Models\User;
 use App\Services\GameService;
 use Illuminate\Support\Facades\Event;
+use Livewire\Livewire;
 
 beforeEach(function () {
     Event::fake();
@@ -80,4 +82,55 @@ test('partially correct order earns zero points (all-or-nothing)', function () {
     expect($result['is_correct'])->toBeFalse();
     expect($result['points_earned'])->toBe(0);
     expect($this->player->fresh()->score)->toBe(0);
+});
+
+test('spectator hides the ordering review leaderboard when show_scoreboard is false', function () {
+    $this->quiz->update(['settings' => ['show_scoreboard' => false]]);
+
+    Livewire::test(SpectatorScreen::class, ['code' => $this->session->join_code])
+        ->call('onQuestionStarted', [
+            'question_id' => $this->question->id,
+            'question_index' => 0,
+            'body' => $this->question->body,
+            'type' => 'ordering',
+            'category_name' => null,
+            'theme' => 'science',
+            'time_limit_seconds' => $this->question->time_limit_seconds,
+            'options' => $this->question->options,
+        ])
+        ->call('onQuestionEnded', [
+            'question_id' => $this->question->id,
+            'correct_answer' => $this->question->correct_answer,
+            'scores' => [['nickname' => 'Sorter', 'score' => 100]],
+            'guesses' => [],
+            'distribution' => [],
+        ])
+        ->assertSet('phase', 'review')
+        ->assertDontSee(__('Leaderboard'));
+});
+
+test('spectator shows the ordering review leaderboard narrowed when show_scoreboard is true', function () {
+    $this->quiz->update(['settings' => ['show_scoreboard' => true]]);
+
+    Livewire::test(SpectatorScreen::class, ['code' => $this->session->join_code])
+        ->call('onQuestionStarted', [
+            'question_id' => $this->question->id,
+            'question_index' => 0,
+            'body' => $this->question->body,
+            'type' => 'ordering',
+            'category_name' => null,
+            'theme' => 'science',
+            'time_limit_seconds' => $this->question->time_limit_seconds,
+            'options' => $this->question->options,
+        ])
+        ->call('onQuestionEnded', [
+            'question_id' => $this->question->id,
+            'correct_answer' => $this->question->correct_answer,
+            'scores' => [['nickname' => 'Sorter', 'score' => 100]],
+            'guesses' => [],
+            'distribution' => [],
+        ])
+        ->assertSet('phase', 'review')
+        ->assertSee(__('Leaderboard'))
+        ->assertSeeHtml('max-w-3xl');
 });

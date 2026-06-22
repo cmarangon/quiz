@@ -15,9 +15,10 @@
         @if(! empty($currentQuestion['options']))
             <div class="qz-options">
                 @foreach($currentQuestion['options'] as $index => $option)
+                    @php $optionLabel = $option['label'] ?? $option; @endphp
                     <div class="qz-option {{ $letters[$index % 4] }}">
                         <span class="qz-key">{{ strtoupper($letters[$index % 4]) }}</span>
-                        {{ $option['label'] ?? $option }}
+                        {{ ($currentQuestion['type'] ?? null) === 'true_false' ? __($optionLabel) : $optionLabel }}
                     </div>
                 @endforeach
             </div>

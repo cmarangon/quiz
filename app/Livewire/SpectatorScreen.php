@@ -34,6 +34,8 @@ class SpectatorScreen extends Component
 
     public array $leaderboard = [];
 
+    public bool $showScoreboard = true;
+
     public string $phase = 'lobby';
 
     public mixed $correctAnswer = null;
@@ -52,6 +54,7 @@ class SpectatorScreen extends Component
         $this->session = GameSession::where('join_code', strtoupper($code))->firstOrFail();
         $this->session->loadMissing('quiz');
         $this->quizTitle = $this->session->quiz->title ?? '';
+        $this->showScoreboard = $this->session->quiz->settings['show_scoreboard'] ?? true;
         $this->joinUrl = route('game.join', $this->session->join_code);
         $this->qrCodeSvg = QrCodeService::svg($this->joinUrl, 250);
         $this->loadPlayers();

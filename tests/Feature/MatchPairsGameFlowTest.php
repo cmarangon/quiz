@@ -138,3 +138,54 @@ test('spectator screen renders the correct pairs during the review phase', funct
         ->assertSet('phase', 'review')
         ->assertSeeHtml('data-test="match-pairs-correct-pairs"');
 });
+
+test('spectator hides the match pairs review leaderboard when show_scoreboard is false', function () {
+    $this->quiz->update(['settings' => ['show_scoreboard' => false]]);
+
+    Livewire::test(SpectatorScreen::class, ['code' => $this->session->join_code])
+        ->call('onQuestionStarted', [
+            'question_id' => $this->question->id,
+            'question_index' => 0,
+            'body' => $this->question->body,
+            'type' => 'match_pairs',
+            'category_name' => null,
+            'theme' => 'science',
+            'time_limit_seconds' => $this->question->time_limit_seconds,
+            'options' => $this->question->options,
+        ])
+        ->call('onQuestionEnded', [
+            'question_id' => $this->question->id,
+            'correct_answer' => $this->question->correct_answer,
+            'scores' => [['nickname' => 'Matcher', 'score' => 100]],
+            'guesses' => [],
+            'distribution' => [],
+        ])
+        ->assertSet('phase', 'review')
+        ->assertDontSee(__('Leaderboard'));
+});
+
+test('spectator shows the match pairs review leaderboard narrowed when show_scoreboard is true', function () {
+    $this->quiz->update(['settings' => ['show_scoreboard' => true]]);
+
+    Livewire::test(SpectatorScreen::class, ['code' => $this->session->join_code])
+        ->call('onQuestionStarted', [
+            'question_id' => $this->question->id,
+            'question_index' => 0,
+            'body' => $this->question->body,
+            'type' => 'match_pairs',
+            'category_name' => null,
+            'theme' => 'science',
+            'time_limit_seconds' => $this->question->time_limit_seconds,
+            'options' => $this->question->options,
+        ])
+        ->call('onQuestionEnded', [
+            'question_id' => $this->question->id,
+            'correct_answer' => $this->question->correct_answer,
+            'scores' => [['nickname' => 'Matcher', 'score' => 100]],
+            'guesses' => [],
+            'distribution' => [],
+        ])
+        ->assertSet('phase', 'review')
+        ->assertSee(__('Leaderboard'))
+        ->assertSeeHtml('max-w-3xl');
+});

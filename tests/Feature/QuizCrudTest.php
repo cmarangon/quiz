@@ -34,6 +34,52 @@ test('user can create a quiz', function () {
     expect(Quiz::where('title', 'New Quiz Title')->where('user_id', $user->id)->exists())->toBeTrue();
 });
 
+test('user can disable the scoreboard when creating a quiz', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class)
+        ->set('title', 'No Scoreboard Quiz')
+        ->set('showScoreboard', false)
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $quiz = Quiz::where('title', 'No Scoreboard Quiz')->firstOrFail();
+    expect($quiz->settings['show_scoreboard'])->toBeFalse();
+});
+
+test('scoreboard setting defaults to true for a brand new quiz form', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class)
+        ->assertSet('showScoreboard', true);
+});
+
+test('editing a quiz loads its scoreboard setting', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create([
+        'user_id' => $user->id,
+        'settings' => ['show_scoreboard' => false],
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->assertSet('showScoreboard', false);
+});
+
+test('editing a quiz without the scoreboard setting defaults it to true', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create([
+        'user_id' => $user->id,
+        'settings' => ['enable_time_bonus' => true],
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->assertSet('showScoreboard', true);
+});
+
 test('quiz title is required', function () {
     $user = User::factory()->create();
 

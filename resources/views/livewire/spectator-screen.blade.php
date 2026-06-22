@@ -194,8 +194,8 @@
                 :correctAnswer="$correctAnswer"
                 :isTrueFalse="($currentQuestion['type'] ?? null) === 'true_false'" />
 
-            @if(! empty($scores))
-                <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 p-10">
+            @if($showScoreboard && ! empty($scores))
+                <div class="mx-auto max-w-3xl rounded-xl border border-zinc-200 dark:border-zinc-700 p-10">
                     <h3 class="text-[clamp(2rem,3.6vw,3.5rem)] font-semibold text-zinc-900 dark:text-white mb-6">{{ __('Leaderboard') }}</h3>
                     <ol class="space-y-5">
                         @foreach($scores as $entry)
