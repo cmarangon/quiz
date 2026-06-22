@@ -24,6 +24,10 @@
                     <input type="checkbox" wire:model="enableStreaks" class="rounded border-neutral-300 dark:border-neutral-600">
                     {{ __('Enable Streaks') }}
                 </label>
+                <label class="flex items-center gap-2 text-sm dark:text-neutral-300">
+                    <input type="checkbox" wire:model="showScoreboard" class="rounded border-neutral-300 dark:border-neutral-600">
+                    {{ __('Show Scoreboard') }}
+                </label>
             </div>
 
             <div class="flex flex-col gap-2">

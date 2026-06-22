@@ -8,10 +8,10 @@ use App\Models\Quiz;
 use App\Models\User;
 use Livewire\Livewire;
 
-function geoSpectatorSession(): GameSession
+function geoSpectatorSession(array $settings = []): GameSession
 {
     $user = User::factory()->create();
-    $quiz = Quiz::factory()->for($user)->create();
+    $quiz = Quiz::factory()->for($user)->create($settings === [] ? [] : ['settings' => $settings]);
     $category = Category::factory()->for($quiz)->create(['theme' => 'geography', 'name' => 'Geography']);
     Question::factory()->for($category)->geoGuesser()->create();
 
@@ -59,4 +59,33 @@ test('spectator does not leak guesses into the map while the question is live', 
         ->call('onQuestionStarted', geoQuestionPayload())
         ->assertSet('phase', 'question')
         ->assertDontSee('Cartographer', false);
+});
+
+test('spectator hides the geo guesser review leaderboard when show_scoreboard is false', function () {
+    $session = geoSpectatorSession(['show_scoreboard' => false]);
+
+    Livewire::test(SpectatorScreen::class, ['code' => $session->join_code])
+        ->call('onQuestionStarted', geoQuestionPayload())
+        ->call('onQuestionEnded', [
+            'correct_answer' => ['lat' => 10.0, 'lng' => 20.0],
+            'scores' => [['nickname' => 'Cartographer', 'score' => 50]],
+            'guesses' => [],
+        ])
+        ->assertSet('phase', 'review')
+        ->assertDontSee(__('Leaderboard'));
+});
+
+test('spectator shows the geo guesser review leaderboard narrowed when show_scoreboard is true', function () {
+    $session = geoSpectatorSession(['show_scoreboard' => true]);
+
+    Livewire::test(SpectatorScreen::class, ['code' => $session->join_code])
+        ->call('onQuestionStarted', geoQuestionPayload())
+        ->call('onQuestionEnded', [
+            'correct_answer' => ['lat' => 10.0, 'lng' => 20.0],
+            'scores' => [['nickname' => 'Cartographer', 'score' => 50]],
+            'guesses' => [],
+        ])
+        ->assertSet('phase', 'review')
+        ->assertSee(__('Leaderboard'))
+        ->assertSeeHtml('max-w-3xl');
 });
