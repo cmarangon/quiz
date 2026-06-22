@@ -16,6 +16,7 @@ return [
         'background_pattern' => 'molecules',
         'emoji' => '🧪',
         'badge' => '⚗️',
+        'hint' => 'Tap your answer before the reaction completes!',
     ],
     'nature' => [
         'gradient' => 'from-green-900 to-emerald-900',
