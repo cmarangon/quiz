@@ -212,6 +212,114 @@ test('spectator renders the distribution bars on the review screen', function ()
         ->assertSee('1 (50%)');         // one of two answers
 });
 
+test('spectator hides the leaderboard on the default review screen when show_scoreboard is false', function () {
+    $quiz = Quiz::factory()->for($this->user)->create(['settings' => ['show_scoreboard' => false]]);
+    Category::factory()->for($quiz)->create(['order' => 0]);
+    $session = GameSession::factory()->for($quiz)->for($this->user, 'host')->create(['status' => 'playing']);
+
+    $start = [
+        'question_id' => 1,
+        'type' => 'multiple_choice',
+        'theme' => 'default',
+        'body' => 'Pick one?',
+        'options' => [['label' => 'Option A'], ['label' => 'Option B']],
+    ];
+    $end = [
+        'question_id' => 1,
+        'correct_answer' => 'Option A',
+        'scores' => [['nickname' => 'Alice', 'emoji' => '🦊', 'score' => 10]],
+        'guesses' => [],
+        'distribution' => [],
+    ];
+
+    Livewire::test(SpectatorScreen::class, ['code' => $session->join_code])
+        ->call('onQuestionStarted', $start)
+        ->call('onQuestionEnded', $end)
+        ->assertDontSee(__('Leaderboard'));
+});
+
+test('spectator shows the leaderboard on the default review screen when show_scoreboard is true', function () {
+    $quiz = Quiz::factory()->for($this->user)->create(['settings' => ['show_scoreboard' => true]]);
+    Category::factory()->for($quiz)->create(['order' => 0]);
+    $session = GameSession::factory()->for($quiz)->for($this->user, 'host')->create(['status' => 'playing']);
+
+    $start = [
+        'question_id' => 1,
+        'type' => 'multiple_choice',
+        'theme' => 'default',
+        'body' => 'Pick one?',
+        'options' => [['label' => 'Option A'], ['label' => 'Option B']],
+    ];
+    $end = [
+        'question_id' => 1,
+        'correct_answer' => 'Option A',
+        'scores' => [['nickname' => 'Alice', 'emoji' => '🦊', 'score' => 10]],
+        'guesses' => [],
+        'distribution' => [],
+    ];
+
+    Livewire::test(SpectatorScreen::class, ['code' => $session->join_code])
+        ->call('onQuestionStarted', $start)
+        ->call('onQuestionEnded', $end)
+        ->assertSee(__('Leaderboard'))
+        ->assertSeeHtml('max-w-3xl');
+});
+
+test('spectator hides the themed review leaderboard when show_scoreboard is false', function () {
+    $quiz = Quiz::factory()->for($this->user)->create(['settings' => ['show_scoreboard' => false]]);
+    Category::factory()->for($quiz)->create(['order' => 0]);
+    $session = GameSession::factory()->for($quiz)->for($this->user, 'host')->create(['status' => 'playing']);
+
+    $start = [
+        'question_id' => 1,
+        'type' => 'multiple_choice',
+        'theme' => 'science',
+        'body' => 'Pick one?',
+        'options' => [['label' => 'Option A'], ['label' => 'Option B']],
+    ];
+    $end = [
+        'question_id' => 1,
+        'correct_answer' => 'Option A',
+        'scores' => [['nickname' => 'Alice', 'emoji' => '🦊', 'score' => 10]],
+        'guesses' => [],
+        'distribution' => [],
+    ];
+
+    Livewire::test(SpectatorScreen::class, ['code' => $session->join_code])
+        ->set('themeKey', 'science')
+        ->call('onQuestionStarted', $start)
+        ->call('onQuestionEnded', $end)
+        ->assertDontSee(__('Leaderboard'));
+});
+
+test('spectator shows the themed review leaderboard narrowed when show_scoreboard is true', function () {
+    $quiz = Quiz::factory()->for($this->user)->create(['settings' => ['show_scoreboard' => true]]);
+    Category::factory()->for($quiz)->create(['order' => 0]);
+    $session = GameSession::factory()->for($quiz)->for($this->user, 'host')->create(['status' => 'playing']);
+
+    $start = [
+        'question_id' => 1,
+        'type' => 'multiple_choice',
+        'theme' => 'science',
+        'body' => 'Pick one?',
+        'options' => [['label' => 'Option A'], ['label' => 'Option B']],
+    ];
+    $end = [
+        'question_id' => 1,
+        'correct_answer' => 'Option A',
+        'scores' => [['nickname' => 'Alice', 'emoji' => '🦊', 'score' => 10]],
+        'guesses' => [],
+        'distribution' => [],
+    ];
+
+    Livewire::test(SpectatorScreen::class, ['code' => $session->join_code])
+        ->set('themeKey', 'science')
+        ->call('onQuestionStarted', $start)
+        ->call('onQuestionEnded', $end)
+        ->assertSee(__('Leaderboard'))
+        ->assertSeeHtml('max-w-3xl');
+});
+
 test('spectator reads the show_scoreboard setting from the quiz on mount', function () {
     $quiz = Quiz::factory()->for($this->user)->create([
         'settings' => ['show_scoreboard' => false],

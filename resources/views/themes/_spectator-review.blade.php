@@ -26,8 +26,8 @@
             @endforeach
         </div>
 
-        @if(! empty($scores))
-            <div class="qz-question" style="text-align:left">
+        @if($showScoreboard && ! empty($scores))
+            <div class="qz-question mx-auto max-w-3xl" style="text-align:left">
                 <h3 class="qz-qlabel" style="margin-bottom:10px">{{ __('Leaderboard') }}</h3>
                 <ol class="space-y-2">
                     @foreach($scores as $entry)
