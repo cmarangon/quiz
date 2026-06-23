@@ -52,9 +52,9 @@ function escapeHtml(value) {
 function guessIcon(emoji) {
     return L.divIcon({
         className: 'geo-guess-marker',
-        html: `<div style="display:grid;place-items:center;width:34px;height:34px;border-radius:9999px;background:rgba(255,255,255,.92);border:2px solid #1f2937;box-shadow:0 1px 4px rgba(0,0,0,.45);font-size:20px;line-height:1;">${escapeHtml(emoji || '📍')}</div>`,
-        iconSize: [34, 34],
-        iconAnchor: [17, 17],
+        html: `<div style="display:grid;place-items:center;width:52px;height:52px;border-radius:9999px;background:rgba(255,255,255,.92);border:3px solid #1f2937;box-shadow:0 2px 6px rgba(0,0,0,.45);font-size:32px;line-height:1;">${escapeHtml(emoji || '📍')}</div>`,
+        iconSize: [52, 52],
+        iconAnchor: [26, 26],
     });
 }
 
@@ -171,10 +171,12 @@ export function geoMap(config) {
             }
         },
 
-        // Spectator review: plot every player's pin as their avatar emoji and
-        // frame the map so all guesses and the correct location are visible.
+        // Spectator review: plot every player's pin as their avatar emoji,
+        // draw a line from each guess to the correct location, and frame the
+        // map so all guesses and the correct location are visible.
         renderGuesses() {
             const points = [];
+            const correct = config.correct;
 
             config.guesses.forEach((g) => {
                 if (!Number.isFinite(g.lat) || !Number.isFinite(g.lng)) {
@@ -189,6 +191,16 @@ export function geoMap(config) {
                     marker.bindTooltip(escapeHtml(g.nickname), {
                         permanent: false,
                     });
+                }
+
+                if (correct) {
+                    L.polyline(
+                        [
+                            [g.lat, g.lng],
+                            [correct.lat, correct.lng],
+                        ],
+                        { color: '#ef4444', weight: 2, dashArray: '6 6', opacity: 0.7 },
+                    ).addTo(this.map);
                 }
 
                 points.push([g.lat, g.lng]);
