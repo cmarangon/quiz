@@ -82,7 +82,7 @@
                                 <li class="flex items-center justify-between gap-2">
                                     <span class="flex items-start gap-2">
                                         <span class="mt-1 text-neutral-400">&bull;</span>
-                                        <span>{{ $question->body }} ({{ $question->points }} {{ __('pts') }}, {{ $question->time_limit_seconds }}s)</span>
+                                        <span>{{ $question->body }} ({{ $question->points }} {{ __('pts') }}, {{ $question->effectiveTimeLimitSeconds() }}s{{ $question->time_limit_seconds === null ? ', '.__('Default') : '' }})</span>
                                     </span>
                                     <span class="flex items-center gap-1">
                                         <flux:button wire:click="editQuestion({{ $question->id }})" size="xs" variant="ghost">
@@ -126,9 +126,11 @@
                                         <flux:input wire:model="questionPoints" :label="__('Points')" type="number" min="1" size="sm" />
                                     </div>
                                     <div>
-                                        <flux:input wire:model="questionTimeLimit" :label="__('Time (seconds)')" type="number" min="5" size="sm" />
+                                        <flux:input wire:model="questionTimeLimit" :label="__('Time (seconds)')" type="number" min="5" size="sm" :placeholder="__('Default')" />
+                                        @error('questionTimeLimit') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                                     </div>
                                 </div>
+                                <p class="text-xs text-neutral-500 dark:text-neutral-400">{{ __('Leave blank to use the quiz default.') }}</p>
 
                                 @if($questionType === 'multiple_choice' || $questionType === 'ordering')
                                     <div>

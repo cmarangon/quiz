@@ -62,7 +62,7 @@ class QuizBuilder extends Component
 
     public int $questionPoints = 10;
 
-    public int $questionTimeLimit = 30;
+    public string $questionTimeLimit = '';
 
     public function mount(?Quiz $quiz = null): void
     {
@@ -170,7 +170,7 @@ class QuizBuilder extends Component
         $this->questionBody = $question->body;
         $this->questionType = $question->type;
         $this->questionPoints = $question->points;
-        $this->questionTimeLimit = $question->time_limit_seconds;
+        $this->questionTimeLimit = $question->time_limit_seconds !== null ? (string) $question->time_limit_seconds : '';
 
         if ($question->type === 'multiple_choice') {
             $options = $question->options ?: [];
@@ -250,7 +250,7 @@ class QuizBuilder extends Component
             'questionBody' => 'required|min:3',
             'questionType' => 'required|in:multiple_choice,true_false,ordering,geo_guesser,match_pairs',
             'questionPoints' => 'required|integer|min:1',
-            'questionTimeLimit' => 'required|integer|min:5',
+            'questionTimeLimit' => 'nullable|integer|min:5',
         ];
 
         if ($this->questionType === 'multiple_choice' || $this->questionType === 'ordering') {
@@ -304,6 +304,8 @@ class QuizBuilder extends Component
             return;
         }
 
+        $timeLimitSeconds = $this->questionTimeLimit === '' ? null : (int) $this->questionTimeLimit;
+
         [$options, $correctAnswer] = $this->buildQuestionPayload();
 
         if ($this->editingQuestionId) {
@@ -324,7 +326,7 @@ class QuizBuilder extends Component
                 'options' => $options,
                 'correct_answer' => $correctAnswer,
                 'points' => $this->questionPoints,
-                'time_limit_seconds' => $this->questionTimeLimit,
+                'time_limit_seconds' => $timeLimitSeconds,
             ]);
         } else {
             $category = Category::findOrFail($this->addingQuestionToCategoryId);
@@ -341,7 +343,7 @@ class QuizBuilder extends Component
                 'options' => $options,
                 'correct_answer' => $correctAnswer,
                 'points' => $this->questionPoints,
-                'time_limit_seconds' => $this->questionTimeLimit,
+                'time_limit_seconds' => $timeLimitSeconds,
                 'order' => $nextOrder,
             ]);
         }
@@ -609,7 +611,7 @@ class QuizBuilder extends Component
         $this->questionGeoMaxDistanceKm = '';
         $this->questionPairs = $this->defaultQuestionPairs();
         $this->questionPoints = 10;
-        $this->questionTimeLimit = 30;
+        $this->questionTimeLimit = '';
     }
 
     public function render()

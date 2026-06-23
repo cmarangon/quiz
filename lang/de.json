@@ -211,6 +211,7 @@
     "Item": "Element",
     "Items (enter in the correct order)": "Elemente (in der richtigen Reihenfolge eingeben)",
     "Latitude": "Breitengrad",
+    "Leave blank to use the quiz default.": "Leer lassen, um den Quiz-Standardwert zu verwenden.",
     "Leave blank to use the quiz defaults. Guesses within the radius earn full points; points decay to zero at the max distance.": "Leer lassen, um die Quiz-Standardwerte zu verwenden. Schätzungen innerhalb des Radius erhalten volle Punkte; die Punkte sinken bei maximaler Entfernung auf null.",
     "Log in to your account": "Melde dich bei deinem Konto an",
     "Log out": "Abmelden",
