@@ -224,3 +224,21 @@ test('timeout records the inherited time limit as the time taken', function () {
 
     expect($answer->time_taken_ms)->toBe(30000);
 });
+
+test('QuestionStarted broadcasts the inherited quiz default when the question has no explicit limit', function () {
+    $quiz = Quiz::factory()->for($this->user)->create([
+        'settings' => ['default_question_duration_seconds' => 15],
+    ]);
+    $category = Category::factory()->for($quiz)->create(['order' => 0]);
+    $question = Question::factory()->for($category)->create([
+        'order' => 0,
+        'time_limit_seconds' => null,
+    ]);
+    $session = GameSession::factory()->for($quiz)->for($this->user, 'host')->create(['status' => 'waiting']);
+
+    app(GameService::class)->start($session);
+
+    $payload = (new QuestionStarted($session->fresh(), $question))->broadcastWith();
+
+    expect($payload['time_limit_seconds'])->toBe(15);
+});

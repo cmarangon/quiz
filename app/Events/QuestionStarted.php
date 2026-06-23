@@ -33,7 +33,7 @@ class QuestionStarted implements ShouldBroadcastNow
             'body' => $this->question->body,
             'type' => $this->question->type,
             'options' => $this->question->options,
-            'time_limit_seconds' => $this->question->time_limit_seconds,
+            'time_limit_seconds' => $this->question->effectiveTimeLimitSeconds(),
             'started_at' => $this->session->current_question_started_at?->getTimestampMs(),
             'question_index' => $this->session->current_question_index,
             'theme' => $this->question->category?->theme ?? 'default',
