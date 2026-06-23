@@ -45,7 +45,7 @@ class MatchPairsType implements QuestionTypeInterface
         if (! $timeBonus) {
             return $base;
         }
-        $limitMs = $question->time_limit_seconds * 1000;
+        $limitMs = $question->effectiveTimeLimitSeconds() * 1000;
         $remaining = max(0, $limitMs - $timeTakenMs);
 
         return (int) round($base * ($remaining / $limitMs));

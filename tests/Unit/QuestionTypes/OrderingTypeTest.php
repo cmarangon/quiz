@@ -2,6 +2,9 @@
 
 use App\Models\Question;
 use App\QuestionTypes\OrderingType;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
 
 function orderingQuestion(array $overrides = []): Question
 {
@@ -111,4 +114,15 @@ test('returns correct livewire component names', function () {
 
     expect($type->renderSpectatorComponent())->toBe('question-types.ordering-spectator');
     expect($type->renderPlayerComponent())->toBe('question-types.ordering-player');
+});
+
+test('calculatePoints falls back to the quiz default when time limit is not set', function () {
+    $quiz = \App\Models\Quiz::factory()->create([
+        'settings' => ['default_question_duration_seconds' => 10],
+    ]);
+    $category = \App\Models\Category::factory()->for($quiz)->create();
+    $type = new OrderingType;
+    $question = orderingQuestion(['category_id' => $category->id, 'time_limit_seconds' => null]);
+
+    expect($type->calculatePoints($question, 5000, ['enable_time_bonus' => true]))->toBe(50);
 });

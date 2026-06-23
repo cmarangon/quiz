@@ -2,6 +2,9 @@
 
 use App\Models\Question;
 use App\QuestionTypes\TrueFalseType;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
 
 test('validates correct answer as boolean', function () {
     $type = new TrueFalseType;
@@ -32,4 +35,15 @@ test('returns correct livewire component names', function () {
     $type = new TrueFalseType;
     expect($type->renderSpectatorComponent())->toBe('question-types.true-false-spectator');
     expect($type->renderPlayerComponent())->toBe('question-types.true-false-player');
+});
+
+test('calculatePoints falls back to the quiz default when time limit is not set', function () {
+    $quiz = \App\Models\Quiz::factory()->create([
+        'settings' => ['default_question_duration_seconds' => 10],
+    ]);
+    $category = \App\Models\Category::factory()->for($quiz)->create();
+    $type = new TrueFalseType;
+    $question = Question::factory()->for($category)->create(['points' => 100, 'time_limit_seconds' => null, 'correct_answer' => 'True']);
+
+    expect($type->calculatePoints($question, 5000, ['enable_time_bonus' => true]))->toBe(50);
 });
