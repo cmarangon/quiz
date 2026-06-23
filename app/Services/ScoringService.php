@@ -37,7 +37,7 @@ class ScoringService
         $timeBonusEnabled = (bool) ($settings['enable_time_bonus'] ?? true);
         $timeFactor = 1.0;
         if ($timeBonusEnabled) {
-            $limitMs = $question->time_limit_seconds * 1000;
+            $limitMs = $question->effectiveTimeLimitSeconds() * 1000;
             $remaining = max(0, $limitMs - $timeTakenMs);
             $timeFactor = $limitMs > 0 ? $remaining / $limitMs : 0.0;
         }

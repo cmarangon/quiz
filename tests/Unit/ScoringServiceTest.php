@@ -153,3 +153,23 @@ test('breakdown reflects disabled time bonus and streaks', function () {
         ->and($bd['speed_points'])->toBe(100)
         ->and($bd['total'])->toBe(100);
 });
+
+test('time bonus falls back to the quiz default when the question has no explicit limit', function () {
+    // Create a partial mock question that preserves real behavior but mocks relations.
+    $question = \Mockery::mock(Question::class)->makePartial();
+    $question->points = 10;
+    $question->time_limit_seconds = null;
+
+    // Create real quiz and category as simple objects for the relation chain.
+    $quiz = (object) ['settings' => ['default_question_duration_seconds' => 10]];
+    $category = (object) ['quiz' => $quiz];
+
+    $question->category = $category;
+
+    $service = new ScoringService;
+    $settings = ['enable_time_bonus' => true, 'enable_streaks' => false];
+
+    // Inherited 10s limit, answered at 5s -> half the time left -> half points.
+    $points = $service->calculate($question, timeTakenMs: 5000, streak: 0, settings: $settings);
+    expect($points)->toBe(5);
+});
