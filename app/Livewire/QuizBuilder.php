@@ -32,6 +32,8 @@ class QuizBuilder extends Component
 
     public string $presentationStyle = 'party-pop';
 
+    public int $defaultQuestionDuration = 30;
+
     public string $newCategoryName = '';
 
     public string $newCategoryTheme = '';
@@ -76,6 +78,7 @@ class QuizBuilder extends Component
             $this->enableStreaks = $quiz->settings['enable_streaks'] ?? true;
             $this->showScoreboard = $quiz->settings['show_scoreboard'] ?? true;
             $this->presentationStyle = $quiz->settings['presentation_style'] ?? 'party-pop';
+            $this->defaultQuestionDuration = $quiz->settings['default_question_duration_seconds'] ?? 30;
         }
     }
 
@@ -84,6 +87,7 @@ class QuizBuilder extends Component
         $this->validate([
             'title' => 'required|min:3',
             'presentationStyle' => ['required', Rule::in(['party-pop', 'game-show', 'bright-bouncy'])],
+            'defaultQuestionDuration' => 'required|integer|min:5',
         ]);
 
         $data = [
@@ -94,6 +98,7 @@ class QuizBuilder extends Component
                 'enable_streaks' => $this->enableStreaks,
                 'show_scoreboard' => $this->showScoreboard,
                 'presentation_style' => $this->presentationStyle,
+                'default_question_duration_seconds' => $this->defaultQuestionDuration,
             ],
         ];
 

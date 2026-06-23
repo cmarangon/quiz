@@ -50,6 +50,11 @@
             </div>
 
             <div>
+                <flux:input wire:model="defaultQuestionDuration" :label="__('Default question duration (seconds)')" type="number" min="5" size="sm" />
+                @error('defaultQuestionDuration') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+            </div>
+
+            <div>
                 <flux:button wire:click="save" variant="primary">
                     {{ $this->quiz ? __('Update Quiz') : __('Create Quiz') }}
                 </flux:button>
