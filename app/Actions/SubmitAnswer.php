@@ -43,7 +43,7 @@ class SubmitAnswer
         $question = $session->quiz->questions()->findOrFail($questionId);
 
         $gracePeriodMs = 500;
-        $timeLimitMs = $question->time_limit_seconds * 1000 + $gracePeriodMs;
+        $timeLimitMs = $question->effectiveTimeLimitSeconds() * 1000 + $gracePeriodMs;
         if ($timeTakenMs > $timeLimitMs) {
             throw new LogicException('Answer submitted after time limit.');
         }
@@ -139,7 +139,7 @@ class SubmitAnswer
                     'question_id' => $questionId,
                     'answer' => null,
                     'is_correct' => false,
-                    'time_taken_ms' => $question->time_limit_seconds * 1000,
+                    'time_taken_ms' => $question->effectiveTimeLimitSeconds() * 1000,
                     'points_earned' => 0,
                 ]);
 

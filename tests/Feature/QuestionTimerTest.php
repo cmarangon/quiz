@@ -189,3 +189,38 @@ test('player answering screen renders the cartoony countdown', function () {
         ->assertSeeHtml('data-test="question-timer"')
         ->assertSeeHtml('questionTimer(');
 });
+
+test('execute rejects an answer submitted after the inherited time limit', function () {
+    $question = Question::factory()->for($this->category)->create([
+        'order' => 1,
+        'correct_answer' => 'Option A',
+        'time_limit_seconds' => null,
+    ]);
+    app(GameService::class)->start($this->session);
+
+    expect(fn () => app(SubmitAnswer::class)->execute(
+        $this->session->fresh(),
+        $this->player,
+        $question->id,
+        'Option A',
+        30501, // inherited 30s limit + 500ms grace, exceeded by 1ms
+    ))->toThrow(LogicException::class, 'Answer submitted after time limit.');
+});
+
+test('timeout records the inherited time limit as the time taken', function () {
+    Event::fake([PlayerAnswered::class]);
+    $question = Question::factory()->for($this->category)->create([
+        'order' => 1,
+        'correct_answer' => 'Option A',
+        'time_limit_seconds' => null,
+    ]);
+    app(GameService::class)->start($this->session);
+
+    app(SubmitAnswer::class)->timeout($this->session->fresh(), $this->player, $question->id);
+
+    $answer = PlayerAnswer::where('player_id', $this->player->id)
+        ->where('question_id', $question->id)
+        ->first();
+
+    expect($answer->time_taken_ms)->toBe(30000);
+});
