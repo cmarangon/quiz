@@ -2,6 +2,9 @@
 
 use App\Models\Question;
 use App\Services\ScoringService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
 
 test('full points when time bonus disabled', function () {
     $service = new ScoringService;
@@ -155,19 +158,14 @@ test('breakdown reflects disabled time bonus and streaks', function () {
 });
 
 test('time bonus falls back to the quiz default when the question has no explicit limit', function () {
-    // Create a partial mock question that preserves real behavior but mocks relations.
-    $question = \Mockery::mock(Question::class)->makePartial();
-    $question->points = 10;
-    $question->time_limit_seconds = null;
-
-    // Create real quiz and category as simple objects for the relation chain.
-    $quiz = (object) ['settings' => ['default_question_duration_seconds' => 10]];
-    $category = (object) ['quiz' => $quiz];
-
-    $question->category = $category;
+    $quiz = \App\Models\Quiz::factory()->create([
+        'settings' => ['enable_time_bonus' => true, 'enable_streaks' => false, 'default_question_duration_seconds' => 10],
+    ]);
+    $category = \App\Models\Category::factory()->for($quiz)->create();
+    $question = Question::factory()->for($category)->create(['points' => 10, 'time_limit_seconds' => null]);
 
     $service = new ScoringService;
-    $settings = ['enable_time_bonus' => true, 'enable_streaks' => false];
+    $settings = $quiz->settings;
 
     // Inherited 10s limit, answered at 5s -> half the time left -> half points.
     $points = $service->calculate($question, timeTakenMs: 5000, streak: 0, settings: $settings);
