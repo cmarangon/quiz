@@ -58,4 +58,11 @@ class Question extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function effectiveTimeLimitSeconds(): int
+    {
+        return $this->time_limit_seconds
+            ?? $this->category->quiz->settings['default_question_duration_seconds']
+            ?? 30;
+    }
 }
