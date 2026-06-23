@@ -246,8 +246,8 @@
             </div>
 
             <div class="qz-result__inner">
-                <p class="qz-result__kicker">{{ __('And the champion is') }}</p>
                 <h1 class="qz-result__title" data-test="spectator-game-over">{{ __('Game Over!') }}</h1>
+                <p class="qz-result__kicker">{{ __('And the champion is') }}</p>
 
                 @if($champion)
                     <div class="qz-champion">
