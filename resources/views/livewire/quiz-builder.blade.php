@@ -32,18 +32,71 @@
 
             <div class="flex flex-col gap-2">
                 <span class="text-sm font-medium text-neutral-700 dark:text-neutral-300">{{ __('Presentation style') }}</span>
-                <div class="flex flex-wrap gap-2" data-test="presentation-style-picker">
-                    @foreach(['party-pop' => 'Party Pop', 'game-show' => 'Game Show', 'bright-bouncy' => 'Bright & Bouncy'] as $key => $label)
+                @php
+                $styleConfigs = [
+                    'party-pop' => [
+                        'label'   => 'Party Pop',
+                        'swatch'  => 'linear-gradient(160deg, #3b0764, #1e1b4b 55%, #0f172a)',
+                        'accent'  => '#f472b6',
+                        'blobs'   => [
+                            ['background' => 'radial-gradient(circle at 30% 30%, #f472b6, #db2777)', 'style' => 'width:52px;height:52px;top:-14px;right:-14px;opacity:.55;'],
+                            ['background' => 'radial-gradient(circle at 30% 30%, #5eead4, #0d9488)',  'style' => 'width:36px;height:36px;bottom:18px;left:-10px;opacity:.45;'],
+                        ],
+                    ],
+                    'game-show' => [
+                        'label'   => 'Game Show',
+                        'swatch'  => 'radial-gradient(ellipse at top, #1f2937, #0b0f1a 70%)',
+                        'accent'  => '#fbbf24',
+                        'blobs'   => [
+                            ['background' => 'radial-gradient(circle, rgba(251,191,36,.4), transparent 60%)', 'style' => 'width:100px;height:80px;top:-30px;left:50%;transform:translateX(-50%);'],
+                        ],
+                    ],
+                    'bright-bouncy' => [
+                        'label'   => 'Bright & Bouncy',
+                        'swatch'  => 'linear-gradient(165deg, #0f766e, #0e7490 50%, #1e3a8a)',
+                        'accent'  => '#5eead4',
+                        'blobs'   => [
+                            ['background' => 'rgba(255,255,255,.12)', 'style' => 'width:32px;height:32px;top:-8px;left:-8px;'],
+                            ['background' => 'rgba(255,255,255,.10)', 'style' => 'width:20px;height:20px;bottom:22px;right:6px;'],
+                        ],
+                    ],
+                ];
+                @endphp
+                <div class="flex flex-wrap gap-3" data-test="presentation-style-picker">
+                    @foreach($styleConfigs as $key => $cfg)
+                        @php $selected = $presentationStyle === $key; @endphp
                         <button type="button"
                             wire:click="$set('presentationStyle', '{{ $key }}')"
                             data-test="presentation-style-option"
                             data-style="{{ $key }}"
+                            style="{{ $selected ? 'outline: 2.5px solid '.$cfg['accent'].'; outline-offset: 2px;' : '' }}"
                             @class([
-                                'rounded-lg border px-4 py-2 text-sm font-medium transition',
-                                'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-200' => $presentationStyle === $key,
-                                'border-neutral-300 text-neutral-600 dark:border-neutral-600 dark:text-neutral-300' => $presentationStyle !== $key,
-                            ])>
-                            {{ __($label) }}
+                                'flex flex-col overflow-hidden rounded-xl border-2 text-left transition focus:outline-none',
+                                'shadow-md' => $selected,
+                                'border-transparent opacity-70 hover:opacity-90' => !$selected,
+                            ])
+                        >
+                            {{-- gradient swatch --}}
+                            <div class="relative h-14 w-32 overflow-hidden"
+                                 style="background: {{ $cfg['swatch'] }};">
+                                @foreach($cfg['blobs'] as $blob)
+                                    <div class="absolute rounded-full"
+                                         style="background: {{ $blob['background'] }}; {{ $blob['style'] }}"></div>
+                                @endforeach
+                                {{-- accent stripe at bottom of swatch --}}
+                                <div class="absolute bottom-0 left-0 right-0 h-1"
+                                     style="background: {{ $cfg['accent'] }}; opacity: .7;"></div>
+                            </div>
+                            {{-- label --}}
+                            <div @class([
+                                    'px-3 py-1.5 text-xs font-semibold',
+                                    'bg-white text-neutral-800 dark:bg-neutral-800 dark:text-neutral-100' => !$selected,
+                                    'text-neutral-800 dark:text-neutral-100' => $selected,
+                                ])
+                                 style="{{ $selected ? 'background: '.$cfg['accent'].'22;' : '' }}"
+                            >
+                                {{ __($cfg['label']) }}
+                            </div>
                         </button>
                     @endforeach
                 </div>
