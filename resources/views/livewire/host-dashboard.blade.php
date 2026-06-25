@@ -64,6 +64,14 @@
         </div>
     </div>
 
+    {{-- Admin note for host only --}}
+    @if(isset($currentQuestion) && $currentQuestion?->comment)
+        <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/50">
+            <p class="text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">{{ __('Note:') }}</p>
+            <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{{ $currentQuestion->comment }}</p>
+        </div>
+    @endif
+
     {{-- Answer Progress --}}
     @if($phase === 'playing')
         <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
