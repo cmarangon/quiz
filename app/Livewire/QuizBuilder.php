@@ -64,6 +64,8 @@ class QuizBuilder extends Component
 
     public string $questionTimeLimit = '';
 
+    public string $questionComment = '';
+
     public function mount(?Quiz $quiz = null): void
     {
         if ($quiz && $quiz->exists) {
@@ -171,6 +173,7 @@ class QuizBuilder extends Component
         $this->questionType = $question->type;
         $this->questionPoints = $question->points;
         $this->questionTimeLimit = $question->time_limit_seconds !== null ? (string) $question->time_limit_seconds : '';
+        $this->questionComment = $question->comment ?? '';
 
         if ($question->type === 'multiple_choice') {
             $options = $question->options ?: [];
@@ -327,6 +330,7 @@ class QuizBuilder extends Component
                 'correct_answer' => $correctAnswer,
                 'points' => $this->questionPoints,
                 'time_limit_seconds' => $timeLimitSeconds,
+                'comment' => $this->questionComment ?: null,
             ]);
         } else {
             $category = Category::findOrFail($this->addingQuestionToCategoryId);
@@ -344,6 +348,7 @@ class QuizBuilder extends Component
                 'correct_answer' => $correctAnswer,
                 'points' => $this->questionPoints,
                 'time_limit_seconds' => $timeLimitSeconds,
+                'comment' => $this->questionComment ?: null,
                 'order' => $nextOrder,
             ]);
         }
@@ -612,6 +617,7 @@ class QuizBuilder extends Component
         $this->questionPairs = $this->defaultQuestionPairs();
         $this->questionPoints = 10;
         $this->questionTimeLimit = '';
+        $this->questionComment = '';
     }
 
     public function render()

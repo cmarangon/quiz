@@ -166,8 +166,13 @@ class HostDashboard extends Component
 
     public function render()
     {
+        $currentQuestion = ($this->currentQuestionId && in_array($this->phase, ['playing', 'reviewing'], true))
+            ? \App\Models\Question::find($this->currentQuestionId)
+            : null;
+
         return view('livewire.host-dashboard', [
             'players' => $this->session->players,
+            'currentQuestion' => $currentQuestion,
         ])->title('Host Dashboard');
     }
 }
