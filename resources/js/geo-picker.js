@@ -19,22 +19,28 @@ function round(value) {
  *
  * config: {
  *   center: {lat,lng}, zoom: int,
- *   latField: string,       // Livewire property name for latitude
- *   lngField: string,       // Livewire property name for longitude
+ *   latField: string,          // Livewire property name for latitude
+ *   lngField: string,          // Livewire property name for longitude
+ *   thresholdField: string,    // Livewire property name for threshold_km (full-points radius)
+ *   maxDistField: string,      // Livewire property name for max_distance_km (zero-points boundary)
  * }
  */
 export function geoPicker(config) {
     return {
         map: null,
         marker: null,
+        thresholdCircle: null,
+        maxCircle: null,
         lat: null,
         lng: null,
+        thresholdKm: null,
+        maxKm: null,
 
         init() {
-            const initLat = parseFloat(this.$wire[config.latField]);
-            this.lat = Number.isFinite(initLat) ? initLat : null;
-            const initLng = parseFloat(this.$wire[config.lngField]);
-            this.lng = Number.isFinite(initLng) ? initLng : null;
+            this.lat = parseFloat(this.$wire[config.latField]) || null;
+            this.lng = parseFloat(this.$wire[config.lngField]) || null;
+            this.thresholdKm = parseFloat(this.$wire[config.thresholdField]) || null;
+            this.maxKm = parseFloat(this.$wire[config.maxDistField]) || null;
 
             // Livewire → Alpine: text field changes move the map pin.
             this.$wire.$watch(config.latField, (val) => {
@@ -50,6 +56,16 @@ export function geoPicker(config) {
                     this.lng = n;
                     this.reflectFields();
                 }
+            });
+
+            // Livewire → Alpine: scoring field changes update the circles.
+            this.$wire.$watch(config.thresholdField, (val) => {
+                this.thresholdKm = parseFloat(val) || null;
+                this.reflectCircles();
+            });
+            this.$wire.$watch(config.maxDistField, (val) => {
+                this.maxKm = parseFloat(val) || null;
+                this.reflectCircles();
             });
 
             this.$nextTick(() => this.setup());
@@ -85,6 +101,7 @@ export function geoPicker(config) {
             const lng = parseFloat(this.lng);
             if (Number.isFinite(lat) && Number.isFinite(lng)) {
                 this.setMarker(lat, lng);
+                this.reflectCircles();
                 this.map.setView([lat, lng], Math.max(zoom, 4));
             }
         },
@@ -110,6 +127,57 @@ export function geoPicker(config) {
             }
 
             this.setMarker(lat, lng);
+            this.reflectCircles();
+        },
+
+        reflectCircles() {
+            const lat = parseFloat(this.lat);
+            const lng = parseFloat(this.lng);
+
+            if (!this.map || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+                return;
+            }
+
+            // Green circle: full-points zone (threshold_km).
+            const tKm = parseFloat(this.thresholdKm);
+            if (Number.isFinite(tKm) && tKm > 0) {
+                const r = tKm * 1000;
+                if (this.thresholdCircle) {
+                    this.thresholdCircle.setLatLng([lat, lng]).setRadius(r);
+                } else {
+                    this.thresholdCircle = L.circle([lat, lng], {
+                        radius: r,
+                        color: '#22c55e',
+                        fillColor: '#22c55e',
+                        fillOpacity: 0.1,
+                        weight: 2,
+                    }).addTo(this.map);
+                }
+            } else if (this.thresholdCircle) {
+                this.thresholdCircle.remove();
+                this.thresholdCircle = null;
+            }
+
+            // Red dashed circle: zero-points boundary (max_distance_km).
+            const mKm = parseFloat(this.maxKm);
+            if (Number.isFinite(mKm) && mKm > 0) {
+                const r = mKm * 1000;
+                if (this.maxCircle) {
+                    this.maxCircle.setLatLng([lat, lng]).setRadius(r);
+                } else {
+                    this.maxCircle = L.circle([lat, lng], {
+                        radius: r,
+                        color: '#ef4444',
+                        fillColor: '#ef4444',
+                        fillOpacity: 0.05,
+                        weight: 2,
+                        dashArray: '6 4',
+                    }).addTo(this.map);
+                }
+            } else if (this.maxCircle) {
+                this.maxCircle.remove();
+                this.maxCircle = null;
+            }
         },
 
         setMarker(lat, lng) {
