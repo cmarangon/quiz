@@ -4,8 +4,6 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
-// Bundlers rewrite Leaflet's default image paths, so point them at the
-// Vite-resolved URLs explicitly.
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: markerIcon2x,
     iconUrl: markerIcon,
@@ -19,15 +17,10 @@ function round(value) {
 /**
  * Alpine component backing the quiz-builder location picker.
  *
- * The map lets an author drop/drag a pin to set a geo-guesser question's
- * correct location without looking up coordinates by hand. The pin is kept
- * in sync with the Livewire latitude/longitude fields in both directions:
- * clicking the map writes the fields, and editing the fields moves the pin.
- *
  * config: {
  *   center: {lat,lng}, zoom: int,
- *   latField: string,            // Livewire property name for latitude
- *   lngField: string,            // Livewire property name for longitude
+ *   latField: string,       // Livewire property name for latitude
+ *   lngField: string,       // Livewire property name for longitude
  * }
  */
 export function geoPicker(config) {
@@ -38,13 +31,26 @@ export function geoPicker(config) {
         lng: null,
 
         init() {
-            this.lat = this.$wire.entangle(config.latField);
-            this.lng = this.$wire.entangle(config.lngField);
+            this.lat = parseFloat(this.$wire[config.latField]) || null;
+            this.lng = parseFloat(this.$wire[config.lngField]) || null;
+
+            // Livewire → Alpine: text field changes move the map pin.
+            this.$wire.$watch(config.latField, (val) => {
+                const n = parseFloat(val);
+                if (Number.isFinite(n)) {
+                    this.lat = n;
+                    this.reflectFields();
+                }
+            });
+            this.$wire.$watch(config.lngField, (val) => {
+                const n = parseFloat(val);
+                if (Number.isFinite(n)) {
+                    this.lng = n;
+                    this.reflectFields();
+                }
+            });
 
             this.$nextTick(() => this.setup());
-
-            this.$watch('lat', () => this.reflectFields());
-            this.$watch('lng', () => this.reflectFields());
         },
 
         setup() {
@@ -66,12 +72,11 @@ export function geoPicker(config) {
                 maxZoom: 18,
             }).addTo(this.map);
 
-            // The container is often hidden/animated on first paint.
             setTimeout(() => this.map && this.map.invalidateSize(), 150);
 
+            // Alpine → Livewire: map click sets the pin and pushes to Livewire.
             this.map.on('click', (e) => {
-                this.lat = round(e.latlng.lat);
-                this.lng = round(e.latlng.lng);
+                this.setPin(e.latlng.lat, e.latlng.lng);
             });
 
             const lat = parseFloat(this.lat);
@@ -80,6 +85,18 @@ export function geoPicker(config) {
                 this.setMarker(lat, lng);
                 this.map.setView([lat, lng], Math.max(zoom, 4));
             }
+        },
+
+        // Single entry point for placing/moving the pin.
+        // Pushes to Livewire AND updates the local state + map.
+        setPin(lat, lng) {
+            const rLat = round(lat);
+            const rLng = round(lng);
+            this.lat = parseFloat(rLat);
+            this.lng = parseFloat(rLng);
+            this.$wire.set(config.latField, rLat);
+            this.$wire.set(config.lngField, rLng);
+            this.reflectFields();
         },
 
         reflectFields() {
@@ -103,8 +120,7 @@ export function geoPicker(config) {
             this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
             this.marker.on('dragend', (e) => {
                 const p = e.target.getLatLng();
-                this.lat = round(p.lat);
-                this.lng = round(p.lng);
+                this.setPin(p.lat, p.lng);
             });
         },
 
