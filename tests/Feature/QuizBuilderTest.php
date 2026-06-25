@@ -111,3 +111,81 @@ test('a question time below 5 seconds fails validation', function () {
         ->call('saveQuestion')
         ->assertHasErrors(['questionTimeLimit']);
 });
+
+test('saving a new question persists its comment', function () {
+    $user = User::factory()->create();
+    $quiz = \App\Models\Quiz::factory()->for($user)->create();
+    $category = \App\Models\Category::factory()->for($quiz)->create();
+
+    Livewire::actingAs($user)
+        ->test(\App\Livewire\QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'What is 2+2?')
+        ->set('questionType', 'true_false')
+        ->set('questionCorrectAnswer', 'True')
+        ->set('questionComment', 'Source: basic arithmetic')
+        ->call('saveQuestion')
+        ->assertHasNoErrors();
+
+    $question = $category->questions()->firstOrFail();
+    expect($question->comment)->toBe('Source: basic arithmetic');
+});
+
+test('saving a question with blank comment stores null', function () {
+    $user = User::factory()->create();
+    $quiz = \App\Models\Quiz::factory()->for($user)->create();
+    $category = \App\Models\Category::factory()->for($quiz)->create();
+
+    Livewire::actingAs($user)
+        ->test(\App\Livewire\QuizBuilder::class, ['quiz' => $quiz])
+        ->call('showAddQuestion', $category->id)
+        ->set('questionBody', 'What is 2+2?')
+        ->set('questionType', 'true_false')
+        ->set('questionCorrectAnswer', 'True')
+        ->set('questionComment', '')
+        ->call('saveQuestion')
+        ->assertHasNoErrors();
+
+    $question = $category->questions()->firstOrFail();
+    expect($question->comment)->toBeNull();
+});
+
+test('editing a question loads its existing comment', function () {
+    $user = User::factory()->create();
+    $quiz = \App\Models\Quiz::factory()->for($user)->create();
+    $category = \App\Models\Category::factory()->for($quiz)->create();
+    $question = \App\Models\Question::factory()->for($category)->create([
+        'type' => 'true_false',
+        'body' => 'Is the sky blue?',
+        'options' => ['True', 'False'],
+        'correct_answer' => 'True',
+        'comment' => 'Remember to mention clouds',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(\App\Livewire\QuizBuilder::class, ['quiz' => $quiz])
+        ->call('editQuestion', $question->id)
+        ->assertSet('questionComment', 'Remember to mention clouds');
+});
+
+test('updating a question overwrites its comment', function () {
+    $user = User::factory()->create();
+    $quiz = \App\Models\Quiz::factory()->for($user)->create();
+    $category = \App\Models\Category::factory()->for($quiz)->create();
+    $question = \App\Models\Question::factory()->for($category)->create([
+        'type' => 'true_false',
+        'body' => 'Is the sky blue?',
+        'options' => ['True', 'False'],
+        'correct_answer' => 'True',
+        'comment' => 'Old note',
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(\App\Livewire\QuizBuilder::class, ['quiz' => $quiz])
+        ->call('editQuestion', $question->id)
+        ->set('questionComment', 'New note')
+        ->call('saveQuestion')
+        ->assertHasNoErrors();
+
+    expect($question->fresh()->comment)->toBe('New note');
+});
