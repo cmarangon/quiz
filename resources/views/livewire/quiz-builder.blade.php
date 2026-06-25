@@ -82,7 +82,12 @@
                                 <li class="flex items-center justify-between gap-2">
                                     <span class="flex items-start gap-2">
                                         <span class="mt-1 text-neutral-400">&bull;</span>
-                                        <span>{{ $question->body }} ({{ $question->points }} {{ __('pts') }}, {{ $question->effectiveTimeLimitSeconds() }}s{{ $question->time_limit_seconds === null ? ', '.__('Default') : '' }})</span>
+                                        <span class="flex flex-col">
+                                            <span>{{ $question->body }} ({{ $question->points }} {{ __('pts') }}, {{ $question->effectiveTimeLimitSeconds() }}s{{ $question->time_limit_seconds === null ? ', '.__('Default') : '' }})</span>
+                                            @if($question->comment)
+                                                <span class="text-xs italic text-neutral-400 dark:text-neutral-500">{{ $question->comment }}</span>
+                                            @endif
+                                        </span>
                                     </span>
                                     <span class="flex items-center gap-1">
                                         <flux:button wire:click="editQuestion({{ $question->id }})" size="xs" variant="ghost">
@@ -109,6 +114,10 @@
                                 <div>
                                     <flux:textarea wire:model="questionBody" :label="__('Question')" :placeholder="__('Enter your question')" rows="2" />
                                     @error('questionBody') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                                </div>
+
+                                <div>
+                                    <flux:textarea wire:model="questionComment" :label="__('Admin note (private)')" :placeholder="__('Optional note visible only to you')" rows="2" />
                                 </div>
 
                                 <div class="flex gap-4">
