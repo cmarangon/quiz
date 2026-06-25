@@ -22,6 +22,7 @@ class Question extends Model
         'points',
         'time_limit_seconds',
         'order',
+        'comment',
     ];
 
     protected static function booted(): void
