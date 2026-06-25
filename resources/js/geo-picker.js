@@ -37,8 +37,10 @@ export function geoPicker(config) {
         maxKm: null,
 
         init() {
-            this.lat = parseFloat(this.$wire[config.latField]) || null;
-            this.lng = parseFloat(this.$wire[config.lngField]) || null;
+            const initLat = parseFloat(this.$wire[config.latField]);
+            this.lat = Number.isFinite(initLat) ? initLat : null;
+            const initLng = parseFloat(this.$wire[config.lngField]);
+            this.lng = Number.isFinite(initLng) ? initLng : null;
             this.thresholdKm = parseFloat(this.$wire[config.thresholdField]) || null;
             this.maxKm = parseFloat(this.$wire[config.maxDistField]) || null;
 
@@ -195,6 +197,8 @@ export function geoPicker(config) {
         },
 
         destroy() {
+            this.thresholdCircle = null;
+            this.maxCircle = null;
             if (this.map) {
                 this.map.remove();
                 this.map = null;
