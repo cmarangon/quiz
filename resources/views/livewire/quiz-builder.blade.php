@@ -235,7 +235,7 @@
                                 @if($questionType === 'geo_guesser')
                                 <div
                                     wire:key="geo-picker-{{ $editingQuestionId ?? 'new' }}"
-                                    x-data="geoPicker({ latField: 'questionGeoLat', lngField: 'questionGeoLng', center: { lat: 20, lng: 0 }, zoom: 2 })"
+                                    x-data="geoPicker({ latField: 'questionGeoLat', lngField: 'questionGeoLng', thresholdField: 'questionGeoThresholdKm', maxDistField: 'questionGeoMaxDistanceKm', center: { lat: 20, lng: 0 }, zoom: 2 })"
                                 >
                                     <label class="mb-1 block text-sm font-medium dark:text-neutral-300">{{ __('Correct Location') }}</label>
                                     <p class="mb-2 text-xs text-neutral-500 dark:text-neutral-400">{{ __('Click the map to drop a pin (drag to fine-tune). The coordinates fill in automatically.') }}</p>
