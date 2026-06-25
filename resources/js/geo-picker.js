@@ -31,8 +31,10 @@ export function geoPicker(config) {
         lng: null,
 
         init() {
-            this.lat = parseFloat(this.$wire[config.latField]) || null;
-            this.lng = parseFloat(this.$wire[config.lngField]) || null;
+            const initLat = parseFloat(this.$wire[config.latField]);
+            this.lat = Number.isFinite(initLat) ? initLat : null;
+            const initLng = parseFloat(this.$wire[config.lngField]);
+            this.lng = Number.isFinite(initLng) ? initLng : null;
 
             // Livewire → Alpine: text field changes move the map pin.
             this.$wire.$watch(config.latField, (val) => {
