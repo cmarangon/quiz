@@ -80,3 +80,30 @@ test('host dashboard does not show comment in lobby phase', function () {
         ->test(HostDashboard::class, ['code' => $session->join_code])
         ->assertDontSee('Should not appear in lobby');
 });
+
+test('host dashboard shows question comment during reviewing phase', function () {
+    Event::fake();
+
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->for($user)->create([
+        'settings' => ['enable_time_bonus' => false, 'enable_streaks' => false],
+    ]);
+    $category = Category::factory()->for($quiz)->create(['order' => 0]);
+    Question::factory()->for($category)->create([
+        'order' => 0,
+        'type' => 'true_false',
+        'body' => 'Is water wet?',
+        'options' => ['True', 'False'],
+        'correct_answer' => 'True',
+        'comment' => 'Reviewing phase note',
+    ]);
+    $session = GameSession::factory()->for($quiz)->for($user, 'host')->create(['status' => 'waiting']);
+
+    app(GameService::class)->start($session);
+    app(GameService::class)->finishQuestion($session->fresh());
+    $session->refresh();
+
+    Livewire::actingAs($user)
+        ->test(HostDashboard::class, ['code' => $session->join_code])
+        ->assertSee('Reviewing phase note');
+});
