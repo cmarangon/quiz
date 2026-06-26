@@ -49,7 +49,7 @@
                             class="qz-option qz-order"
                             x-bind:class="pairedWith(index) !== null ? colorFor(index) : (selectedLeft === index ? 'qz-option--armed' : '')"
                         >
-                            <img x-show="item.kind === 'image'" x-bind:src="item.value" class="h-16 w-16 rounded object-cover" alt="" />
+                            <img x-show="item.kind === 'image'" x-bind:src="item.kind === 'image' ? item.value : null" class="h-16 w-16 rounded object-cover" alt="" />
                             <span x-show="item.kind === 'text'" x-text="item.value" class="qz-order__label"></span>
                         </li>
                     </template>
@@ -62,7 +62,7 @@
                             class="qz-option qz-order"
                             x-bind:class="rightUsedAt(index) !== -1 ? colorFor(rightUsedAt(index)) : ''"
                         >
-                            <img x-show="item.kind === 'image'" x-bind:src="item.value" class="h-16 w-16 rounded object-cover" alt="" />
+                            <img x-show="item.kind === 'image'" x-bind:src="item.kind === 'image' ? item.value : null" class="h-16 w-16 rounded object-cover" alt="" />
                             <span x-show="item.kind === 'text'" x-text="item.value" class="qz-order__label"></span>
                         </li>
                     </template>
@@ -103,7 +103,7 @@
                         class="flex items-center justify-center rounded-xl border border-zinc-200 bg-white p-3 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-800"
                         x-bind:class="pairedWith(index) !== null ? 'ring-2 ring-blue-500' : (selectedLeft === index ? 'ring-2 ring-amber-400' : '')"
                     >
-                        <img x-show="item.kind === 'image'" x-bind:src="item.value" class="h-16 w-16 rounded object-cover" alt="" />
+                        <img x-show="item.kind === 'image'" x-bind:src="item.kind === 'image' ? item.value : null" class="h-16 w-16 rounded object-cover" alt="" />
                         <span x-show="item.kind === 'text'" x-text="item.value" class="font-medium text-zinc-900 dark:text-white"></span>
                     </li>
                 </template>
@@ -116,7 +116,7 @@
                         class="flex items-center justify-center rounded-xl border border-zinc-200 bg-white p-3 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-800"
                         x-bind:class="rightUsedAt(index) !== -1 ? 'ring-2 ring-blue-500' : ''"
                     >
-                        <img x-show="item.kind === 'image'" x-bind:src="item.value" class="h-16 w-16 rounded object-cover" alt="" />
+                        <img x-show="item.kind === 'image'" x-bind:src="item.kind === 'image' ? item.value : null" class="h-16 w-16 rounded object-cover" alt="" />
                         <span x-show="item.kind === 'text'" x-text="item.value" class="font-medium text-zinc-900 dark:text-white"></span>
                     </li>
                 </template>
