@@ -551,3 +551,66 @@ test('user cannot delete a question belonging to another users quiz', function (
 
     expect(Question::find($question->id))->not->toBeNull();
 });
+
+test('user can delete a category and all its questions', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = $category->questions()->create([
+        'type' => 'multiple_choice',
+        'body' => 'What is 2+2?',
+        'options' => ['3', '4'],
+        'correct_answer' => '4',
+        'points' => 10,
+        'time_limit_seconds' => 30,
+        'order' => 1,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('deleteCategory', $category->id);
+
+    expect(Category::find($category->id))->toBeNull();
+    expect(Question::find($question->id))->toBeNull();
+});
+
+test('deleting a category resets the form when its question is being edited', function () {
+    $user = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $user->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+    $question = $category->questions()->create([
+        'type' => 'multiple_choice',
+        'body' => 'What is 2+2?',
+        'options' => ['3', '4'],
+        'correct_answer' => '4',
+        'points' => 10,
+        'time_limit_seconds' => 30,
+        'order' => 1,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(QuizBuilder::class, ['quiz' => $quiz])
+        ->call('editQuestion', $question->id)
+        ->assertSet('editingQuestionId', $question->id)
+        ->call('deleteCategory', $category->id)
+        ->assertSet('editingQuestionId', null)
+        ->assertSet('questionBody', '');
+
+    expect(Category::find($category->id))->toBeNull();
+});
+
+test('user cannot delete a category belonging to another users quiz', function () {
+    $owner = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $quiz = Quiz::factory()->create(['user_id' => $owner->id]);
+    $category = Category::factory()->create(['quiz_id' => $quiz->id]);
+
+    $otherQuiz = Quiz::factory()->create(['user_id' => $otherUser->id]);
+
+    Livewire::actingAs($otherUser)
+        ->test(QuizBuilder::class, ['quiz' => $otherQuiz])
+        ->call('deleteCategory', $category->id)
+        ->assertStatus(403);
+
+    expect(Category::find($category->id))->not->toBeNull();
+});
