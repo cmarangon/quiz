@@ -220,6 +220,13 @@
 .qz-theme--history .qz-option.d .qz-key { background: var(--gold); color: var(--hist-ink); }
 .qz-theme--history .qz-option.is-correct { outline: 4px solid var(--gold); outline-offset: 2px; }
 .qz-theme--history .qz-option.is-dim { filter: grayscale(0.55) brightness(0.82); opacity: 0.7; }
+/* Pair colors for match-pairs / ordering items (.qz-order targets these, not MC options). */
+.qz-theme--history .qz-option.qz-order.a { background: linear-gradient(180deg, #f5d8d8, #e8bebe); border-color: var(--burg); }
+.qz-theme--history .qz-option.qz-order.b { background: linear-gradient(180deg, #d8eedd, #c0d9c4); border-color: var(--hgreen); }
+.qz-theme--history .qz-option.qz-order.c { background: linear-gradient(180deg, #f5e4cc, #eacfa4); border-color: var(--sepia); }
+.qz-theme--history .qz-option.qz-order.d { background: linear-gradient(180deg, #fdf0cc, #f5e090); border-color: var(--gold); }
+/* White armed outline is invisible on parchment; use burgundy instead. */
+.qz-theme--history.qz-player .qz-option--armed { outline-color: var(--burg); box-shadow: 0 0 8px rgba(122, 46, 46, 0.4); }
 .qz-theme--history .qz-hint { text-align: center; font-style: italic; color: var(--parch-dark); opacity: 0.85; }
 .qz-theme--history .qz-meta { display: flex; align-items: center; justify-content: space-between; color: var(--parch-dark); font-weight: 600; }
 .qz-theme--history .qz-laurel { text-align: center; color: var(--gold); letter-spacing: 12px; font-size: 30px; }
@@ -628,6 +635,13 @@
 .qz-theme--crime .qz-option.d .qz-key { background: #6b7689; }
 .qz-theme--crime .qz-option.is-correct { outline: 4px solid var(--crime-tape); outline-offset: 2px; }
 .qz-theme--crime .qz-option.is-dim { filter: grayscale(0.55) brightness(0.7); opacity: 0.7; }
+/* Pair colors for match-pairs / ordering items (.qz-order targets these, not MC options). */
+.qz-theme--crime .qz-option.qz-order.a { background: linear-gradient(180deg, #321418, #200a0c); border-color: var(--crime-blood); }
+.qz-theme--crime .qz-option.qz-order.b { background: linear-gradient(180deg, #0d2628, #091819); border-color: var(--crime-teal); }
+.qz-theme--crime .qz-option.qz-order.c { background: linear-gradient(180deg, #2a2206, #1a1600); border-color: var(--crime-tape); }
+.qz-theme--crime .qz-option.qz-order.d { background: linear-gradient(180deg, #1e2432, #101520); border-color: #6b7689; }
+/* Override armed-state outline to use crime-tape yellow (more visible than white on dark). */
+.qz-theme--crime.qz-player .qz-option--armed { outline-color: var(--crime-tape); }
 .qz-theme--crime .qz-hint { text-align: center; font-family: 'Special Elite', monospace; color: #9aa6b8; opacity: 0.85; }
 .qz-theme--crime .qz-meta { display: flex; align-items: center; justify-content: space-between; font-family: 'Special Elite', monospace; color: var(--crime-tape); }
 /* crime-scene tape banners + red evidence thread + magnifier */
