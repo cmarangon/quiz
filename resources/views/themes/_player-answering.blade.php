@@ -12,6 +12,13 @@
             </div>
         @endif
 
+        @if($currentQuestion['body'] ?? null)
+            <div class="qz-question">
+                <span class="qz-emoji">{{ $themeConfig['emoji'] }}</span>
+                <h2>{{ $currentQuestion['body'] }}</h2>
+            </div>
+        @endif
+
         <div class="qz-options">
             @foreach($currentQuestion['options'] as $index => $option)
                 @php $label = $option['label'] ?? $option; @endphp
