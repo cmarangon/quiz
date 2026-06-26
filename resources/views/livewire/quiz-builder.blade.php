@@ -124,9 +124,20 @@
                 <div class="mb-4 rounded-lg border border-neutral-200 p-4 dark:border-neutral-700">
                     <div class="mb-2 flex items-center justify-between">
                         <h3 class="font-medium dark:text-white">{{ $category->name }}</h3>
-                        <span class="rounded-full bg-neutral-100 px-2 py-1 text-xs dark:bg-neutral-700 dark:text-neutral-300">
-                            {{ $category->theme }}
-                        </span>
+                        <div class="flex items-center gap-2">
+                            <span class="rounded-full bg-neutral-100 px-2 py-1 text-xs dark:bg-neutral-700 dark:text-neutral-300">
+                                {{ $category->theme }}
+                            </span>
+                            <flux:button
+                                wire:click="deleteCategory({{ $category->id }})"
+                                wire:confirm="{{ __('Delete \':name\'? This will also delete all its questions.', ['name' => $category->name]) }}"
+                                size="xs"
+                                variant="ghost"
+                                class="text-red-500"
+                            >
+                                {{ __('Delete') }}
+                            </flux:button>
+                        </div>
                     </div>
 
                     @if($category->questions->isNotEmpty())
