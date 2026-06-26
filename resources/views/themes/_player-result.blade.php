@@ -10,7 +10,7 @@
             <div class="qz-result__title">{{ $correct ? __('Correct!') : __('Wrong!') }}</div>
             <div class="qz-result__points">+{{ $points }} {{ __('points') }}</div>
 
-            @if($bd)
+            @if($bd && ($bd['time_bonus_enabled'] || $bd['streak_enabled']))
                 {{-- How the score was reached: each row applies one factor to the
                      running subtotal, mirroring base × accuracy × speed × streak. --}}
                 <div class="qz-breakdown" data-test="player-points-breakdown">

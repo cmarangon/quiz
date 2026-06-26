@@ -94,6 +94,9 @@
                         $colors = ['bg-red-500 hover:bg-red-600', 'bg-blue-500 hover:bg-blue-600', 'bg-yellow-500 hover:bg-yellow-600', 'bg-green-500 hover:bg-green-600'];
                     @endphp
                     <div wire:key="mc-player-{{ $currentQuestion['question_id'] ?? 'q' }}" x-data="choiceAnswer()" class="space-y-4">
+                        @if($currentQuestion['body'] ?? null)
+                            <h2 class="text-xl font-bold text-zinc-900 dark:text-white">{{ $currentQuestion['body'] }}</h2>
+                        @endif
                         <div class="grid grid-cols-2 gap-3">
                             @foreach($currentQuestion['options'] as $index => $option)
                                 @php $label = $option['label'] ?? $option; @endphp
